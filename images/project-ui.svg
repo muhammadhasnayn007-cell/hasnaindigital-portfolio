@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0c0911"/><stop offset=".55" stop-color="#251231"/><stop offset="1" stop-color="#061116"/></linearGradient></defs>
+<rect width="1200" height="700" fill="url(#g)"/><text x="75" y="105" fill="#bdb7b4" font-family="Arial" font-size="18" letter-spacing="4">UI/UX DESIGN / PRODUCT SYSTEM</text><text x="75" y="170" fill="#fff" font-family="Arial" font-size="58" font-weight="700">PRODUCT EXPERIENCE</text>
+<rect x="85" y="220" width="220" height="310" rx="28" fill="#0d0e12" stroke="#fff" stroke-opacity=".13"/><rect x="335" y="220" width="350" height="310" rx="28" fill="#11131a" stroke="#fff" stroke-opacity=".13"/><rect x="715" y="220" width="400" height="140" rx="28" fill="#11131a" stroke="#fff" stroke-opacity=".13"/><rect x="715" y="390" width="190" height="140" rx="28" fill="#11131a" stroke="#fff" stroke-opacity=".13"/><rect x="925" y="390" width="190" height="140" rx="28" fill="#11131a" stroke="#fff" stroke-opacity=".13"/>
+<circle cx="195" cy="275" r="35" fill="#e3131b"/><rect x="370" y="260" width="180" height="18" rx="9" fill="#e3131b"/><rect x="370" y="300" width="220" height="10" rx="5" fill="#474747"/><rect x="370" y="335" width="190" height="10" rx="5" fill="#2e2e2e"/>
+</svg>

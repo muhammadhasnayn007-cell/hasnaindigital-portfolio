@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17090b"/><stop offset=".55" stop-color="#6f0b13"/><stop offset="1" stop-color="#090909"/></linearGradient><filter id="b"><feGaussianBlur stdDeviation="24"/></filter></defs>
+<rect width="1200" height="700" fill="#070707"/><rect width="1200" height="700" fill="url(#g)"/><circle cx="965" cy="120" r="190" fill="#e3131b" opacity=".16" filter="url(#b)"/>
+<rect x="70" y="75" width="1060" height="550" rx="26" fill="#101011" stroke="#fff" stroke-opacity=".12"/>
+<text x="105" y="125" fill="#a9a3a0" font-family="Arial" font-size="18" letter-spacing="4">SEARCH GROWTH / ANALYTICS</text>
+<text x="105" y="190" fill="#fff" font-family="Arial" font-size="58" font-weight="700">SEO PERFORMANCE</text>
+<path d="M105 500 C210 470 290 480 380 420 S570 300 665 360 S820 330 935 205" fill="none" stroke="#e3131b" stroke-width="8"/>
+<circle cx="665" cy="360" r="11" fill="#fff"/><circle cx="935" cy="205" r="11" fill="#fff"/>
+<text x="105" y="585" fill="#777" font-family="Arial" font-size="16">VISIBILITY</text><text x="315" y="585" fill="#777" font-family="Arial" font-size="16">KEYWORDS</text><text x="545" y="585" fill="#777" font-family="Arial" font-size="16">CLICKS</text><text x="755" y="585" fill="#777" font-family="Arial" font-size="16">CONVERSIONS</text>
+</svg>

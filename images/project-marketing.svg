@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#09090b"/><stop offset=".45" stop-color="#331018"/><stop offset="1" stop-color="#a00c16"/></linearGradient></defs>
+<rect width="1200" height="700" fill="url(#g)"/><text x="75" y="105" fill="#c7c0bc" font-family="Arial" font-size="18" letter-spacing="4">DIGITAL MARKETING / CAMPAIGN</text><text x="75" y="170" fill="#fff" font-family="Arial" font-size="58" font-weight="700">GROWTH CAMPAIGN</text>
+<g fill="#111" stroke="#fff" stroke-opacity=".12"><rect x="75" y="230" width="260" height="330" rx="24"/><rect x="365" y="230" width="260" height="330" rx="24"/><rect x="655" y="230" width="470" height="150" rx="24"/><rect x="655" y="405" width="470" height="155" rx="24"/></g>
+<circle cx="205" cy="335" r="70" fill="#e3131b" opacity=".22"/><rect x="430" y="295" width="130" height="15" rx="7" fill="#e3131b"/><rect x="430" y="330" width="90" height="10" rx="5" fill="#777"/><path d="M700 335 L785 285 L860 320 L955 255 L1075 300" fill="none" stroke="#e3131b" stroke-width="8"/>
+</svg>

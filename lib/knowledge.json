@@ -1,0 +1,169 @@
+{
+  "brand": {
+    "name": "Hasnain Digital Marketer",
+    "fullName": "Muhammad Hasnain",
+    "title": "Web Developer • Python Developer • UI/UX Designer • SEO & Digital Marketing Specialist",
+    "email": "muhammadhasnayn007@gmail.com",
+    "location": "Based in Pakistan • Available Worldwide",
+    "website": "https://hasnaindigitalmarketer.com",
+    "responseTime": "Under 24 hours",
+    "availability": "Available for Projects"
+  },
+  "services": [
+    {
+      "id": "web-development",
+      "title": "Web Development",
+      "summary": "Fast, responsive, crawlable, and maintainable modern web applications and websites.",
+      "capabilities": [
+        "Frontend development (HTML5, CSS3, modern JavaScript, React)",
+        "Backend development (Node.js, Express, RESTful APIs)",
+        "Mobile-first responsive design and cross-device optimization",
+        "Performance optimization and Core Web Vitals compliance",
+        "Semantic, crawlable website architecture for optimal search indexing"
+      ]
+    },
+    {
+      "id": "python-development",
+      "title": "Python Development",
+      "summary": "Custom Python engineering for automation, backend systems, APIs, and scripts.",
+      "capabilities": [
+        "Python backend services and REST APIs",
+        "Data scraping, extraction, and automated workflow scripts",
+        "System automation and repetitive task scripting",
+        "Data processing and integration pipelines",
+        "Custom utility tools and application logic"
+      ]
+    },
+    {
+      "id": "ui-ux-design",
+      "title": "UI/UX Design",
+      "summary": "User-centered digital product interfaces, wireframes, prototypes, and design systems.",
+      "capabilities": [
+        "User research, information architecture, and user journey mapping",
+        "Low-fidelity wireframes and interactive prototypes in Figma",
+        "High-converting landing page layouts and web UI",
+        "Design systems, style guides, and typography hierarchies",
+        "Conversion rate optimization (CRO) focused layouts"
+      ]
+    },
+    {
+      "id": "seo",
+      "title": "SEO & Search Engine Optimization",
+      "summary": "Comprehensive search engine optimization for organic visibility and ranking growth.",
+      "capabilities": [
+        "Technical SEO audits (crawl budget, sitemaps, robots.txt, schema markup, Core Web Vitals)",
+        "On-page SEO (meta titles, meta descriptions, H1-H3 hierarchy, search-intent content alignment)",
+        "Keyword research and competitor gap analysis",
+        "Off-page SEO and backlink strategy",
+        "Google Search Console & Google Analytics 4 (GA4) configuration and tracking"
+      ]
+    },
+    {
+      "id": "digital-marketing",
+      "title": "Digital Marketing",
+      "summary": "Multi-channel marketing strategy and conversion-focused growth campaigns.",
+      "capabilities": [
+        "Digital marketing strategy aligned with business objectives",
+        "Content marketing and search-intent messaging",
+        "Audience targeting and conversion funnels",
+        "Online growth campaigns and analytics direction"
+      ]
+    }
+  ],
+  "technicalStack": {
+    "languages": ["JavaScript", "Python", "HTML5", "CSS3"],
+    "frontend": ["Responsive Web Design", "React", "Modern CSS", "Accessibility (a11y)"],
+    "backend": ["Node.js", "Express", "Python", "REST APIs"],
+    "design": ["Figma", "Adobe Photoshop", "Wireframing", "Design Systems"],
+    "seoAndAnalytics": ["Google Search Console", "Google Analytics 4 (GA4)", "Technical SEO", "Ahrefs", "Keyword Research"]
+  },
+  "projects": [
+    {
+      "id": "seo-case-study",
+      "type": "Case Study",
+      "title": "Search Growth Strategy",
+      "category": "SEO & Analytics",
+      "challenge": "A business website needed enhanced organic discoverability, technical crawl hygiene, and clear search-intent alignment for competitive keywords.",
+      "solution": "Conducted a complete technical SEO audit, resolved crawl indexation barriers, mapped high-intent target keywords, and structured content architecture with semantic schema.",
+      "process": "Technical Audit → Keyword Research → On-Page Optimization → Schema Markup → Search Console Monitoring",
+      "technologies": ["Technical SEO", "Google Search Console", "GA4", "Schema.org", "HTML5 Semantic Architecture"],
+      "outcome": "Established clean indexing, improved Core Web Vitals, and structured keyword clusters for sustainable search rankings."
+    },
+    {
+      "id": "marketing-case-study",
+      "type": "Case Study",
+      "title": "Growth Marketing Campaign",
+      "category": "Digital Marketing",
+      "challenge": "Converting incoming web traffic into qualified leads required a streamlined funnel and cohesive digital campaign messaging.",
+      "solution": "Designed a multi-touchpoint marketing funnel with targeted landing pages, value propositions, and clear conversion paths.",
+      "process": "Audience Analysis → Funnel Architecture → Landing Page Messaging → Conversion Tracking",
+      "technologies": ["Marketing Strategy", "Content SEO", "CRO", "Analytics"],
+      "outcome": "Improved user engagement and established transparent conversion measurement across campaign channels."
+    },
+    {
+      "id": "web-dev-project",
+      "type": "Demo Project",
+      "title": "Business Website Build",
+      "category": "Web Development",
+      "challenge": "Building a lightning-fast, fully responsive business portfolio with zero layout shifts, dark glassmorphism aesthetic, and accessible controls.",
+      "solution": "Built a clean front-end and Node.js backend architecture with instant response times, fluid mobile navigation, and real-time contact validation.",
+      "process": "UI Prototyping → Responsive Coding → API Integration → Performance Testing",
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Node.js", "Express", "REST APIs"],
+      "outcome": "Achieved optimal Core Web Vitals scores and smooth interaction across mobile, tablet, and desktop devices."
+    },
+    {
+      "id": "uiux-project",
+      "type": "Demo Project",
+      "title": "Product UX Experience",
+      "category": "UI/UX Design",
+      "challenge": "Designing an intuitive, visually striking interface system for a modern digital platform with clear visual hierarchy.",
+      "solution": "Constructed end-to-end design specifications, interactive Figma prototypes, and a unified design system with dark-mode aesthetic.",
+      "process": "User Journeys → Wireframes → High-Fidelity Mockups → Interactive Prototyping",
+      "technologies": ["Figma", "Wireframes", "Design Systems", "Interaction Design"],
+      "outcome": "Delivered a refined, accessible UI prototype with tested user task completion flows."
+    }
+  ],
+  "workProcess": [
+    { "step": "01", "name": "Discover & Audit", "description": "Keyword research, technical audit & competitor gap analysis." },
+    { "step": "02", "name": "Plan & Architecture", "description": "Roadmap, technical architecture & conversion funnels." },
+    { "step": "03", "name": "Design & Content", "description": "High-converting layout, UX copy & search-intent alignment." },
+    { "step": "04", "name": "Develop & Optimize", "description": "Speed, Core Web Vitals, mobile responsiveness & schema." },
+    { "step": "05", "name": "Grow & Amplify", "description": "On-page SEO, content strategy & targeted digital campaigns." },
+    { "step": "06", "name": "Measure & Refine", "description": "GA4, Search Console performance tracking & reporting." }
+  ],
+  "faqs": [
+    {
+      "question": "How long does a website take to design and build?",
+      "answer": "Timing depends on project scope, pages, and requirements. A focused landing page can typically take 1–2 weeks, while a full custom website with SEO architecture and backend systems usually takes 3–4 weeks."
+    },
+    {
+      "question": "Do you provide SEO and digital marketing services?",
+      "answer": "Yes. As Hasnain Digital Marketer, I offer comprehensive SEO (technical audits, on-page optimization, keyword research, link building) and digital marketing campaigns to ensure your site is discoverable and drives measurable business growth."
+    },
+    {
+      "question": "Can you redesign an existing website?",
+      "answer": "Yes. I can audit your current website, identify technical SEO and UX bottlenecks, modernize the interface, and rebuild key pages for fast mobile speed and Core Web Vitals compliance."
+    },
+    {
+      "question": "What information do you need before starting a project?",
+      "answer": "A summary of your business goals, target audience, primary services or products, current website URL (if you have one), and your preferred launch timeline is sufficient to begin the discovery process."
+    },
+    {
+      "question": "Do you provide Python development and automation?",
+      "answer": "Yes. I develop custom Python applications, automation scripts, backend services, REST APIs, and data processing tools tailored to your operational needs."
+    }
+  ],
+  "leadQualification": {
+    "intentKeywords": [
+      "hire", "project", "quote", "cost", "price", "budget", "need a website", "need seo", 
+      "need python", "build a website", "redesign", "timeline", "inquiry", "contact you",
+      "chahiye", "website banwani hai", "kaam karwana hai", "project banana hai", "seo karwana hai"
+    ],
+    "categories": {
+      "general": "General Visitor",
+      "potential": "Potential Client",
+      "qualified": "Qualified Lead",
+      "high_priority": "High-Priority Lead"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#08090a"/><stop offset=".6" stop-color="#132a2a"/><stop offset="1" stop-color="#130a0b"/></linearGradient></defs>
+<rect width="1200" height="700" fill="url(#g)"/><text x="75" y="105" fill="#a9a3a0" font-family="Arial" font-size="18" letter-spacing="4">WEB DEVELOPMENT / PERFORMANCE</text><text x="75" y="170" fill="#fff" font-family="Arial" font-size="58" font-weight="700">DIGITAL EXPERIENCE</text>
+<rect x="75" y="220" width="1050" height="350" rx="24" fill="#0b0d0d" stroke="#fff" stroke-opacity=".12"/><rect x="110" y="265" width="170" height="20" rx="10" fill="#e3131b"/><rect x="110" y="315" width="420" height="20" rx="10" fill="#444"/><rect x="110" y="350" width="350" height="12" rx="6" fill="#2e2e2e"/>
+<rect x="110" y="405" width="330" height="120" rx="18" fill="#141717"/><rect x="470" y="405" width="300" height="120" rx="18" fill="#141717"/><rect x="800" y="265" width="280" height="260" rx="18" fill="#141717"/><circle cx="940" cy="395" r="82" fill="#e3131b" opacity=".18"/>
+</svg>
