@@ -49,6 +49,7 @@ app.use((req, res, next) => {
     reqPath.startsWith('/node_modules') ||
     reqPath.endsWith('.env') ||
     reqPath.endsWith('.json') ||
+    reqPath.endsWith('.lock') ||
     (reqPath.endsWith('.js') && reqPath !== '/script.js')
   ) {
     if (reqPath.startsWith('/api/')) return next();
@@ -57,7 +58,36 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static assets with cache headers
+// Explicit static handlers for core assets to guarantee correct Content-Type on Serverless & Node runtimes
+app.get('/style.css', (req, res) => {
+  res.setHeader('Content-Type', 'text/css; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(path.join(__dirname, 'style.css'));
+});
+
+app.get('/script.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(path.join(__dirname, 'script.js'));
+});
+
+app.get('/robots.txt', (req, res) => {
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.sendFile(path.join(__dirname, 'robots.txt'));
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.sendFile(path.join(__dirname, 'sitemap.xml'));
+});
+
+// Serve images directory statically
+app.use('/images', express.static(path.join(__dirname, 'images'), {
+  maxAge: '1d',
+  etag: true
+}));
+
+// Serve other static assets with cache headers
 app.use(express.static(__dirname, {
   maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
   etag: true,
@@ -212,8 +242,11 @@ app.all('/api/*', (req, res) => {
   res.status(404).json({ success: false, error: 'API endpoint not found.' });
 });
 
-// SPA fallback for HTML requests
+// SPA fallback for HTML requests only (never serve HTML for file asset paths)
 app.get('*', (req, res) => {
+  if (path.extname(req.path)) {
+    return res.status(404).end();
+  }
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 

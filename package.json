@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node test/api-test.js && node test/server-test.js && node test/serverless-test.js"
+    "test": "node test/api-test.js && node test/server-test.js && node test/serverless-test.js && node test/static-asset-test.js"
   },
   "keywords": [
     "portfolio",
