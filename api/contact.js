@@ -1,5 +1,5 @@
 // Serverless Contact Form Handler for Vercel, Netlify, and Serverless Platforms
-const { isValidEmail, checkRateLimit, isDuplicateSubmission, getClientIp } = require('../lib/security');
+const { isValidEmail, checkRateLimit, isDuplicateSubmission, recordSubmissionSuccess, clearSubmissionLock, getClientIp } = require('../lib/security');
 const { sendContactFormEmail } = require('../lib/mailer');
 
 module.exports = async function handler(req, res) {
@@ -75,6 +75,7 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ success: false, error: 'Please provide project details (minimum 10 characters).' });
   }
 
+  // Duplicate submission protection (only triggers if previously DELIVERED within 60s)
   if (isDuplicateSubmission(name, email, message)) {
     return res.status(400).json({
       success: false,
@@ -84,12 +85,18 @@ module.exports = async function handler(req, res) {
 
   try {
     const delivery = await sendContactFormEmail({ name, email, subject, service, message });
+    
+    // Only lock after successful acceptance by email provider
+    recordSubmissionSuccess(name, email, message);
+
     return res.status(200).json({
       success: true,
       message: 'Your message has been delivered directly to Hasnain. You will receive a response within 24 hours.',
       deliveryId: delivery.id
     });
   } catch (err) {
+    // Clear lock immediately so user can retry
+    clearSubmissionLock(name, email, message);
     console.error('Contact Form Delivery Error:', err.message);
 
     if (err.message.includes('No email service configured')) {
@@ -102,7 +109,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(500).json({
       success: false,
-      error: 'An unexpected error occurred delivering your message. Please reach out directly to muhammadhasnayn007@gmail.com.'
+      error: err.message || 'An unexpected error occurred delivering your message. Please reach out directly to muhammadhasnayn007@gmail.com.'
     });
   }
 };

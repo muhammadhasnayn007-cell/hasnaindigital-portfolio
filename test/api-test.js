@@ -6,6 +6,8 @@ const {
   containsInjectionAttempt,
   checkRateLimit,
   isDuplicateSubmission,
+  recordSubmissionSuccess,
+  clearSubmissionLock,
   sanitizeChatInput
 } = require('../lib/security');
 const {
@@ -77,9 +79,13 @@ runTest('Security: Duplicate submission detection', () => {
   const email = 'ahmed@test.com';
   const msg = 'Test message for duplicate protection';
   const first = isDuplicateSubmission(name, email, msg);
+  assert.strictEqual(first, false, 'First check before recording success should be false');
+  recordSubmissionSuccess(name, email, msg);
   const second = isDuplicateSubmission(name, email, msg);
-  assert.strictEqual(first, false, 'First submission should be accepted');
-  assert.strictEqual(second, true, 'Immediate duplicate submission should be flagged');
+  assert.strictEqual(second, true, 'Immediate duplicate submission should be flagged after success');
+  clearSubmissionLock(name, email, msg);
+  const third = isDuplicateSubmission(name, email, msg);
+  assert.strictEqual(third, false, 'Submission should not be flagged after lock is cleared');
 });
 
 runTest('Security: Rate limiter operation', () => {
