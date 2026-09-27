@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: hasnain-portfolio
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CONTACT_EMAIL
+        value: muhammadhasnayn007@gmail.com
+      - key: SITE_URL
+        value: https://hasnaindigitalmarketer.com
+      - key: AVAILABILITY_STATUS
+        value: "Available for Projects"
+      - key: RESEND_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
