@@ -2,6 +2,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 
@@ -10,6 +11,8 @@ const {
   getClientIp,
   checkRateLimit,
   isDuplicateSubmission,
+  recordSubmissionSuccess,
+  clearSubmissionLock,
   escapeHtml
 } = require('./lib/security');
 const { sendContactFormEmail } = require('./lib/mailer');
@@ -50,7 +53,7 @@ app.use((req, res, next) => {
     reqPath.endsWith('.env') ||
     reqPath.endsWith('.json') ||
     reqPath.endsWith('.lock') ||
-    (reqPath.endsWith('.js') && reqPath !== '/script.js')
+    (reqPath.endsWith('.js') && reqPath !== '/script.js' && reqPath !== '/firebase-client.js')
   ) {
     if (reqPath.startsWith('/api/')) return next();
     return res.status(404).end();
@@ -69,6 +72,12 @@ app.get('/script.js', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=86400');
   res.sendFile(path.join(__dirname, 'script.js'));
+});
+
+app.get('/firebase-client.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(path.join(__dirname, 'firebase-client.js'));
 });
 
 app.get('/robots.txt', (req, res) => {
@@ -107,8 +116,32 @@ app.get('/api/health', (req, res) => {
     version: '2.0.0',
     emailConfigured: Boolean(process.env.RESEND_API_KEY || (process.env.SMTP_HOST && process.env.SMTP_USER)),
     aiConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY),
+    firebaseConfigured: fs.existsSync(path.join(__dirname, 'firebase-applet-config.json')),
     timestamp: new Date().toISOString()
   });
+});
+
+// Firebase Client Configuration Endpoint
+app.get('/api/firebase-config', (req, res) => {
+  try {
+    const configPath = path.join(__dirname, 'firebase-applet-config.json');
+    if (fs.existsSync(configPath)) {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+      return res.status(200).json({
+        configured: true,
+        projectId: config.projectId,
+        appId: config.appId,
+        apiKey: config.apiKey,
+        authDomain: config.authDomain,
+        firestoreDatabaseId: config.firestoreDatabaseId,
+        storageBucket: config.storageBucket,
+        messagingSenderId: config.messagingSenderId
+      });
+    }
+  } catch (err) {
+    console.error('Error reading firebase-applet-config.json:', err.message);
+  }
+  return res.status(200).json({ configured: false });
 });
 
 // ==============================================================================
@@ -167,12 +200,14 @@ app.post('/api/contact', async (req, res) => {
 
   try {
     const delivery = await sendContactFormEmail({ name, email, subject, service, message });
+    recordSubmissionSuccess(name, email, message);
     return res.status(200).json({
       success: true,
       message: 'Your message has been delivered directly to Hasnain. You will receive a response within 24 hours.',
       deliveryId: delivery.id
     });
   } catch (err) {
+    clearSubmissionLock(name, email, message);
     console.error('Contact Form Delivery Error:', err.message);
 
     // If neither Resend nor SMTP is configured on the server
@@ -225,6 +260,7 @@ app.post('/api/chat', async (req, res) => {
     return res.status(200).json({
       success: true,
       reply: result.reply,
+      groundingSources: result.groundingSources || [],
       leadStatus: result.leadStatus,
       handoffAvailable: result.handoffAvailable
     });
@@ -260,7 +296,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`=================================================================`);
   console.log(` Hasnain Digital Marketer - Full-Stack Portfolio Running`);
   console.log(` URL: http://localhost:${PORT}`);

@@ -1,1 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#090708"/><path d="M18 15v34M18 15l20 34M18 31h20" fill="none" stroke="#f7f3ef" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="48" cy="16" r="5" fill="#e3131b"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="H.X.S.N Favicon">
+  <!-- Solid Dark Background Circle to ensure high contrast in all browser themes -->
+  <circle cx="256" cy="256" r="248" fill="#070606" />
+  
+  <!-- Outer White Circle Border -->
+  <circle cx="256" cy="256" r="230" fill="none" stroke="#ffffff" stroke-width="12" />
+  
+  <!-- "H.X.S.N" Text (Bold, modern, sans-serif) -->
+  <text x="256" y="248" font-family="'Oswald', 'Inter', 'Helvetica Neue', sans-serif" font-size="94" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.05em">H.X.S.N</text>
+  
+  <!-- Thin Horizontal Divider Line -->
+  <line x1="120" y1="272" x2="392" y2="272" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+  
+  <!-- "Digital Marketer" Text (Lighter, clean, sans-serif) -->
+  <text x="256" y="324" font-family="'Inter', 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif" font-size="34" font-weight="500" fill="#ffffff" text-anchor="middle" letter-spacing="0.1em">Digital Marketer</text>
+</svg>

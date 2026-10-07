@@ -102,7 +102,7 @@ runTest('Security: Rate limiter operation', () => {
 
 // 2. Knowledge Base Tests
 runTest('Knowledge: Centralized knowledge structure integrity', () => {
-  assert.strictEqual(knowledge.brand.name, 'Hasnain Digital Marketer');
+  assert.strictEqual(knowledge.brand.name, 'H.X.S.N Digital Marketer');
   assert.ok(knowledge.services.length >= 5, 'Should define at least 5 core services');
   assert.ok(knowledge.projects.length >= 4, 'Should define projects/case studies');
   assert.ok(knowledge.faqs.length >= 4, 'Should define FAQs');
@@ -162,7 +162,18 @@ runTest('Mailer: Contact form email template format & bottom-right logo', () => 
   assert.ok(html.includes('Web Development'), 'Should render service');
   assert.ok(html.includes('cid:hasnain_logo'), 'Should use CID logo attachment');
   assert.ok(html.includes('align="right"'), 'Logo should be aligned to the right');
-  assert.ok(html.includes('Hasnain Digital Marketer'), 'Should contain brand name');
+  assert.ok(html.includes('H.X.S.N Digital Marketer'), 'Should contain brand name');
+});
+
+runTest('AI: Hasnain availability and Contact action handling', () => {
+  const whereIsHasnain = fallbackSemanticAssistant('Where is Hasnain?', [], 'en');
+  assert.ok(whereIsHasnain.includes('currently unavailable'), 'Should state Hasnain is currently unavailable');
+  assert.ok(whereIsHasnain.includes('Contact section'), 'Should direct to contact section');
+  assert.ok(whereIsHasnain.includes('[CONTACT HASNAIN]'), 'Should append [CONTACT HASNAIN] action tag');
+
+  const hireHasnain = fallbackSemanticAssistant('I want to hire Hasnain', [], 'en');
+  assert.ok(hireHasnain.includes('send your project details through the Contact section'), 'Should invite project details via Contact');
+  assert.ok(hireHasnain.includes('[CONTACT HASNAIN]'), 'Should append [CONTACT HASNAIN] action tag');
 });
 
 runTest('Mailer: Private AI lead notification email template format', () => {

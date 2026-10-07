@@ -62,6 +62,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       success: true,
       reply: result.reply,
+      groundingSources: result.groundingSources || [],
       leadStatus: result.leadStatus,
       handoffAvailable: result.handoffAvailable
     });

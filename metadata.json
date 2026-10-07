@@ -1,0 +1,8 @@
+{
+  "name": "Hasnain Digital Marketer Portfolio",
+  "description": "Full-stack portfolio for Hasnain Digital Marketer - Web Developer, Python Developer, UI/UX Designer & SEO Specialist with interactive lead qualification and contact handling.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

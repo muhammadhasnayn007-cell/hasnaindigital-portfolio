@@ -65,7 +65,7 @@ setTimeout(async () => {
     const health = await get('/api/health');
     assert.strictEqual(health.statusCode, 200, 'Health endpoint should return 200');
     assert.strictEqual(health.data.status, 'ok');
-    assert.strictEqual(health.data.brand, 'Hasnain Digital Marketer');
+    assert.strictEqual(health.data.brand, 'H.X.S.N Digital Marketer');
     assert.strictEqual(health.data.availability, 'Available for Projects');
     console.log('✓ [PASS] GET /api/health returned 200 with correct brand and availability');
 
@@ -106,7 +106,7 @@ setTimeout(async () => {
     // 6. Static asset serving
     const htmlRes = await get('/');
     assert.strictEqual(htmlRes.statusCode, 200);
-    assert.ok(htmlRes.text.includes('Hasnain Digital Marketer'));
+    assert.ok(htmlRes.text.includes('H.X.S.N Digital Marketer'));
     assert.ok(htmlRes.text.includes("Hasnain's Assistant"));
     console.log('✓ [PASS] GET / serves index.html with Hasnain\'s Assistant widget');
 

@@ -26,7 +26,7 @@ async function runServerlessTests() {
   healthHandler(reqHealth, resHealth);
   assert.strictEqual(resHealth.statusCode, 200);
   assert.strictEqual(resHealth.body.status, 'ok');
-  assert.strictEqual(resHealth.body.brand, 'Hasnain Digital Marketer');
+  assert.strictEqual(resHealth.body.brand, 'H.X.S.N Digital Marketer');
   console.log('✓ [PASS] api/health handler returned 200 OK');
 
   // 2. Contact Handler Options (CORS preflight)

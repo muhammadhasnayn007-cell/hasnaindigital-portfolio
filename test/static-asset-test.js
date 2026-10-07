@@ -41,7 +41,13 @@ setTimeout(async () => {
     assert.ok(js.length > 25000, `Expected JS size > 25KB, got ${js.length}`);
     console.log(`✓ [PASS] /script.js returns 200 OK with ${js.contentType} (${js.length} bytes)`);
 
-    // 3. robots.txt verification
+    // 3. firebase-client.js verification
+    const fbJs = await fetchPath('/firebase-client.js');
+    assert.strictEqual(fbJs.statusCode, 200);
+    assert.ok(fbJs.contentType.includes('javascript'), `Expected javascript but got ${fbJs.contentType}`);
+    console.log(`✓ [PASS] /firebase-client.js returns 200 OK with ${fbJs.contentType}`);
+
+    // 4. robots.txt verification
     const robots = await fetchPath('/robots.txt');
     assert.strictEqual(robots.statusCode, 200);
     assert.ok(robots.contentType.includes('text/plain'));

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 64" role="img" aria-label="H.X.S.N Digital Marketer Logo">
+  <defs>
+    <!-- Premium Crimson Gradient matching the brand's premium red -->
+    <linearGradient id="logoCrimson" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff1f29" />
+      <stop offset="100%" stop-color="#b80c12" />
+    </linearGradient>
+    <filter id="subtleGlow">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <g filter="url(#subtleGlow)">
+    <!-- Sleek Typographic Lettermark "H.X.S.N" -->
+    <text x="0" y="44" 
+          font-family="'Oswald', 'Bebas Neue', 'Inter', 'Helvetica Neue', system-ui, sans-serif" 
+          font-size="44" 
+          font-weight="900" 
+          letter-spacing="2" 
+          fill="#ffffff">H.X.S.N</text>
+
+    <!-- Stylized Dot accents in crimson to make the mark unique and memorable -->
+    <!-- Dot after H -->
+    <circle cx="34" cy="41" r="4" fill="url(#logoCrimson)" />
+    <!-- Dot after X -->
+    <circle cx="78" cy="41" r="4" fill="url(#logoCrimson)" />
+    <!-- Dot after S -->
+    <circle cx="118" cy="41" r="4" fill="url(#logoCrimson)" />
+    <!-- Dot after N -->
+    <circle cx="162" cy="41" r="4" fill="url(#logoCrimson)" />
+
+    <!-- Sleek vertical slash or a stylish slash at the end or divider -->
+    <line x1="184" y1="12" x2="184" y2="48" stroke="url(#logoCrimson)" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Subtitle: Digital Marketer, positioned on the right of the vertical bar -->
+    <text x="198" y="27" 
+          font-family="'Inter', 'Plus Jakarta Sans', 'Helvetica Neue', system-ui, sans-serif" 
+          font-size="12" 
+          font-weight="800" 
+          letter-spacing="1.5" 
+          fill="#ffffff" 
+          text-transform="uppercase">Digital</text>
+    <text x="198" y="45" 
+          font-family="'Inter', 'Plus Jakarta Sans', 'Helvetica Neue', system-ui, sans-serif" 
+          font-size="12" 
+          font-weight="800" 
+          letter-spacing="1.5" 
+          fill="url(#logoCrimson)" 
+          text-transform="uppercase">Marketer</text>
+  </g>
+</svg>

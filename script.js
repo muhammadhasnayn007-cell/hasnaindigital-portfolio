@@ -1,6 +1,14 @@
 document.addEventListener('DOMContentLoaded',()=>{
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
-  $('#year').textContent=new Date().getFullYear();
+  const yearEl=$('#year');
+  if(yearEl) yearEl.textContent=new Date().getFullYear();
+  const backToTop=$('#backToTopBtn');
+  if(backToTop){
+    backToTop.addEventListener('click',e=>{
+      e.preventDefault();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  }
 
   // Animated mobile navigation
   const toggle=$('.nav-toggle'), nav=$('.main-nav');
@@ -13,7 +21,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   // Scroll reveal with stagger
-  const reveals=$$('.reveal,.reveal-left,.reveal-right,.reveal-scale');
+  const reveals=$$('.reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-up');
   const ro=new IntersectionObserver(entries=>entries.forEach(entry=>{
     if(!entry.isIntersecting)return;
     const d=Number(entry.target.dataset.delay||0);
@@ -46,7 +54,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   sections.forEach(s=>so.observe(s));
 
   // Smooth anchor with sticky header compensation
-  $$('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const target=$(id);if(!target)return;e.preventDefault();window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-78,behavior:'smooth'});}));
+  $$('a[href^="#"]:not(#backToTopBtn)').forEach(a=>a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const target=$(id);if(!target)return;e.preventDefault();window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-78,behavior:'smooth'});}));
 
   // Large HASNAIN watermark is animated right-to-left by CSS.
   // Keep it deterministic on scroll rather than overriding the CSS animation.
@@ -410,6 +418,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       submitBtn.classList.remove('loading');
 
       if (delivered) {
+        // Persist inquiry to Firestore if Firebase is active
+        if (window.FirebaseApp && typeof window.FirebaseApp.persistInquiryToFirestore === 'function') {
+          window.FirebaseApp.persistInquiryToFirestore(payload);
+        }
+
         // --- Success state ---
         if (alertBox) {
           alertBox.className = 'form-alert success';
@@ -537,25 +550,88 @@ document.addEventListener('DOMContentLoaded',()=>{
       scrollChatToBottom();
     };
 
-    const appendAssistantMessage = text => {
+    const appendAssistantMessage = (text, groundingSources = []) => {
       const bubble = document.createElement('div');
       bubble.className = 'chat-bubble assistant';
       
+      // Detect action markers like [CONTACT HASNAIN], [START A PROJECT], [ACTION:CONTACT_HASNAIN]
+      let actionLabel = null;
+      const actionRegex = /\[(?:ACTION:)?(CONTACT_HASNAIN|START_PROJECT|CONTACT HASNAIN|START A PROJECT)\]/gi;
+      const cleanedText = text.replace(actionRegex, (m, p1) => {
+        const upper = p1.toUpperCase().replace(/_/g, ' ');
+        if (upper.includes('START')) actionLabel = 'START A PROJECT';
+        else actionLabel = 'CONTACT HASNAIN';
+        return '';
+      }).trim();
+
       // Convert line breaks and simple formatting
-      const paragraphs = text.split('\n\n').filter(Boolean);
+      const paragraphs = cleanedText.split('\n\n').filter(Boolean);
       let contentHtml = '';
       if (paragraphs.length > 1) {
         contentHtml = paragraphs.map(p => `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`).join('');
       } else {
-        contentHtml = `<p>${escapeHtml(text).replace(/\n/g, '<br>')}</p>`;
+        contentHtml = `<p>${escapeHtml(cleanedText).replace(/\n/g, '<br>')}</p>`;
+      }
+
+      let actionHtml = '';
+      if (actionLabel) {
+        actionHtml = `
+          <div class="chat-action-container">
+            <button type="button" class="chat-action-btn magnetic" data-action="contact">
+              <span>${actionLabel}</span>
+              <b>↗</b>
+            </button>
+          </div>
+        `;
+      }
+
+      let groundingHtml = '';
+      if (groundingSources && groundingSources.length > 0) {
+        groundingHtml = `
+          <div class="grounding-sources">
+            <div class="grounding-sources-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              Google Search Data:
+            </div>
+            <div class="grounding-sources-list">
+              ${groundingSources.map(s => `<a class="grounding-source-chip" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(s.title || s.url)}">↗ ${escapeHtml(s.title || s.url)}</a>`).join('')}
+            </div>
+          </div>
+        `;
       }
 
       bubble.innerHTML = `
         <div class="bubble-content">
           ${contentHtml}
+          ${actionHtml}
+          ${groundingHtml}
         </div>
         <span class="bubble-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
       `;
+
+      // Wire up Contact Hasnain / Start a Project action button
+      const actionBtn = bubble.querySelector('.chat-action-btn');
+      if (actionBtn) {
+        actionBtn.addEventListener('click', e => {
+          e.preventDefault();
+          if (window.innerWidth <= 820) {
+            closeChat();
+          }
+          const contactSection = document.getElementById('contact');
+          if (contactSection) {
+            window.scrollTo({
+              top: contactSection.getBoundingClientRect().top + window.scrollY - 78,
+              behavior: 'smooth'
+            });
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+              contactForm.classList.add('focused-glow');
+              setTimeout(() => contactForm.classList.remove('focused-glow'), 2200);
+            }
+          }
+        });
+      }
+
       chatMessages.appendChild(bubble);
       scrollChatToBottom();
     };
@@ -615,8 +691,13 @@ document.addEventListener('DOMContentLoaded',()=>{
         hideTypingIndicator();
 
         if (response.ok && data.success && data.reply) {
-          appendAssistantMessage(data.reply);
+          appendAssistantMessage(data.reply, data.groundingSources || []);
           conversationHistory.push({ role: 'assistant', content: data.reply });
+
+          // Persist chat session to Firestore if authenticated
+          if (window.FirebaseApp && typeof window.FirebaseApp.persistChatSessionToFirestore === 'function') {
+            window.FirebaseApp.persistChatSessionToFirestore(sessionId, messageText, data.leadStatus);
+          }
 
           // If lead qualification triggered, display handoff banner
           if (data.handoffAvailable && chatHandoffBanner) {
@@ -758,5 +839,442 @@ document.addEventListener('DOMContentLoaded',()=>{
       progressRaf = false;
     });
   }, { passive: true });
+
+  // 3D Space & Spatial Plexus Network Animation using Three.js
+  const initHero3DAnimation = () => {
+    const canvas = document.getElementById('hero-3d-canvas');
+    if (!canvas || typeof THREE === 'undefined') return;
+
+    const container = canvas.parentElement;
+    const scene = new THREE.Scene();
+
+    // Create Perspective Camera
+    const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 25;
+
+    // Create WebGL Renderer with alpha and antialiasing
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Dynamic particles geometry
+    const particleCount = window.innerWidth < 768 ? 60 : 120;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    // Distribute particles inside a 3D spherical volume with random velocities
+    for (let i = 0; i < particleCount; i++) {
+      const radius = 15;
+      const u = Math.random();
+      const v = Math.random();
+      const theta = u * 2.0 * Math.PI;
+      const phi = Math.acos(2.0 * v - 1.0);
+      const r = radius * Math.cbrt(Math.random());
+
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = r * Math.cos(phi);
+
+      velocities.push({
+        x: (Math.random() - 0.5) * 0.015,
+        y: (Math.random() - 0.5) * 0.015,
+        z: (Math.random() - 0.5) * 0.015
+      });
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    // Create custom particle texture (circular glowing dots with red/crimson gradient)
+    const particleTexture = (() => {
+      const canvasTex = document.createElement('canvas');
+      canvasTex.width = 16;
+      canvasTex.height = 16;
+      const ctx = canvasTex.getContext('2d');
+      const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+      grad.addColorStop(0, 'rgba(255, 77, 90, 1)'); // Bright red center
+      grad.addColorStop(0.3, 'rgba(227, 19, 27, 0.8)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 16, 16);
+      return new THREE.CanvasTexture(canvasTex);
+    })();
+
+    const material = new THREE.PointsMaterial({
+      size: 0.65,
+      map: particleTexture,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    const particleSystem = new THREE.Points(geometry, material);
+    scene.add(particleSystem);
+
+    // Create glowing 3D wireframe core (Icosahedron)
+    const coreGeometry = new THREE.IcosahedronGeometry(4.5, 1);
+    const coreMaterial = new THREE.MeshBasicMaterial({
+      color: 0xe3131b,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.15,
+      blending: THREE.AdditiveBlending
+    });
+    const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
+    scene.add(coreMesh);
+
+    // Create a outer geometric ring/orbit
+    const ringGeometry = new THREE.TorusGeometry(8, 0.04, 8, 64);
+    const ringMaterial = new THREE.MeshBasicMaterial({
+      color: 0x8d0a10,
+      transparent: true,
+      opacity: 0.2,
+      blending: THREE.AdditiveBlending
+    });
+    const ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
+    ringMesh.rotation.x = Math.PI / 3;
+    scene.add(ringMesh);
+
+    // Mouse and scroll variables for subtle interactive movement
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let scrollYOffset = 0;
+
+    const handleMouseMove = (e) => {
+      mouseX = (e.clientX - window.innerWidth / 2) * 0.012;
+      mouseY = (e.clientY - window.innerHeight / 2) * 0.012;
+    };
+
+    window.addEventListener('pointermove', handleMouseMove, { passive: true });
+
+    // Handle Resize
+    const handleResize = () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    // Dynamic connections (Lines) between nearby particles
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: 0xe3131b,
+      transparent: true,
+      opacity: 0.08,
+      blending: THREE.AdditiveBlending
+    });
+
+    let lineSegments = null;
+
+    // Animation Loop
+    const animate = () => {
+      requestAnimationFrame(animate);
+
+      // Move and bounce particles
+      const positionsArr = geometry.attributes.position.array;
+      const linePositions = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        // Apply velocity
+        positionsArr[i * 3] += velocities[i].x;
+        positionsArr[i * 3 + 1] += velocities[i].y;
+        positionsArr[i * 3 + 2] += velocities[i].z;
+
+        // Spherical boundary constraint
+        const x = positionsArr[i * 3];
+        const y = positionsArr[i * 3 + 1];
+        const z = positionsArr[i * 3 + 2];
+        const dist = Math.sqrt(x*x + y*y + z*z);
+
+        if (dist > 15) {
+          velocities[i].x *= -1;
+          velocities[i].y *= -1;
+          velocities[i].z *= -1;
+        }
+
+        // Build dynamic connection lines logic
+        for (let j = i + 1; j < particleCount; j++) {
+          const dx = x - positionsArr[j * 3];
+          const dy = y - positionsArr[j * 3 + 1];
+          const dz = z - positionsArr[j * 3 + 2];
+          const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+          if (d < 5) {
+            linePositions.push(x, y, z);
+            linePositions.push(positionsArr[j * 3], positionsArr[j * 3 + 1], positionsArr[j * 3 + 2]);
+          }
+        }
+      }
+
+      geometry.attributes.position.needsUpdate = true;
+
+      // Rebuild connection lines mesh dynamically for high performance
+      if (lineSegments) scene.remove(lineSegments);
+      if (linePositions.length > 0) {
+        const lineGeometry = new THREE.BufferGeometry();
+        lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+        lineSegments = new THREE.LineSegments(lineGeometry, lineMaterial);
+        scene.add(lineSegments);
+      }
+
+      // Smooth camera interpolation towards mouse targets (lerp)
+      targetX += (mouseX - targetX) * 0.05;
+      targetY += (mouseY - targetY) * 0.05;
+
+      // Adjust camera positioning slightly based on scroll
+      scrollYOffset += (window.scrollY * 0.015 - scrollYOffset) * 0.08;
+
+      // Apply rotations
+      particleSystem.rotation.y += 0.0012;
+      particleSystem.rotation.x += 0.0006;
+      coreMesh.rotation.y -= 0.002;
+      coreMesh.rotation.x -= 0.001;
+      ringMesh.rotation.z += 0.003;
+
+      // Apply subtle mouse & scroll drift to the scene group or camera
+      scene.position.x = targetX;
+      scene.position.y = -targetY - scrollYOffset;
+
+      renderer.render(scene, camera);
+    };
+
+    // Trigger WebGL fallback check
+    try {
+      animate();
+    } catch (err) {
+      console.warn("WebGL initialization failed, hiding canvas.", err);
+      canvas.style.display = 'none';
+    }
+  };
+
+  // 3D Services Floating Sacred Geometries using Three.js
+  const initServices3DAnimation = () => {
+    const canvas = document.getElementById('services-3d-canvas');
+    if (!canvas || typeof THREE === 'undefined') return;
+
+    const container = canvas.parentElement;
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 20;
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Create floating wireframe geometries
+    const group = new THREE.Group();
+    scene.add(group);
+
+    const shapes = [];
+    const geometries = [
+      new THREE.IcosahedronGeometry(2.2, 1),
+      new THREE.OctahedronGeometry(1.8, 1),
+      new THREE.TorusGeometry(1.5, 0.35, 8, 24),
+      new THREE.TetrahedronGeometry(1.8, 0)
+    ];
+
+    const colors = [0xe3131b, 0x8d0a10, 0xff4d5a, 0xff1e27];
+
+    geometries.forEach((geom, idx) => {
+      const mat = new THREE.MeshBasicMaterial({
+        color: colors[idx % colors.length],
+        wireframe: true,
+        transparent: true,
+        opacity: 0.12,
+        blending: THREE.AdditiveBlending
+      });
+      const mesh = new THREE.Mesh(geom, mat);
+      
+      // Distribute them evenly horizontally
+      mesh.position.x = (idx - 1.5) * 7.5;
+      mesh.position.y = (Math.random() - 0.5) * 3;
+      mesh.position.z = (Math.random() - 0.5) * 2;
+      
+      mesh.userData = {
+        floatOffset: Math.random() * Math.PI * 2,
+        floatSpeed: 0.004 + Math.random() * 0.004,
+        rotSpeedX: (Math.random() - 0.5) * 0.005,
+        rotSpeedY: (Math.random() - 0.5) * 0.005,
+        rotSpeedZ: (Math.random() - 0.5) * 0.005
+      };
+
+      group.add(mesh);
+      shapes.push(mesh);
+    });
+
+    let mouseX = 0, mouseY = 0;
+    let targetX = 0, targetY = 0;
+
+    window.addEventListener('pointermove', (e) => {
+      mouseX = (e.clientX - window.innerWidth / 2) * 0.006;
+      mouseY = (e.clientY - window.innerHeight / 2) * 0.006;
+    }, { passive: true });
+
+    const handleResize = () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+
+      targetX += (mouseX - targetX) * 0.05;
+      targetY += (mouseY - targetY) * 0.05;
+
+      shapes.forEach(mesh => {
+        mesh.rotation.x += mesh.userData.rotSpeedX;
+        mesh.rotation.y += mesh.userData.rotSpeedY;
+        mesh.rotation.z += mesh.userData.rotSpeedZ;
+
+        mesh.userData.floatOffset += mesh.userData.floatSpeed;
+        mesh.position.y += Math.sin(mesh.userData.floatOffset) * 0.006;
+      });
+
+      group.position.x = targetX * 1.2;
+      group.position.y = -targetY * 1.2;
+
+      renderer.render(scene, camera);
+    };
+
+    try {
+      animate();
+    } catch (err) {
+      canvas.style.display = 'none';
+    }
+  };
+
+  // 3D Contact Interactive Particle Vortex using Three.js
+  const initContact3DAnimation = () => {
+    const canvas = document.getElementById('contact-3d-canvas');
+    if (!canvas || typeof THREE === 'undefined') return;
+
+    const container = canvas.parentElement;
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 18;
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const particleCount = window.innerWidth < 768 ? 140 : 320;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const waveOffsets = new Float32Array(particleCount);
+
+    for (let i = 0; i < particleCount; i++) {
+      const theta = (i / particleCount) * Math.PI * 16;
+      const r = (i / particleCount) * 11 + 2.5;
+      const y = (Math.random() - 0.5) * 4;
+
+      positions[i * 3] = r * Math.cos(theta);
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = r * Math.sin(theta);
+
+      waveOffsets[i] = Math.random() * Math.PI * 2;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const pTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 16;
+      c.height = 16;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+      grad.addColorStop(0, 'rgba(255, 77, 90, 0.9)');
+      grad.addColorStop(0.3, 'rgba(141, 10, 16, 0.55)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 16, 16);
+      return new THREE.CanvasTexture(c);
+    })();
+
+    const material = new THREE.PointsMaterial({
+      size: 0.45,
+      map: pTex,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    let mouseX = 0, mouseY = 0;
+    let targetX = 0, targetY = 0;
+
+    window.addEventListener('pointermove', (e) => {
+      mouseX = (e.clientX - window.innerWidth / 2) * 0.005;
+      mouseY = (e.clientY - window.innerHeight / 2) * 0.005;
+    }, { passive: true });
+
+    const handleResize = () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    let clock = 0;
+    const animate = () => {
+      requestAnimationFrame(animate);
+      clock += 0.005;
+
+      const pos = geometry.attributes.position.array;
+      for (let i = 0; i < particleCount; i++) {
+        pos[i * 3 + 1] += Math.sin(clock + waveOffsets[i]) * 0.005;
+      }
+      geometry.attributes.position.needsUpdate = true;
+
+      particles.rotation.y += 0.0008;
+
+      targetX += (mouseX - targetX) * 0.05;
+      targetY += (mouseY - targetY) * 0.05;
+
+      particles.position.x = targetX * 2.5;
+      particles.position.y = -targetY * 2.5;
+
+      renderer.render(scene, camera);
+    };
+
+    try {
+      animate();
+    } catch (err) {
+      canvas.style.display = 'none';
+    }
+  };
+
+  // Initialize interactive 3D animations
+  initHero3DAnimation();
+  initServices3DAnimation();
+  initContact3DAnimation();
 });
 
