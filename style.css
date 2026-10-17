@@ -94,6 +94,11 @@ a,button{ -webkit-tap-highlight-color:transparent }
 
 
 /* Final layout polish */
+.hero-copy,.hero-services{min-width:0}
+.hero-copy p,.hero-services p,.service-line span{overflow-wrap:anywhere}
+@media (min-width: 1151px){
+  .hero{grid-template-columns:minmax(0,1fr) minmax(360px,470px) minmax(240px,.74fr)}
+}
 @media (min-width: 1151px){
   .hero.section{width:calc(100% - 80px);max-width:none}
   .hero-copy{padding-left:8px}
@@ -107,6 +112,7 @@ a,button{ -webkit-tap-highlight-color:transparent }
   .faq-question{padding-left:10px}
 }
 @media (max-width: 520px){
+  .hero-copy{padding-left:12px;padding-right:4px}
   .faq-question{padding-left:6px}
 }
 
@@ -929,6 +935,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   transform: translateY(22px) scale(0.96);
   transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  min-height: 0;
 }
 .chat-drawer.open {
   opacity: 1;
@@ -986,22 +993,61 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   background: #48c78e;
   box-shadow: 0 0 6px #48c78e;
 }
-.chat-action-btn {
+.chat-header-actions .chat-action-btn {
+  flex: 0 0 32px;
   width: 32px;
   height: 32px;
   border-radius: 8px;
   display: grid;
   place-items: center;
+  padding: 0;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #a8a09b;
   cursor: pointer;
   transition: all 0.25s ease;
 }
-.chat-action-btn:hover {
+.chat-header-actions .chat-action-btn:hover {
   background: rgba(227, 19, 27, 0.18);
   border-color: rgba(227, 19, 27, 0.5);
   color: #fff;
+}
+.chat-action-container {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 10px;
+}
+.chat-bubble .chat-action-container .chat-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 34px;
+  flex: 0 1 auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  background: rgba(227, 19, 27, 0.14);
+  border: 1px solid rgba(227, 19, 27, 0.45);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.chat-bubble .chat-action-container .chat-action-btn span {
+  min-width: 0;
+  text-align: left;
+}
+.chat-bubble .chat-action-container .chat-action-btn b {
+  flex: 0 0 auto;
+}
+.chat-bubble .chat-action-container .chat-action-btn:hover {
+  background: rgba(227, 19, 27, 0.28);
+  border-color: rgba(227, 19, 27, 0.75);
 }
 
 /* Quick Suggestion Chips */
@@ -1039,7 +1085,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 /* Chat Messages Container */
 .chat-messages {
   flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px 16px 12px;
   display: flex;
   flex-direction: column;
@@ -1058,7 +1107,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .chat-bubble {
   display: flex;
   flex-direction: column;
-  max-width: 86%;
+  min-width: 0;
+  max-width: min(86%, 100%);
   animation: bubbleIn 0.3s ease-out;
 }
 @keyframes bubbleIn {
@@ -1163,6 +1213,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .chat-input-bar {
   display: flex;
   align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
   gap: 8px;
   padding: 10px 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -1225,9 +1277,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     right: 12px;
     left: 12px;
     width: auto;
+    max-width: calc(100vw - 24px);
     height: min(530px, calc(100vh - 100px));
+    max-height: calc(100dvh - 100px);
     border-radius: 18px;
   }
+  .chat-header { min-width: 0; }
+  .chat-brand { min-width: 0; gap: 10px; }
+  .chat-header-info { min-width: 0; }
+  .chat-header-info strong, .chat-status { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-bubble { max-width: 92%; }
+  .chat-bubble .bubble-content { min-width: 0; }
+  .chat-input-bar input { min-width: 0; }
+  .chat-bubble .chat-action-container .chat-action-btn { max-width: 100%; }
+
 }
 
 /* Firebase Auth & Client Portal Styles */
@@ -1551,4 +1614,117 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   color: #fff;
 }
 
+/* Final responsive guardrails: keep every content block usable from phones to wide screens. */
+.navbar-logo{display:block;width:min(180px,34vw);height:auto;max-height:42px;object-fit:contain}
+.hero-copy,.hero-services,.about-copy,.contact-copy,.contact-form{min-width:0}
+img,svg,canvas{max-width:100%}
+.project-info h4,.service-card h3,.about-points strong,.contact-form label{overflow-wrap:anywhere}
+
+@media (max-width: 1200px){
+  .hero{grid-template-columns:minmax(0,1fr) minmax(320px,40vw) minmax(220px,.7fr);gap:24px}
+  .hero h1{font-size:clamp(72px,8vw,104px)}
+  .hero h2{font-size:clamp(32px,3.4vw,46px)}
+  .contact-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
+
+@media (max-width: 960px){
+  .topbar{padding-inline:18px}
+  .brand{min-width:0}
+  .hero{display:grid;grid-template-columns:1fr;align-items:stretch;gap:0;padding-top:54px}
+  .hero-copy{padding-bottom:24px}
+  .hero-portrait{width:100%;height:auto;min-height:480px;display:grid;place-items:center;order:2}
+  .hero-services{order:3;padding:28px 0 52px}
+  .portrait-frame{width:min(430px,82vw);height:min(560px,108vw)}
+  .hero-services .service-line{min-width:0}
+  .section-head{align-items:flex-start}
+  .contact-grid{grid-template-columns:1fr;gap:38px;align-items:start}
+  .contact-copy h3{max-width:10ch}
+}
+
+@media (max-width: 640px){
+  .section,.footer{width:calc(100% - 32px)}
+  .topbar{min-height:68px;padding-inline:16px}
+  .navbar-logo{width:min(155px,58vw);max-height:36px}
+  .main-nav{top:68px;left:10px;right:10px}
+  .hero{padding-top:42px}
+  .hero-bg{top:92px;font-size:36vw;max-width:100%;overflow:hidden}
+  .script{font-size:28px}
+  .hero h1{font-size:clamp(62px,17vw,82px);line-height:.86;max-width:8ch}
+  .hero h2{font-size:clamp(29px,8.4vw,38px);line-height:.98}
+  .hero-copy p{font-size:12px;line-height:1.75}
+  .hero-actions{gap:10px}
+  .hero-actions .btn{flex:1 1 145px;min-height:48px;padding-inline:14px}
+  .hero-portrait{min-height:420px}
+  .portrait-frame{width:min(360px,90vw);height:min(470px,118vw)}
+  .orbit-a{width:calc(min(360px,90vw) + 45px);height:calc(min(360px,90vw) + 45px)}
+  .orbit-b{width:calc(min(360px,90vw) + 95px);height:calc(min(360px,90vw) + 95px)}
+  .float-tag{max-width:38vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hero-services{padding-bottom:42px}
+  .hero-services .service-line{padding:14px 0;font-size:11px;gap:10px}
+  .services,.projects,.capabilities,.testimonials,.faq{padding-top:84px}
+  .section-head{margin-bottom:24px}
+  .section-head h3{font-size:clamp(48px,14vw,68px);max-width:12ch}
+  .section-head>p{font-size:12px;line-height:1.7}
+  .service-grid,.project-grid,.testimonial-grid{grid-template-columns:1fr}
+  .service-card{min-height:0;padding:24px}
+  .service-card h4{font-size:34px;margin-top:58px}
+  .project-visual{height:min(82vw,330px)}
+  .project-overlay{left:14px;right:14px;bottom:14px;align-items:flex-start;flex-direction:column;gap:5px}
+  .project-overlay small{text-align:left}
+  .project-hover{opacity:1;inset:auto 12px 12px;padding:12px;display:flex;justify-content:space-between}
+  .about{gap:28px;padding-top:88px}
+  .about-card{min-height:390px;padding:24px}
+  .about-copy h3{font-size:clamp(48px,14vw,68px)}
+  .about-points div{gap:14px;align-items:flex-start}
+  .lower{padding-top:88px}
+  .cta{margin-top:88px;padding:42px 0;align-items:flex-start}
+  .cta h3{font-size:clamp(54px,15vw,78px)}
+  .contact{padding:88px 16px 84px}
+  .contact-copy h3{font-size:clamp(60px,17vw,86px);max-width:none}
+  .contact-form{padding:20px 0}
+  .field-row{grid-template-columns:1fr!important}
+  .form-bottom{gap:20px}
+  .form-bottom .btn{width:100%}
+  .footer{padding:40px 0 64px;align-items:flex-start;gap:24px}
+  .footer-right{flex-direction:column;align-items:flex-start;gap:20px}
+  .footer-right-actions{flex-wrap:wrap;gap:12px}
+  .footer-centered{position:static;transform:none;order:3;width:100%;text-align:left}
+}
+
+@media (max-width: 380px){
+  .section,.footer{width:calc(100% - 24px)}
+  .topbar{padding-inline:12px}
+  .navbar-logo{width:52vw}
+  .hero-actions .btn{flex-basis:100%}
+  .portrait-frame{width:88vw;height:112vw}
+  .hero-services .service-line span{font-size:10px}
+  .project-info{padding:16px}
+  .project-info h4{font-size:23px}
+}
+
+@media (min-width: 1600px){
+  .hero{min-height:min(82vh,900px)}
+}
+
+/* Keep the desktop navigation centered independently from the logo and CTA. */
+@media (min-width: 961px){
+  .topbar{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    justify-content:initial;
+    gap:24px;
+  }
+  .brand{grid-column:1;justify-self:start;min-width:0}
+  .main-nav{grid-column:2;justify-self:center;margin:0;gap:clamp(14px,1.55vw,28px)}
+  .availability{grid-column:3;justify-self:end}
+}
+
+/* Prevent animated decorative layers from expanding the mobile layout viewport. */
+html{width:100%;max-width:100%;overflow-x:clip}
+body{width:100%;max-width:100%;overflow-x:clip}
+.marquee{width:100%;max-width:100%;contain:layout paint;overflow:hidden;clip-path:inset(0)}
+.marquee-track{max-width:none}
+.hero,.services,.contact{isolation:isolate}
+.hero-grid canvas,.services canvas{max-width:none}
+.portrait-shine,.portrait-vignette,.about-photo-glow{max-width:none}
 
