@@ -935,6 +935,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   transform: translateY(22px) scale(0.96);
   transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  min-height: 0;
 }
 .chat-drawer.open {
   opacity: 1;
@@ -992,22 +993,61 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   background: #48c78e;
   box-shadow: 0 0 6px #48c78e;
 }
-.chat-action-btn {
+.chat-header-actions .chat-action-btn {
+  flex: 0 0 32px;
   width: 32px;
   height: 32px;
   border-radius: 8px;
   display: grid;
   place-items: center;
+  padding: 0;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #a8a09b;
   cursor: pointer;
   transition: all 0.25s ease;
 }
-.chat-action-btn:hover {
+.chat-header-actions .chat-action-btn:hover {
   background: rgba(227, 19, 27, 0.18);
   border-color: rgba(227, 19, 27, 0.5);
   color: #fff;
+}
+.chat-action-container {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 10px;
+}
+.chat-bubble .chat-action-container .chat-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 34px;
+  flex: 0 1 auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  background: rgba(227, 19, 27, 0.14);
+  border: 1px solid rgba(227, 19, 27, 0.45);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.chat-bubble .chat-action-container .chat-action-btn span {
+  min-width: 0;
+  text-align: left;
+}
+.chat-bubble .chat-action-container .chat-action-btn b {
+  flex: 0 0 auto;
+}
+.chat-bubble .chat-action-container .chat-action-btn:hover {
+  background: rgba(227, 19, 27, 0.28);
+  border-color: rgba(227, 19, 27, 0.75);
 }
 
 /* Quick Suggestion Chips */
@@ -1045,7 +1085,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 /* Chat Messages Container */
 .chat-messages {
   flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px 16px 12px;
   display: flex;
   flex-direction: column;
@@ -1064,7 +1107,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .chat-bubble {
   display: flex;
   flex-direction: column;
-  max-width: 86%;
+  min-width: 0;
+  max-width: min(86%, 100%);
   animation: bubbleIn 0.3s ease-out;
 }
 @keyframes bubbleIn {
@@ -1169,6 +1213,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .chat-input-bar {
   display: flex;
   align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
   gap: 8px;
   padding: 10px 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -1231,9 +1277,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     right: 12px;
     left: 12px;
     width: auto;
+    max-width: calc(100vw - 24px);
     height: min(530px, calc(100vh - 100px));
+    max-height: calc(100dvh - 100px);
     border-radius: 18px;
   }
+  .chat-header { min-width: 0; }
+  .chat-brand { min-width: 0; gap: 10px; }
+  .chat-header-info { min-width: 0; }
+  .chat-header-info strong, .chat-status { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-bubble { max-width: 92%; }
+  .chat-bubble .bubble-content { min-width: 0; }
+  .chat-input-bar input { min-width: 0; }
+  .chat-bubble .chat-action-container .chat-action-btn { max-width: 100%; }
+
 }
 
 /* Firebase Auth & Client Portal Styles */
