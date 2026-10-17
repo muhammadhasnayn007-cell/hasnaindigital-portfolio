@@ -94,6 +94,11 @@ a,button{ -webkit-tap-highlight-color:transparent }
 
 
 /* Final layout polish */
+.hero-copy,.hero-services{min-width:0}
+.hero-copy p,.hero-services p,.service-line span{overflow-wrap:anywhere}
+@media (min-width: 1151px){
+  .hero{grid-template-columns:minmax(0,1fr) minmax(360px,470px) minmax(240px,.74fr)}
+}
 @media (min-width: 1151px){
   .hero.section{width:calc(100% - 80px);max-width:none}
   .hero-copy{padding-left:8px}
@@ -107,6 +112,7 @@ a,button{ -webkit-tap-highlight-color:transparent }
   .faq-question{padding-left:10px}
 }
 @media (max-width: 520px){
+  .hero-copy{padding-left:12px;padding-right:4px}
   .faq-question{padding-left:6px}
 }
 
