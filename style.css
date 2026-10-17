@@ -1649,10 +1649,24 @@ img,svg,canvas{max-width:100%}
   .hero{min-height:min(82vh,900px)}
 }
 
+/* Keep the desktop navigation centered independently from the logo and CTA. */
+@media (min-width: 961px){
+  .topbar{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    justify-content:initial;
+    gap:24px;
+  }
+  .brand{grid-column:1;justify-self:start;min-width:0}
+  .main-nav{grid-column:2;justify-self:center;margin:0;gap:clamp(14px,1.55vw,28px)}
+  .availability{grid-column:3;justify-self:end}
+}
+
 /* Prevent animated decorative layers from expanding the mobile layout viewport. */
-html{width:100%;max-width:100%;overflow-x:hidden}
-body{width:100%;max-width:100%;overflow-x:hidden}
-.marquee{width:100%;max-width:100%;contain:paint}
+html{width:100%;max-width:100%;overflow-x:clip}
+body{width:100%;max-width:100%;overflow-x:clip}
+.marquee{width:100%;max-width:100%;contain:layout paint;overflow:hidden;clip-path:inset(0)}
+.marquee-track{max-width:none}
 .hero,.services,.contact{isolation:isolate}
 .hero-grid canvas,.services canvas{max-width:none}
 .portrait-shine,.portrait-vignette,.about-photo-glow{max-width:none}
