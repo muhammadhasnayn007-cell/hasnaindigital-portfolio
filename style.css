@@ -1615,7 +1615,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 }
 
 /* Final responsive guardrails: keep every content block usable from phones to wide screens. */
-.navbar-logo{display:block;width:min(180px,34vw);height:auto;max-height:42px;object-fit:contain}
+.navbar-logo{display:block;width:min(180px,34vw);height:auto;max-height:60px;object-fit:contain}
 .hero-copy,.hero-services,.about-copy,.contact-copy,.contact-form{min-width:0}
 img,svg,canvas{max-width:100%}
 .project-info h3,.service-card h3,.about-points strong,.contact-form label{overflow-wrap:anywhere}
@@ -1644,7 +1644,7 @@ img,svg,canvas{max-width:100%}
 @media (max-width: 640px){
   .section,.footer{width:calc(100% - 32px)}
   .topbar{min-height:68px;padding-inline:16px}
-  .navbar-logo{width:min(155px,58vw);max-height:36px}
+  .navbar-logo{width:min(155px,58vw);max-height:44px}
   .main-nav{top:68px;left:10px;right:10px}
   .hero{padding-top:42px}
   .hero-bg{top:92px;font-size:36vw;max-width:100%;overflow:hidden}

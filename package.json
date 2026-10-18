@@ -1,7 +1,7 @@
 {
   "name": "hasnain-digital-marketer-portfolio",
   "version": "2.0.0",
-  "description": "Production-ready full-stack portfolio for Hasnain Digital Marketer - Web Developer, Python Developer, UI/UX Designer, SEO & Digital Marketing Specialist",
+  "description": "Production-ready full-stack portfolio for H.X.S.N Digital Technologies - Web Developer, Python Developer, UI/UX Designer, SEO & Digital Marketing Specialist",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -20,7 +20,7 @@
     "ai-assistant",
     "full-stack"
   ],
-  "author": "Hasnain Digital Marketer <muhammadhasnayn007@gmail.com>",
+  "author": "H.X.S.N Digital Technologies <muhammadhasnayn007@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@google/genai": "^2.27.0",
