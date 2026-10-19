@@ -6,7 +6,7 @@
     "email": "muhammadhasnayn007@gmail.com",
     "location": "Based in Pakistan • Available Worldwide",
     "website": "https://hasnaindigitalmarketer.com",
-    "github": "https://github.com/muhammadhasnayn007",
+    "github": "https://github.com/muhammadhasnayn007-cell",
     "linkedin": "https://www.linkedin.com/in/muhammad-hasnain-01911b2a3",
     "responseTime": "Under 24 hours",
     "availability": "Available for Projects"
@@ -69,6 +69,26 @@
         "Content marketing and search-intent messaging",
         "Audience targeting and conversion funnels",
         "Online growth campaigns and analytics direction"
+      ]
+    },
+    {
+      "id": "social-media-marketing",
+      "title": "Social Media Marketing",
+      "summary": "Social media marketing strategy and campaign support aligned with business goals.",
+      "capabilities": [
+        "Audience-focused social content direction",
+        "Campaign messaging and channel planning",
+        "Social growth support connected to conversion goals"
+      ]
+    },
+    {
+      "id": "jarvis",
+      "title": "AI Assistant — JARVIS",
+      "summary": "An AI portfolio assistant designed to help visitors understand Hasnain's services, projects, and contact options.",
+      "capabilities": [
+        "Portfolio and service guidance",
+        "Project discovery and requirement conversations",
+        "English, Urdu, and Roman Urdu conversation support"
       ]
     }
   ],
