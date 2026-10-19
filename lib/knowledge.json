@@ -127,11 +127,11 @@
       "type": "Demo Project",
       "title": "Business Website Build",
       "category": "Web Development",
-      "challenge": "Building a lightning-fast, fully responsive business portfolio with zero layout shifts, dark glassmorphism aesthetic, and accessible controls.",
-      "solution": "Built a clean front-end and Node.js backend architecture with instant response times, fluid mobile navigation, and real-time contact validation.",
-      "process": "UI Prototyping → Responsive Coding → API Integration → Performance Testing",
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Node.js", "Express", "REST APIs"],
-      "outcome": "Achieved optimal Core Web Vitals scores and smooth interaction across mobile, tablet, and desktop devices."
+      "challenge": "Building a responsive business portfolio with a dark glassmorphism aesthetic, clear navigation, and accessible controls.",
+      "solution": "Implemented the portfolio interface with semantic HTML, responsive CSS, client-side JavaScript interactions, and a server-side chat/contact integration.",
+      "process": "Interface Structure → Responsive Styling → Client Interactions → Integration Verification",
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Vercel serverless API routes"],
+      "outcome": "Responsive behavior and interaction flows are implemented. No measured Core Web Vitals results or client performance metrics are documented."
     },
     {
       "id": "uiux-project",

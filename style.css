@@ -1053,18 +1053,26 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 /* Quick Suggestion Chips */
 .chat-chips-bar {
   display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-height: 52px;
   gap: 7px;
   padding: 10px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(14, 10, 12, 0.78);
   overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: none;
+  overscroll-behavior-x: contain;
 }
 .chat-chips-bar::-webkit-scrollbar {
   display: none;
 }
 .chat-chip {
   flex: 0 0 auto;
-  padding: 5px 11px;
+  min-height: 30px;
+  line-height: 1.2;
+  padding: 7px 11px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.11);
