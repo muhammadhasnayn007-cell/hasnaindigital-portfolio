@@ -1,4 +1,4 @@
-// Serverless Chatbot Handler for Hasnain's Assistant (Vercel & Netlify)
+// Serverless Chatbot Handler for HXSN Assistant (Vercel & Netlify)
 const { checkRateLimit, getClientIp } = require('../lib/security');
 const { handleChatInteraction } = require('../lib/ai');
 

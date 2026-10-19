@@ -10,14 +10,14 @@ async function testAll() {
   // TEST 1: Greeting
   const t1 = await handleChatInteraction({ sessionId: 's1', message: 'Hi', history: [] });
   assert.strictEqual(t1.success, true);
-  assert.ok(t1.reply.includes("Hasnain's Assistant"));
+  assert.ok(t1.reply.includes("HXSN Assistant"));
   assert.strictEqual(t1.leadStatus, 'General Visitor');
   console.log('✓ [PASS] TEST 1: "Hi" handled naturally as General Visitor');
   passed++;
 
   // TEST 2: Identity
   const t2 = await handleChatInteraction({ sessionId: 's2', message: 'Who are you?', history: [] });
-  assert.ok(t2.reply.includes("Hasnain's Assistant") && t2.reply.includes('Muhammad Hasnain'));
+  assert.ok(t2.reply.includes("HXSN Assistant") && t2.reply.includes('Muhammad Hasnain'));
   assert.strictEqual(t2.leadStatus, 'General Visitor');
   console.log('✓ [PASS] TEST 2: "Who are you?" introduces role respectfully in 3rd person');
   passed++;

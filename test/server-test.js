@@ -107,7 +107,7 @@ setTimeout(async () => {
     const htmlRes = await get('/');
     assert.strictEqual(htmlRes.statusCode, 200);
     assert.ok(htmlRes.text.includes('H.X.S.N Digital Technologies'));
-    assert.ok(htmlRes.text.includes("Hasnain's Assistant"));
+    assert.ok(htmlRes.text.includes("HXSN Assistant"));
     console.log('✓ [PASS] GET / serves index.html with Hasnain\'s Assistant widget');
 
     console.log('\n=================================================');

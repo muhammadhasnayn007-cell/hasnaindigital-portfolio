@@ -1070,9 +1070,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 }
 .chat-chip {
   flex: 0 0 auto;
-  min-height: 30px;
-  line-height: 1.2;
+  width: max-content;
+  height: 32px;
+  line-height: 16px;
   padding: 7px 11px;
+  white-space: nowrap;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.11);
@@ -1081,18 +1083,24 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.25s ease;
+  box-sizing: border-box;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
-.chat-chip:hover {
+.chat-chip:hover,
+.chat-chip:focus-visible,
+.chat-chip[aria-pressed="true"] {
   background: rgba(227, 19, 27, 0.15);
   border-color: rgba(227, 19, 27, 0.5);
   color: #ffffff;
-  transform: translateY(-1px);
+}
+.chat-chip:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
 }
 
 /* Chat Messages Container */
 .chat-messages {
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   min-height: 0;
   min-width: 0;
   overflow-y: auto;

@@ -108,7 +108,7 @@ runTest('Knowledge: Centralized knowledge structure integrity', () => {
   assert.ok(knowledge.faqs.length >= 4, 'Should define FAQs');
 });
 
-// 3. AI & Hasnain's Assistant Tests
+// 3. AI & HXSN Assistant Tests
 runTest('AI: Multilingual detection (English, Urdu, Roman Urdu)', () => {
   assert.strictEqual(detectLanguage('Hello, I need a website'), 'en');
   assert.strictEqual(detectLanguage('مجھے ویب سائٹ بنوانی ہے'), 'ur');
@@ -134,7 +134,7 @@ runTest('AI: Lead intent qualification logic', () => {
 
 runTest('AI: Semantic assistant fallback produces professional responses', () => {
   const greeting = fallbackSemanticAssistant('Hi there', [], 'en');
-  assert.ok(greeting.includes("Hasnain's Assistant"), 'Should identify as Hasnain\'s Assistant');
+  assert.ok(greeting.includes("HXSN Assistant"), 'Should identify as Hasnain\'s Assistant');
 
   const webDev = fallbackSemanticAssistant('Tell me about your web development', [], 'en');
   assert.ok(webDev.includes('Web Development') || webDev.includes('HTML5'), 'Should describe web dev');

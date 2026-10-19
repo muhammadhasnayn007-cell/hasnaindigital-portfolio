@@ -474,7 +474,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   // ==========================================================================
-  // HASNAIN'S ASSISTANT - AI CLIENT & LEAD ASSISTANT CONTROLLER
+  // HXSN ASSISTANT - AI CLIENT & LEAD ASSISTANT CONTROLLER
   // ==========================================================================
   const chatLauncher = $('#chatLauncher');
   const chatDrawer = $('#chatDrawer');
@@ -642,7 +642,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       indicator.id = 'chatTypingIndicator';
       indicator.innerHTML = `
         <div class="bubble-content">
-          <div class="typing-dots" aria-label="Hasnain's Assistant is typing">
+          <div class="typing-dots" aria-label="HXSN Assistant is typing">
             <span class="typing-dot"></span>
             <span class="typing-dot"></span>
             <span class="typing-dot"></span>
@@ -772,7 +772,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             .join(' | ');
 
           messageInput.value = userNotes
-            ? `Discussion via Hasnain's Assistant:\n${userNotes}`
+            ? `Discussion via HXSN Assistant:\n${userNotes}`
             : messageInput.value;
           messageInput.closest('.form-group')?.classList.add('is-valid');
         }
