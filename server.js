@@ -227,7 +227,7 @@ app.post('/api/contact', async (req, res) => {
 });
 
 // ==============================================================================
-// 3. Hasnain's Assistant - AI Chat Endpoint
+// 3. HXSN Assistant - AI Chat Endpoint
 // ==============================================================================
 app.post('/api/chat', async (req, res) => {
   const ip = getClientIp(req);
