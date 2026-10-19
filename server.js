@@ -53,7 +53,7 @@ app.use((req, res, next) => {
     reqPath.endsWith('.env') ||
     reqPath.endsWith('.json') ||
     reqPath.endsWith('.lock') ||
-    (reqPath.endsWith('.js') && reqPath !== '/script.js' && reqPath !== '/firebase-client.js')
+    (reqPath.endsWith('.js') && reqPath !== '/script.js' && reqPath !== '/firebase-client.js' && reqPath !== '/speed-insights.js')
   ) {
     if (reqPath.startsWith('/api/')) return next();
     return res.status(404).end();
@@ -78,6 +78,12 @@ app.get('/firebase-client.js', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=86400');
   res.sendFile(path.join(__dirname, 'firebase-client.js'));
+});
+
+app.get('/speed-insights.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(path.join(__dirname, 'speed-insights.js'));
 });
 
 app.get('/robots.txt', (req, res) => {
