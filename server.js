@@ -172,6 +172,18 @@ app.post('/api/contact', async (req, res) => {
   const subject = (body.subject || '').trim();
   const service = (body.service || 'General Project').trim();
   const message = (body.message || '').trim();
+  const budget = (body.budget || '').trim();
+  const timeline = (body.timeline || '').trim();
+  const websiteUrl = (body.websiteUrl || '').trim();
+  const contactMethod = body.contactMethod === 'WhatsApp' ? 'WhatsApp' : 'Email';
+  const whatsapp = (body.whatsapp || '').trim();
+
+  if (websiteUrl) {
+    try { new URL(websiteUrl); } catch { return res.status(400).json({ success: false, error: 'Please provide a valid website URL.' }); }
+  }
+  if (contactMethod === 'WhatsApp' && whatsapp.length < 7) {
+    return res.status(400).json({ success: false, error: 'Please provide a valid WhatsApp number.' });
+  }
 
   // Server-side validation
   if (!name || name.length < 2) {
@@ -199,7 +211,7 @@ app.post('/api/contact', async (req, res) => {
   }
 
   try {
-    const delivery = await sendContactFormEmail({ name, email, subject, service, message });
+    const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });
     recordSubmissionSuccess(name, email, message);
     return res.status(200).json({
       success: true,

@@ -457,6 +457,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   color: #ff4d5a;
   font-weight: 700;
 }
+.contact-form label .optional { color: #756d69; font: 500 9px Inter, sans-serif; letter-spacing: 0; text-transform: none; }
+.form-group[hidden] { display: none; }
 
 .input-wrapper {
   position: relative;

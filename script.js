@@ -233,6 +233,12 @@ document.addEventListener('DOMContentLoaded',()=>{
     const subjectInput = $('#contact-subject');
     const serviceSelect = $('#contact-service');
     const messageInput = $('#contact-message');
+    const budgetInput = $('#contact-budget');
+    const timelineInput = $('#contact-timeline');
+    const urlInput = $('#contact-url');
+    const contactMethodInput = $('#contact-method');
+    const whatsappGroup = $('#whatsapp-group');
+    const whatsappInput = $('#contact-whatsapp');
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -310,6 +316,21 @@ document.addEventListener('DOMContentLoaded',()=>{
       });
     }
 
+    urlInput?.addEventListener('blur', () => {
+      const value = urlInput.value.trim();
+      if (!value) return clearFieldError(urlInput, 'url-error');
+      try { new URL(value); clearFieldError(urlInput, 'url-error'); } catch { setFieldError(urlInput, 'url-error', 'Please enter a valid URL, including https://.'); }
+    });
+
+    const syncContactMethod = () => {
+      const whatsappSelected = contactMethodInput?.value === 'WhatsApp';
+      if (whatsappGroup) whatsappGroup.hidden = !whatsappSelected;
+      if (whatsappInput) whatsappInput.required = whatsappSelected;
+      if (!whatsappSelected && whatsappInput) { whatsappInput.value = ''; clearFieldError(whatsappInput, 'whatsapp-error'); }
+    };
+    contactMethodInput?.addEventListener('change', syncContactMethod);
+    syncContactMethod();
+
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -357,6 +378,15 @@ document.addEventListener('DOMContentLoaded',()=>{
         clearFieldError(messageInput, 'message-error');
       }
 
+      const urlVal = urlInput?.value.trim() || '';
+      if (urlVal) {
+        try { new URL(urlVal); clearFieldError(urlInput, 'url-error'); }
+        catch { setFieldError(urlInput, 'url-error', 'Please enter a valid URL, including https://.'); isValid = false; firstInvalid = firstInvalid || urlInput; }
+      }
+      if (contactMethodInput?.value === 'WhatsApp' && (!whatsappInput?.value.trim() || whatsappInput.value.trim().length < 7)) {
+        setFieldError(whatsappInput, 'whatsapp-error', 'Please enter a valid WhatsApp number.'); isValid = false; firstInvalid = firstInvalid || whatsappInput;
+      } else if (whatsappInput?.value.trim()) clearFieldError(whatsappInput, 'whatsapp-error');
+
       if (!isValid) {
         if (firstInvalid) firstInvalid.focus();
         return;
@@ -385,7 +415,12 @@ document.addEventListener('DOMContentLoaded',()=>{
         email: emailVal,
         subject: subjectVal,
         service: serviceVal,
-        message: messageVal
+        message: messageVal,
+        budget: budgetInput?.value.trim() || '',
+        timeline: timelineInput?.value.trim() || '',
+        websiteUrl: urlVal,
+        contactMethod: contactMethodInput?.value || 'Email',
+        whatsapp: whatsappInput?.value.trim() || ''
       };
 
       let delivered = false;
