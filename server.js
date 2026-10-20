@@ -114,7 +114,7 @@ app.get('/api/health', (req, res) => {
     brand: knowledge.brand.name,
     availability,
     version: '2.0.0',
-    emailConfigured: Boolean(process.env.RESEND_API_KEY || (process.env.SMTP_HOST && process.env.SMTP_USER)),
+    emailConfigured: Boolean(process.env.API_key || (process.env.SMTP_HOST && process.env.SMTP_USER)),
     aiConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY),
     firebaseConfigured: fs.existsSync(path.join(__dirname, 'firebase-applet-config.json')),
     timestamp: new Date().toISOString()
@@ -313,7 +313,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(` Hasnain Digital Marketer - Full-Stack Portfolio Running`);
   console.log(` URL: http://localhost:${PORT}`);
   console.log(` Mode: ${process.env.NODE_ENV || 'development'}`);
-  console.log(` Contact Delivery: ${process.env.RESEND_API_KEY ? 'Resend' : process.env.SMTP_HOST ? 'SMTP' : 'Unconfigured'}`);
+  console.log(` Contact Delivery: ${process.env.API_key ? 'Resend' : process.env.SMTP_HOST ? 'SMTP' : 'Unconfigured'}`);
   console.log(` AI Assistant: ${process.env.GEMINI_API_KEY ? 'Google Gemini' : process.env.OPENAI_API_KEY ? 'OpenAI' : 'Built-in Semantic Engine'}`);
   console.log(`=================================================================`);
 });
