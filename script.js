@@ -242,6 +242,99 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    // Progressive enhancement for contact selects: the native select remains in the form,
+    // while the accessible surface provides consistent styling and keyboard behavior.
+    const enhanceDropdowns = () => {
+      const wrappers = [...contactForm.querySelectorAll('.select-wrap')];
+      wrappers.forEach((wrapper, index) => {
+        const select = wrapper.querySelector('select');
+        if (!select || wrapper.querySelector('.custom-select-trigger')) return;
+        const menuId = `${select.id || 'contact-select'}-menu-${index}`;
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'custom-select-trigger';
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.setAttribute('aria-controls', menuId);
+        const label = document.createElement('span');
+        label.className = 'custom-select-value';
+        trigger.append(label);
+        const menu = document.createElement('div');
+        menu.className = 'custom-select-menu';
+        menu.id = menuId;
+        menu.setAttribute('role', 'listbox');
+        menu.setAttribute('tabindex', '-1');
+        const options = [...select.options].map((option, optionIndex) => {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'custom-select-option';
+          item.textContent = option.textContent;
+          item.dataset.value = option.value;
+          item.dataset.index = String(optionIndex);
+          item.setAttribute('role', 'option');
+          item.setAttribute('aria-selected', option.selected ? 'true' : 'false');
+          item.addEventListener('click', () => {
+            select.value = option.value;
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+            closeDropdown();
+            trigger.focus();
+          });
+          menu.append(item);
+          return item;
+        });
+        const setValue = () => {
+          label.textContent = select.selectedOptions[0]?.textContent || '';
+          options.forEach((item) => item.setAttribute('aria-selected', item.dataset.value === select.value ? 'true' : 'false'));
+        };
+        const closeDropdown = () => {
+          wrapper.classList.remove('is-open');
+          trigger.setAttribute('aria-expanded', 'false');
+        };
+        const openDropdown = () => {
+          document.querySelectorAll('.select-wrap.is-open').forEach((open) => {
+            if (open !== wrapper) open.classList.remove('is-open');
+          });
+          wrapper.classList.add('is-open');
+          trigger.setAttribute('aria-expanded', 'true');
+        };
+        trigger.addEventListener('click', () => wrapper.classList.contains('is-open') ? closeDropdown() : openDropdown());
+        trigger.addEventListener('keydown', (event) => {
+          if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); openDropdown(); }
+          if (event.key === 'Escape') { closeDropdown(); trigger.focus(); }
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            const current = select.selectedIndex;
+            const next = event.key === 'ArrowDown' ? Math.min(current + 1, options.length - 1) : Math.max(current - 1, 0);
+            select.value = options[next].dataset.value;
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+            options[next].focus();
+          }
+        });
+        menu.addEventListener('keydown', (event) => {
+          const current = document.activeElement?.dataset?.index ? Number(document.activeElement.dataset.index) : select.selectedIndex;
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            options[Math.min(Math.max(current + (event.key === 'ArrowDown' ? 1 : -1), 0), options.length - 1)].focus();
+          } else if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            document.activeElement?.click();
+          } else if (event.key === 'Escape') { closeDropdown(); trigger.focus(); }
+        });
+        select.addEventListener('change', setValue);
+        wrapper.append(trigger, menu);
+        setValue();
+      });
+      document.addEventListener('click', (event) => {
+        if (!event.target.closest('.select-wrap')) document.querySelectorAll('.select-wrap.is-open').forEach((wrapper) => wrapper.classList.remove('is-open'));
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') document.querySelectorAll('.select-wrap.is-open').forEach((wrapper) => {
+          wrapper.classList.remove('is-open');
+          wrapper.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+        });
+      });
+    };
+    enhanceDropdowns();
+
     const setFieldError = (input, errorId, msg) => {
       if (!input) return;
       const group = input.closest('.form-group');
