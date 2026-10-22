@@ -15,7 +15,7 @@ module.exports = function handler(req, res) {
     status: 'ok',
     brand: knowledge.brand.name,
     availability,
-    emailConfigured: Boolean(process.env.API_key || (process.env.SMTP_HOST && process.env.SMTP_USER)),
+    emailConfigured: Boolean(process.env.RESEND_API_KEY || process.env.API_key || (process.env.SMTP_HOST && process.env.SMTP_USER)),
     aiConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY),
     timestamp: new Date().toISOString()
   });
