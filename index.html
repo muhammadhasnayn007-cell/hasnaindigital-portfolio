@@ -686,6 +686,55 @@
               </div>
             </div>
 
+            <div class="field-row">
+              <div class="form-group">
+                <label for="contact-budget">ESTIMATED BUDGET <span class="optional">(optional)</span></label>
+                <div class="input-wrapper select-wrap">
+                  <span class="input-icon-glyph" aria-hidden="true">$</span>
+                  <select id="contact-budget" name="budget">
+                    <option value="">Select a range</option>
+                    <option>Under $100</option><option>$100–$300</option><option>$300–$500</option>
+                    <option>$500–$1,000</option><option>$1,000+</option><option>Not Sure Yet</option>
+                  </select><span class="select-arrow" aria-hidden="true">▾</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="contact-timeline">PROJECT TIMELINE <span class="optional">(optional)</span></label>
+                <div class="input-wrapper select-wrap">
+                  <span class="input-icon-glyph" aria-hidden="true">◷</span>
+                  <select id="contact-timeline" name="timeline">
+                    <option value="">Select a timeline</option><option>ASAP</option><option>Within 1–2 Weeks</option>
+                    <option>Within a Month</option><option>Flexible</option>
+                  </select><span class="select-arrow" aria-hidden="true">▾</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="form-group">
+                <label for="contact-url">WEBSITE / BUSINESS URL <span class="optional">(optional)</span></label>
+                <div class="input-wrapper"><span class="input-icon-glyph" aria-hidden="true">↗</span>
+                  <input id="contact-url" name="websiteUrl" type="url" placeholder="https://example.com" autocomplete="url" aria-describedby="url-error">
+                  <span class="input-glow"></span>
+                </div><span id="url-error" class="field-error" aria-live="polite"></span>
+              </div>
+              <div class="form-group">
+                <label for="contact-method">PREFERRED CONTACT METHOD</label>
+                <div class="input-wrapper select-wrap"><span class="input-icon-glyph" aria-hidden="true">@</span>
+                  <select id="contact-method" name="contactMethod"><option value="Email">Email</option><option value="WhatsApp">WhatsApp</option></select>
+                  <span class="select-arrow" aria-hidden="true">▾</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" id="whatsapp-group" hidden>
+              <label for="contact-whatsapp">WHATSAPP NUMBER <span class="req" aria-hidden="true">*</span></label>
+              <div class="input-wrapper"><span class="input-icon-glyph" aria-hidden="true">WA</span>
+                <input id="contact-whatsapp" name="whatsapp" type="tel" inputmode="tel" placeholder="+92 300 1234567" aria-describedby="whatsapp-error">
+                <span class="input-glow"></span>
+              </div><span id="whatsapp-error" class="field-error" aria-live="polite"></span>
+            </div>
+
             <div class="form-group full-width">
               <label for="contact-message">PROJECT DETAILS <span class="req" aria-hidden="true">*</span></label>
               <div class="input-wrapper">
@@ -863,7 +912,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="/script.js"></script>
+  <script src="/script.js?v=dropdowns-2026-10-2"></script>
   <script type="module" src="/firebase-client.js"></script>
 </body>
 
