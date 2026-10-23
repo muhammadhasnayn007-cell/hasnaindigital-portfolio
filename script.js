@@ -1,11 +1,4 @@
 document.addEventListener('DOMContentLoaded',()=>{
-  const pageLoader = document.getElementById('pageLoader');
-  const finishLoading = () => pageLoader?.classList.add('is-ready');
-  if (pageLoader) {
-    if (document.readyState === 'complete') finishLoading();
-    else window.addEventListener('load', finishLoading, { once: true });
-    window.setTimeout(finishLoading, 1800);
-  }
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const yearEl=$('#year');
   if(yearEl) yearEl.textContent=new Date().getFullYear();
@@ -20,8 +13,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Animated mobile navigation
   const toggle=$('.nav-toggle'), nav=$('.main-nav');
   if(toggle&&nav){
-    const close=()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false');};
-    toggle.addEventListener('click',e=>{e.stopPropagation();const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open));});
+    const close=()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation');};
+    toggle.addEventListener('click',e=>{e.stopPropagation();const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');});
     $$('.nav-link',nav).forEach((a,i)=>a.addEventListener('click',()=>setTimeout(close,220)));
     document.addEventListener('click',e=>{if(nav.classList.contains('open')&&!nav.contains(e.target)&&!toggle.contains(e.target))close();});
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});

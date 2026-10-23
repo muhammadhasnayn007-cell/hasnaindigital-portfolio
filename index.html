@@ -43,7 +43,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,600;1,700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=navbar-fix-2026-10-23">
 
   <!-- Comprehensive Structured Data (JSON-LD) -->
   <script type="application/ld+json">
@@ -146,20 +146,6 @@
 </head>
 
 <body>
-  <div class="page-loader" id="pageLoader" role="status" aria-live="polite" aria-label="Loading H.X.S.N Digital Technologies">
-    <div class="page-loader-mark"><img src="/images/logo-mark.svg" alt="" width="34" height="34"></div>
-    <span class="page-loader-name">H.X.S.N DIGITAL TECHNOLOGIES</span>
-    <span class="page-loader-line" aria-hidden="true"><i></i></span>
-  </div>
-  <script>
-    (() => {
-      const loader = document.getElementById('pageLoader');
-      if (!loader) return;
-      const dismiss = () => loader.classList.add('is-ready');
-      window.addEventListener('load', dismiss, { once: true });
-      window.setTimeout(dismiss, 1800);
-    })();
-  </script>
   <div class="ambient ambient-a"></div>
   <div class="ambient ambient-b"></div>
   <div class="noise"></div>
@@ -169,7 +155,7 @@
       <a class="brand" href="#home" aria-label="H.X.S.N Digital Technologies home">
         <img class="navbar-logo" src="/images/brand-logo.png" alt="H.X.S.N Digital Technologies Logo" width="180" height="42">
       </a>
-      <button class="nav-toggle" aria-label="Open navigation" aria-expanded="false"><span></span><span></span></button>
+      <button class="nav-toggle" type="button" aria-label="Open navigation" aria-controls="mainNav" aria-expanded="false"><span></span><span></span></button>
       <nav class="main-nav" id="mainNav" aria-label="Primary">
         <a class="nav-link active" href="#home">HOME</a><a class="nav-link" href="#services">SERVICES</a><a
           class="nav-link" href="#projects">PROJECTS</a><a class="nav-link" href="#about">ABOUT</a><a class="nav-link"
@@ -926,7 +912,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="/script.js?v=dropdowns-2026-10-2"></script>
+  <script src="/script.js?v=navbar-fix-2026-10-23"></script>
   <script type="module" src="/firebase-client.js"></script>
 </body>
 
