@@ -597,6 +597,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   }
 
+  function safeExternalUrl(value) {
+    try {
+      const parsed = new URL(String(value));
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed.href : null;
+    } catch {
+      return null;
+    }
+  }
+
   // Helper function to escape HTML in frontend rendering
   function escapeHtml(str) {
     if (!str) return '';
@@ -729,7 +738,7 @@ document.addEventListener('DOMContentLoaded',()=>{
               Google Search Data:
             </div>
             <div class="grounding-sources-list">
-              ${groundingSources.map(s => `<a class="grounding-source-chip" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(s.title || s.url)}">↗ ${escapeHtml(s.title || s.url)}</a>`).join('')}
+              ${groundingSources.map(s => { const url = safeExternalUrl(s.url); const label = s.title || s.url || 'Source'; return url ? `<a class="grounding-source-chip" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(label)}">↗ ${escapeHtml(label)}</a>` : `<span class="grounding-source-chip">${escapeHtml(label)}</span>`; }).join('')}
             </div>
           </div>
         `;
