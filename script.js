@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded',()=>{
+  const loader=document.getElementById('pageLoader');
+  const finishLoader=(failed=false)=>{if(!loader)return;loader.classList.toggle('is-error',failed);loader.classList.add('is-ready');loader.setAttribute('aria-hidden','true');};
+  const loaderTimeout=setTimeout(()=>finishLoader(true),2500);
+  addEventListener('load',()=>{clearTimeout(loaderTimeout);finishLoader(false)},{once:true});
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const yearEl=$('#year');
   if(yearEl) yearEl.textContent=new Date().getFullYear();
@@ -987,7 +991,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 3D Space & Spatial Plexus Network Animation using Three.js
   const initHero3DAnimation = () => {
     const canvas = document.getElementById('hero-3d-canvas');
-    if (!canvas || typeof THREE === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!canvas || typeof THREE === 'undefined' || !window.WebGLRenderingContext || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { if (canvas) canvas.dataset.webglFallback = 'true'; return; }
 
     const container = canvas.parentElement;
     const scene = new THREE.Scene();
@@ -1004,7 +1008,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       powerPreference: 'high-performance'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
 
     // Dynamic particles geometry
     const particleCount = window.innerWidth < 768 ? 60 : 120;
@@ -1104,7 +1108,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const h = container.clientHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
+      renderer.setSize(w, h, false);
     };
 
     window.addEventListener('resize', handleResize, { passive: true });
@@ -1170,7 +1175,10 @@ document.addEventListener('DOMContentLoaded',()=>{
       geometry.attributes.position.needsUpdate = true;
 
       // Rebuild connection lines mesh dynamically for high performance
-      if (lineSegments) scene.remove(lineSegments);
+      if (lineSegments) {
+        scene.remove(lineSegments);
+        lineSegments.geometry.dispose();
+      }
       if (linePositions.length > 0) {
         const lineGeometry = new THREE.BufferGeometry();
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
@@ -1211,7 +1219,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 3D Services Floating Sacred Geometries using Three.js
   const initServices3DAnimation = () => {
     const canvas = document.getElementById('services-3d-canvas');
-    if (!canvas || typeof THREE === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!canvas || typeof THREE === 'undefined' || !window.WebGLRenderingContext || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { if (canvas) canvas.dataset.webglFallback = 'true'; return; }
 
     const container = canvas.parentElement;
     const scene = new THREE.Scene();
@@ -1226,7 +1234,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       powerPreference: 'high-performance'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
 
     // Create floating wireframe geometries
     const group = new THREE.Group();
@@ -1257,7 +1265,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       mesh.position.y = (Math.random() - 0.5) * 3;
       mesh.position.z = (Math.random() - 0.5) * 2;
       
-      mesh.userData = {
+        mesh.userData = {
+        baseY: mesh.position.y,
         floatOffset: Math.random() * Math.PI * 2,
         floatSpeed: 0.004 + Math.random() * 0.004,
         rotSpeedX: (Math.random() - 0.5) * 0.005,
@@ -1282,7 +1291,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const h = container.clientHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
+      renderer.setSize(w, h, false);
     };
     window.addEventListener('resize', handleResize, { passive: true });
 
@@ -1306,7 +1316,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         mesh.rotation.z += mesh.userData.rotSpeedZ;
 
         mesh.userData.floatOffset += mesh.userData.floatSpeed;
-        mesh.position.y += Math.sin(mesh.userData.floatOffset) * 0.006;
+        mesh.position.y = mesh.userData.baseY + Math.sin(mesh.userData.floatOffset) * 0.18;
       });
 
       group.position.x = targetX * 1.2;
@@ -1325,7 +1335,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 3D Contact Interactive Particle Vortex using Three.js
   const initContact3DAnimation = () => {
     const canvas = document.getElementById('contact-3d-canvas');
-    if (!canvas || typeof THREE === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!canvas || typeof THREE === 'undefined' || !window.WebGLRenderingContext || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { if (canvas) canvas.dataset.webglFallback = 'true'; return; }
 
     const container = canvas.parentElement;
     const scene = new THREE.Scene();
@@ -1340,12 +1350,13 @@ document.addEventListener('DOMContentLoaded',()=>{
       powerPreference: 'high-performance'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
 
     const particleCount = window.innerWidth < 768 ? 140 : 320;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const waveOffsets = new Float32Array(particleCount);
+    const baseY = new Float32Array(particleCount);
 
     for (let i = 0; i < particleCount; i++) {
       const theta = (i / particleCount) * Math.PI * 16;
@@ -1356,6 +1367,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       positions[i * 3 + 1] = y;
       positions[i * 3 + 2] = r * Math.sin(theta);
 
+      baseY[i] = y;
       waveOffsets[i] = Math.random() * Math.PI * 2;
     }
 
@@ -1399,7 +1411,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const h = container.clientHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
+      renderer.setSize(w, h, false);
     };
     window.addEventListener('resize', handleResize, { passive: true });
 
@@ -1418,7 +1431,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
       const pos = geometry.attributes.position.array;
       for (let i = 0; i < particleCount; i++) {
-        pos[i * 3 + 1] += Math.sin(clock + waveOffsets[i]) * 0.005;
+        pos[i * 3 + 1] = baseY[i] + Math.sin(clock + waveOffsets[i]) * 0.18;
       }
       geometry.attributes.position.needsUpdate = true;
 

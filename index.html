@@ -146,6 +146,14 @@
 </head>
 
 <body>
+  <div class="page-loader" id="pageLoader" role="status" aria-live="polite" aria-label="Loading H.X.S.N Digital Technologies">
+    <div class="page-loader-inner">
+      <div class="page-loader-mark"><img src="/images/logo-mark.svg" width="34" height="34" alt=""></div>
+      <span class="page-loader-name">H.X.S.N DIGITAL TECHNOLOGIES</span>
+      <span class="page-loader-line" aria-hidden="true"><i></i></span>
+      <span class="sr-only" id="loaderStatus">Loading portfolio</span>
+    </div>
+  </div>
   <div class="ambient ambient-a"></div>
   <div class="ambient ambient-b"></div>
   <div class="noise"></div>
@@ -169,7 +177,7 @@
       <section class="hero section" id="home">
         <div class="hero-bg" aria-hidden="true">HASNAIN</div>
         <div class="hero-grid">
-          <canvas id="hero-3d-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></canvas>
+          <canvas id="hero-3d-canvas" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></canvas>
         </div>
         <div class="hero-copy reveal-left">
           <span class="script">Hello, I'm Hasnain</span>
