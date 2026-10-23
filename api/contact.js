@@ -102,7 +102,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Your message has been delivered directly to Hasnain. You will receive a response within 24 hours.',
+      message: 'Your enquiry was accepted by the delivery service. You will receive a response within 24 hours.',
       deliveryId: delivery.id
     });
   } catch (err) {
@@ -120,7 +120,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(500).json({
       success: false,
-      error: err.message || 'An unexpected error occurred delivering your message. Please reach out directly to muhammadhasnayn007@gmail.com.'
+      error: 'We could not deliver your enquiry right now. Please retry or use the direct email fallback.'
     });
   }
 };

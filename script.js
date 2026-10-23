@@ -54,7 +54,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   sections.forEach(s=>so.observe(s));
 
   // Smooth anchor with sticky header compensation
-  $$('a[href^="#"]:not(#backToTopBtn)').forEach(a=>a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const target=$(id);if(!target)return;e.preventDefault();window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-78,behavior:'smooth'});}));
+  $$('a[href^="#"]:not(#backToTopBtn)').forEach(a=>a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const target=$(id);if(!target)return;e.preventDefault();if(id==='#contact') window.dispatchEvent(new CustomEvent('portfolio:cta-clicked',{detail:{type:'contact'}}));window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-78,behavior:'smooth'});}));
+  $$('.whatsapp, .glass-contact').forEach(a=>a.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('portfolio:cta-clicked',{detail:{type:'whatsapp'}}))));
 
   // Large HASNAIN watermark is animated right-to-left by CSS.
   // Keep it deterministic on scroll rather than overriding the CSS animation.
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       solution: 'Conducted a complete technical SEO audit, resolved crawl indexation barriers, mapped high-intent target keywords, and structured content architecture with semantic schema.',
       process: 'Technical Audit → Keyword Research → On-Page Optimization → Schema Markup → Search Console Monitoring',
       technologies: ['Technical SEO', 'Google Search Console', 'GA4', 'Schema.org', 'HTML5 Semantic Architecture'],
-      outcome: 'Established clean indexing, improved Core Web Vitals, and structured keyword clusters for sustainable search rankings.',
+      outcome: 'Concept outcome: an SEO audit and keyword-cluster framework for demonstrating technical search strategy.',
       tags: ['TECHNICAL SEO', 'ON-PAGE', 'ANALYTICS'],
       img: 'images/project-seo.svg'
     },
@@ -116,18 +117,19 @@ document.addEventListener('DOMContentLoaded',()=>{
       solution: 'Designed a multi-touchpoint marketing funnel with targeted landing pages, value propositions, and clear conversion paths.',
       process: 'Audience Analysis → Funnel Architecture → Landing Page Messaging → Conversion Tracking',
       technologies: ['Marketing Strategy', 'Content SEO', 'CRO', 'Analytics'],
-      outcome: 'Improved user engagement and established transparent conversion measurement across campaign channels.',
+      outcome: 'Concept outcome: a campaign and measurement framework for planning content, landing pages, and conversion events.',
       tags: ['STRATEGY', 'CONTENT', 'CAMPAIGNS'],
       img: 'images/project-marketing.svg'
     },
     'Web Development': {
       title: 'BUSINESS WEBSITE BUILD',
       type: 'Demo Project',
-      challenge: 'Building a lightning-fast, fully responsive business portfolio with zero layout shifts, dark glassmorphism aesthetic, and accessible controls.',
-      solution: 'Built a clean front-end and Node.js backend architecture with instant response times, fluid mobile navigation, and real-time contact validation.',
-      process: 'UI Prototyping → Responsive Coding → API Integration → Performance Testing',
+      challenge: 'Designing a responsive business portfolio with a dark visual system, accessible controls, and a clear path from discovery to enquiry.',
+      solution: 'Built the front-end structure, responsive navigation, contact flow, SEO foundations, and supporting Node.js API routes for this portfolio demo.',
+      role: 'Portfolio concept: strategy, UX direction, front-end implementation, API integration, and QA.',
+      process: 'UI Prototyping → Responsive Coding → API Integration → Accessibility Testing',
       technologies: ['HTML5', 'CSS3', 'JavaScript', 'Node.js', 'Express', 'REST APIs'],
-      outcome: 'Achieved optimal Core Web Vitals scores and smooth interaction across mobile, tablet, and desktop devices.',
+      outcome: 'Concept outcome: a responsive case-study direction for demonstrating web development and enquiry workflows.',
       tags: ['HTML/CSS', 'JAVASCRIPT', 'RESPONSIVE'],
       img: 'images/project-web.svg'
     },
@@ -138,7 +140,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       solution: 'Constructed end-to-end design specifications, interactive Figma prototypes, and a unified design system with dark-mode aesthetic.',
       process: 'User Journeys → Wireframes → High-Fidelity Mockups → Interactive Prototyping',
       technologies: ['Figma', 'Wireframes', 'Design Systems', 'Interaction Design'],
-      outcome: 'Delivered a refined, accessible UI prototype with tested user task completion flows.',
+      outcome: 'Concept outcome: an accessible UI prototype direction with documented user flows and reusable interface patterns.',
       tags: ['RESEARCH', 'WIREFRAMES', 'SYSTEM'],
       img: 'images/project-ui.svg'
     }
@@ -159,6 +161,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         <div class="case-modal-breakdown" style="display:grid;gap:14px;margin:18px 0;font-size:12px;line-height:1.65;color:#c8c1bc;">
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Challenge</strong><span class="cm-challenge"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Solution</strong><span class="cm-solution"></span></div>
+          <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Role</strong><span class="cm-role"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Process</strong><span class="cm-process"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Outcome</strong><span class="cm-outcome"></span></div>
         </div>
@@ -174,12 +177,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   const modalTypeBadge = $('.case-modal-type-badge', modal);
   const cmChallenge = $('.cm-challenge', modal);
   const cmSolution = $('.cm-solution', modal);
+  const cmRole = $('.cm-role', modal);
   const cmProcess = $('.cm-process', modal);
   const cmOutcome = $('.cm-outcome', modal);
   const modalTags = $('.case-modal-tags', modal);
 
   const openProject = key => {
     const d = projectCopy[key];
+    window.dispatchEvent(new CustomEvent('portfolio:project-viewed', { detail: { project: key } }));
     if (!d) return;
     modalImg.src = d.img;
     modalImg.alt = d.title;
@@ -187,6 +192,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     modalTypeBadge.textContent = d.type;
     cmChallenge.textContent = d.challenge;
     cmSolution.textContent = d.solution;
+    cmRole.textContent = d.role || 'Concept project: strategy, design, implementation, and documentation.';
     cmProcess.textContent = d.process;
     cmOutcome.textContent = d.outcome;
     modalTags.innerHTML = d.tags.map(t => '<span>' + t + '</span>').join('');
@@ -546,6 +552,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       submitBtn.classList.remove('loading');
 
       if (delivered) {
+        window.dispatchEvent(new CustomEvent('portfolio:enquiry-submitted', { detail: { service: serviceVal, contactMethod: payload.contactMethod } }));
         // Persist inquiry to Firestore if Firebase is active
         if (window.FirebaseApp && typeof window.FirebaseApp.persistInquiryToFirestore === 'function') {
           window.FirebaseApp.persistInquiryToFirestore(payload);
@@ -554,7 +561,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         // --- Success state ---
         if (alertBox) {
           alertBox.className = 'form-alert success';
-          alertBox.innerHTML = `<strong>✓ Message Sent Successfully!</strong> Thank you, ${nameVal}. Your message has been delivered directly to Hasnain. I will respond to <em>${emailVal}</em> within 24 hours.`;
+          alertBox.innerHTML = `<strong>Message submitted successfully.</strong> Thank you, ${escapeHtml(nameVal)}. Your enquiry was accepted by the delivery service. I will respond to <em>${escapeHtml(emailVal)}</em> within 24 hours.`;
           alertBox.style.display = 'flex';
           alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
