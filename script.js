@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded',()=>{
+  const pageLoader = document.getElementById('pageLoader');
+  const finishLoading = () => pageLoader?.classList.add('is-ready');
+  if (pageLoader) {
+    if (document.readyState === 'complete') finishLoading();
+    else window.addEventListener('load', finishLoading, { once: true });
+    window.setTimeout(finishLoading, 1800);
+  }
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const yearEl=$('#year');
   if(yearEl) yearEl.textContent=new Date().getFullYear();
@@ -971,7 +978,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 3D Space & Spatial Plexus Network Animation using Three.js
   const initHero3DAnimation = () => {
     const canvas = document.getElementById('hero-3d-canvas');
-    if (!canvas || typeof THREE === 'undefined') return;
+    if (!canvas || typeof THREE === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const container = canvas.parentElement;
     const scene = new THREE.Scene();
@@ -988,7 +995,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       powerPreference: 'high-performance'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
     // Dynamic particles geometry
     const particleCount = window.innerWidth < 768 ? 60 : 120;
@@ -1104,7 +1111,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     let lineSegments = null;
 
     // Animation Loop
+    let isVisible = true;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) requestAnimationFrame(animate);
+    }, { threshold: 0.01 });
+    visibilityObserver.observe(canvas);
+
     const animate = () => {
+      if (!isVisible) return;
       requestAnimationFrame(animate);
 
       // Move and bounce particles
@@ -1187,7 +1202,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 3D Services Floating Sacred Geometries using Three.js
   const initServices3DAnimation = () => {
     const canvas = document.getElementById('services-3d-canvas');
-    if (!canvas || typeof THREE === 'undefined') return;
+    if (!canvas || typeof THREE === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const container = canvas.parentElement;
     const scene = new THREE.Scene();
@@ -1202,7 +1217,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       powerPreference: 'high-performance'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
     // Create floating wireframe geometries
     const group = new THREE.Group();
@@ -1262,7 +1277,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     };
     window.addEventListener('resize', handleResize, { passive: true });
 
+    let isVisible = true;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) requestAnimationFrame(animate);
+    }, { threshold: 0.01 });
+    visibilityObserver.observe(canvas);
+
     const animate = () => {
+      if (!isVisible) return;
       requestAnimationFrame(animate);
 
       targetX += (mouseX - targetX) * 0.05;
@@ -1293,7 +1316,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 3D Contact Interactive Particle Vortex using Three.js
   const initContact3DAnimation = () => {
     const canvas = document.getElementById('contact-3d-canvas');
-    if (!canvas || typeof THREE === 'undefined') return;
+    if (!canvas || typeof THREE === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const container = canvas.parentElement;
     const scene = new THREE.Scene();
@@ -1308,7 +1331,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       powerPreference: 'high-performance'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
     const particleCount = window.innerWidth < 768 ? 140 : 320;
     const geometry = new THREE.BufferGeometry();
@@ -1372,7 +1395,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     window.addEventListener('resize', handleResize, { passive: true });
 
     let clock = 0;
+    let isVisible = true;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) requestAnimationFrame(animate);
+    }, { threshold: 0.01 });
+    visibilityObserver.observe(canvas);
+
     const animate = () => {
+      if (!isVisible) return;
       requestAnimationFrame(animate);
       clock += 0.005;
 

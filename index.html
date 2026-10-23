@@ -146,6 +146,20 @@
 </head>
 
 <body>
+  <div class="page-loader" id="pageLoader" role="status" aria-live="polite" aria-label="Loading H.X.S.N Digital Technologies">
+    <div class="page-loader-mark"><img src="/images/logo-mark.svg" alt="" width="34" height="34"></div>
+    <span class="page-loader-name">H.X.S.N DIGITAL TECHNOLOGIES</span>
+    <span class="page-loader-line" aria-hidden="true"><i></i></span>
+  </div>
+  <script>
+    (() => {
+      const loader = document.getElementById('pageLoader');
+      if (!loader) return;
+      const dismiss = () => loader.classList.add('is-ready');
+      window.addEventListener('load', dismiss, { once: true });
+      window.setTimeout(dismiss, 1800);
+    })();
+  </script>
   <div class="ambient ambient-a"></div>
   <div class="ambient ambient-b"></div>
   <div class="noise"></div>
@@ -184,9 +198,8 @@
           <div class="orbit orbit-a"></div>
           <div class="orbit orbit-b"></div>
           <div class="portrait-frame tilt-target">
-<img src="/images/hasnain-photo-from-reference.png" width="640" height="800" fetchpriority="high"
-              alt="Muhammad Hasnain — Professional Web Developer, Python Developer and SEO Specialist portrait"
-              width="900" height="1200" fetchpriority="high">
+<img src="/images/hasnain-photo-from-reference.png" width="900" height="1200" fetchpriority="high"
+              alt="Muhammad Hasnain — Professional Web Developer, Python Developer and SEO Specialist portrait">
             <div class="portrait-shine"></div>
             <div class="portrait-vignette"></div>
             <div class="portrait-brand-badge" aria-hidden="true">
