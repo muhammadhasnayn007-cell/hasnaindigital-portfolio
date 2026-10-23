@@ -1,12 +1,9 @@
 // Serverless Chatbot Handler for HXSN Assistant (Vercel & Netlify)
-const { checkRateLimit, getClientIp } = require('../lib/security');
+const { checkRateLimit, getClientIp, applyCors, readRequestBody, parseRequestBody, MAX_SERVERLESS_BODY_BYTES, MAX_CHAT_HISTORY_ITEMS, MAX_CHAT_ITEM_LENGTH } = require('../lib/security');
 const { handleChatInteraction } = require('../lib/ai');
 
 module.exports = async function handler(req, res) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  applyCors(req, res, 'POST, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -25,30 +22,26 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  let body = req.body;
-  if (typeof body === 'string') {
-    try {
-      body = JSON.parse(body);
-    } catch {
-      const params = new URLSearchParams(body);
-      body = Object.fromEntries(params.entries());
-    }
-  } else if (!body && req.readable) {
-    const buffers = [];
-    for await (const chunk of req) buffers.push(chunk);
-    const raw = Buffer.concat(buffers).toString();
-    try {
-      body = JSON.parse(raw);
-    } catch {
-      const params = new URLSearchParams(raw);
-      body = Object.fromEntries(params.entries());
-    }
+  let body;
+  try {
+    const raw = await readRequestBody(req, MAX_SERVERLESS_BODY_BYTES);
+    body = parseRequestBody(raw, req.headers['content-type'] || '');
+  } catch (err) {
+    if (err.code === 'BODY_TOO_LARGE') return res.status(413).json({ success: false, error: 'Request is too large.' });
+    return res.status(400).json({ success: false, error: 'Please send valid JSON.' });
+  }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return res.status(400).json({ success: false, error: 'Please send a valid chat request.' });
+  }
+  const { sessionId, message, history } = body;
+  if (sessionId !== undefined && (typeof sessionId !== 'string' || sessionId.length < 1 || sessionId.length > 128 || !/^[a-zA-Z0-9_-]+$/.test(sessionId))) {
+    return res.status(400).json({ success: false, error: 'Invalid session.' });
+  }
+  if (history !== undefined && (!Array.isArray(history) || history.length > MAX_CHAT_HISTORY_ITEMS || history.some(item => !item || typeof item !== 'object' || typeof item.role !== 'string' || typeof item.content !== 'string' || item.content.length > MAX_CHAT_ITEM_LENGTH))) {
+    return res.status(400).json({ success: false, error: 'Chat history is invalid or too large.' });
   }
 
-  body = body || {};
-  const { sessionId, message, history } = body;
-
-  if (!message || typeof message !== 'string' || !message.trim()) {
+  if (!message || typeof message !== 'string' || message.length > 2000 || !message.trim()) {
     return res.status(400).json({ success: false, error: 'Please provide a message.' });
   }
 

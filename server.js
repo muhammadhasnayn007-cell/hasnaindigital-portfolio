@@ -21,12 +21,23 @@ const knowledge = require('./lib/knowledge.json');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const allowedOrigins = new Set([
+  'https://hasnaindigital-portfolio.vercel.app',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  ...(process.env.ALLOWED_ORIGINS || '').split(',').map(value => value.trim()).filter(Boolean)
+]);
+app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
 
-// Security and CORS configuration
+// CORS is an origin allowlist, not authentication.
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.has(origin)) return callback(null, true);
+    return callback(null, false);
+  },
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type'],
+  optionsSuccessStatus: 204
 }));
 
 // Body parsers with sensible size limits
@@ -108,15 +119,11 @@ app.use(express.static(__dirname, {
 // 1. Health & Status Endpoint
 // ==============================================================================
 app.get('/api/health', (req, res) => {
-  const availability = process.env.AVAILABILITY_STATUS || knowledge.brand.availability || 'Available for Projects';
   res.status(200).json({
     status: 'ok',
+    service: 'portfolio-api',
     brand: knowledge.brand.name,
-    availability,
-    version: '2.0.0',
-    emailConfigured: Boolean(process.env.RESEND_API_KEY || process.env.API_key || (process.env.SMTP_HOST && process.env.SMTP_USER)),
-    aiConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY),
-    firebaseConfigured: fs.existsSync(path.join(__dirname, 'firebase-applet-config.json')),
+    availability: process.env.AVAILABILITY_STATUS || knowledge.brand.availability || 'Available for Projects',
     timestamp: new Date().toISOString()
   });
 });
@@ -215,96 +222,36 @@ app.post('/api/contact', async (req, res) => {
     recordSubmissionSuccess(name, email, message);
     return res.status(200).json({
       success: true,
-      message: 'Your message has been delivered directly to Hasnain. You will receive a response within 24 hours.',
+      message: 'Your message was submitted successfully and accepted by the delivery service. You will receive a response within 24 hours.',
       deliveryId: delivery.id
     });
   } catch (err) {
     clearSubmissionLock(name, email, message);
     console.error('Contact Form Delivery Error:', err.message);
 
-    // If neither Resend nor SMTP is configured on the server
-    if (err.message.includes('No email service configured')) {
-      return res.status(503).json({
-        success: false,
-        error: 'Email delivery service is currently not configured on this server. Please contact Hasnain directly at muhammadhasnayn007@gmail.com.',
-        fallbackEmail: 'muhammadhasnayn007@gmail.com'
-      });
-    }
-
     return res.status(500).json({
       success: false,
-      error: 'An unexpected email delivery error occurred. Please try again or reach out directly to muhammadhasnayn007@gmail.com.'
+      error: 'A server error occurred. Please try again later.'
     });
   }
 });
 
-// ==============================================================================
-// 3. HXSN Assistant - AI Chat Endpoint
-// ==============================================================================
+// HXSN Assistant - AI Chat Endpoint
 app.post('/api/chat', async (req, res) => {
   const ip = getClientIp(req);
-
-  // Rate limit: max 25 chat messages per minute per IP
   const rateCheck = checkRateLimit(`${ip}:chat`, Number(process.env.RATE_LIMIT_CHAT || 25), 60000);
-  if (!rateCheck.allowed) {
-    return res.status(429).json({
-      success: false,
-      error: 'You have sent messages too quickly. Please wait a few seconds before trying again.'
-    });
-  }
-
+  if (!rateCheck.allowed) return res.status(429).json({ success: false, error: 'You have sent messages too quickly. Please wait a few seconds before trying again.' });
   const { sessionId, message, history } = req.body || {};
-
-  if (!message || typeof message !== 'string' || !message.trim()) {
-    return res.status(400).json({
-      success: false,
-      error: 'Please provide a message.'
-    });
-  }
-
+  if (!message || typeof message !== 'string' || message.length > 2000 || !message.trim()) return res.status(400).json({ success: false, error: 'Please provide a message.' });
+  if (sessionId !== undefined && (typeof sessionId !== 'string' || sessionId.length > 128 || !/^[a-zA-Z0-9_-]+$/.test(sessionId))) return res.status(400).json({ success: false, error: 'Invalid session.' });
+  if (history !== undefined && (!Array.isArray(history) || history.length > 20 || history.some(item => !item || typeof item.role !== 'string' || typeof item.content !== 'string' || item.content.length > 2000))) return res.status(400).json({ success: false, error: 'Chat history is invalid or too large.' });
   try {
-    const result = await handleChatInteraction({
-      sessionId: sessionId || ip,
-      message: message.trim(),
-      history: history || []
-    });
-
-    return res.status(200).json({
-      success: true,
-      reply: result.reply,
-      groundingSources: result.groundingSources || [],
-      leadStatus: result.leadStatus,
-      handoffAvailable: result.handoffAvailable
-    });
+    const result = await handleChatInteraction({ sessionId: sessionId || ip, message: message.trim(), history: history || [] });
+    return res.status(200).json({ success: true, reply: result.reply, groundingSources: result.groundingSources || [], leadStatus: result.leadStatus, handoffAvailable: result.handoffAvailable });
   } catch (err) {
     console.error('Chat error:', err.message);
-    return res.status(500).json({
-      success: false,
-      error: 'Hasnain\'s Assistant encountered a temporary processing issue. Please feel free to ask again or reach out directly.'
-    });
+    return res.status(500).json({ success: false, error: "Hasnain's Assistant encountered a temporary processing issue. Please feel free to ask again or reach out directly." });
   }
-});
-
-// Fallback for API routes
-app.all('/api/*', (req, res) => {
-  res.status(404).json({ success: false, error: 'API endpoint not found.' });
-});
-
-// SPA fallback for HTML requests only (never serve HTML for file asset paths)
-app.get('*', (req, res) => {
-  if (path.extname(req.path)) {
-    return res.status(404).end();
-  }
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('Server Uncaught Error:', err.message);
-  res.status(500).json({
-    success: false,
-    error: 'A server error occurred. Please try again later.'
-  });
 });
 
 // Start server

@@ -1,12 +1,9 @@
 // Serverless Contact Form Handler for Vercel, Netlify, and Serverless Platforms
-const { isValidEmail, checkRateLimit, isDuplicateSubmission, recordSubmissionSuccess, clearSubmissionLock, getClientIp } = require('../lib/security');
+const { isValidEmail, checkRateLimit, isDuplicateSubmission, recordSubmissionSuccess, clearSubmissionLock, getClientIp, applyCors, readRequestBody, parseRequestBody, MAX_SERVERLESS_BODY_BYTES } = require('../lib/security');
 const { sendContactFormEmail } = require('../lib/mailer');
 
 module.exports = async function handler(req, res) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  applyCors(req, res, 'POST, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -25,43 +22,35 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  let body = req.body;
-  if (typeof body === 'string') {
-    try {
-      body = JSON.parse(body);
-    } catch {
-      const params = new URLSearchParams(body);
-      body = Object.fromEntries(params.entries());
-    }
-  } else if (!body && req.readable) {
-    const buffers = [];
-    for await (const chunk of req) buffers.push(chunk);
-    const raw = Buffer.concat(buffers).toString();
-    try {
-      body = JSON.parse(raw);
-    } catch {
-      const params = new URLSearchParams(raw);
-      body = Object.fromEntries(params.entries());
-    }
+  let body;
+  try {
+    const raw = await readRequestBody(req, MAX_SERVERLESS_BODY_BYTES);
+    body = parseRequestBody(raw, req.headers['content-type'] || '');
+  } catch (err) {
+    if (err.code === 'BODY_TOO_LARGE') return res.status(413).json({ success: false, error: 'Request is too large.' });
+    return res.status(400).json({ success: false, error: 'Please send a valid request.' });
   }
 
-  body = body || {};
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return res.status(400).json({ success: false, error: 'Please send a valid contact request.' });
+  }
+  const textField = (value, max) => typeof value === 'string' && value.length <= max ? value.trim() : '';
 
   // Honeypot spam check
   if (body._honey) {
     return res.status(200).json({ success: true, message: 'Message sent successfully.' });
   }
 
-  const name = (body.name || '').trim();
-  const email = (body.email || '').trim();
-  const subject = (body.subject || '').trim();
-  const service = (body.service || 'General Project').trim();
-  const message = (body.message || '').trim();
-  const budget = (body.budget || '').trim();
-  const timeline = (body.timeline || '').trim();
-  const websiteUrl = (body.websiteUrl || '').trim();
+  const name = textField(body.name, 120);
+  const email = textField(body.email, 254);
+  const subject = textField(body.subject, 200);
+  const service = textField(body.service, 120) || 'General Project';
+  const message = textField(body.message, 8000);
+  const budget = textField(body.budget, 120);
+  const timeline = textField(body.timeline, 120);
+  const websiteUrl = textField(body.websiteUrl, 500);
   const contactMethod = body.contactMethod === 'WhatsApp' ? 'WhatsApp' : 'Email';
-  const whatsapp = (body.whatsapp || '').trim();
+  const whatsapp = textField(body.whatsapp, 40);
   if (websiteUrl) {
     try { new URL(websiteUrl); } catch { return res.status(400).json({ success: false, error: 'Please provide a valid website URL.' }); }
   }
@@ -102,7 +91,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Your message has been delivered directly to Hasnain. You will receive a response within 24 hours.',
+      message: 'Your enquiry was accepted by the delivery service. You will receive a response within 24 hours.',
       deliveryId: delivery.id
     });
   } catch (err) {
@@ -110,17 +99,9 @@ module.exports = async function handler(req, res) {
     clearSubmissionLock(name, email, message);
     console.error('Contact Form Delivery Error:', err.message);
 
-    if (err.message.includes('No email service configured')) {
-      return res.status(503).json({
-        success: false,
-        error: 'Email delivery service is currently not configured on this server. Please reach out directly to muhammadhasnayn007@gmail.com.',
-        fallbackEmail: 'muhammadhasnayn007@gmail.com'
-      });
-    }
-
     return res.status(500).json({
       success: false,
-      error: err.message || 'An unexpected error occurred delivering your message. Please reach out directly to muhammadhasnayn007@gmail.com.'
+      error: 'We could not deliver your enquiry right now. Please retry or use the direct email fallback.'
     });
   }
 };

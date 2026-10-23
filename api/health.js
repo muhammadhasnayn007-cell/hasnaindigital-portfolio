@@ -1,22 +1,19 @@
 // Serverless Health Check Handler
 const knowledge = require('../lib/knowledge.json');
+const { applyCors } = require('../lib/security');
 
 module.exports = function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  applyCors(req, res, 'GET, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  const availability = process.env.AVAILABILITY_STATUS || knowledge.brand.availability || 'Available for Projects';
-
   res.status(200).json({
     status: 'ok',
+    service: 'portfolio-api',
     brand: knowledge.brand.name,
-    availability,
-    emailConfigured: Boolean(process.env.RESEND_API_KEY || process.env.API_key || (process.env.SMTP_HOST && process.env.SMTP_USER)),
-    aiConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY),
+    availability: process.env.AVAILABILITY_STATUS || knowledge.brand.availability || 'Available for Projects',
     timestamp: new Date().toISOString()
   });
 };

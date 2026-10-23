@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded',()=>{
+  const loader=document.getElementById('pageLoader');
+  const finishLoader=(failed=false)=>{if(!loader)return;loader.classList.toggle('is-error',failed);loader.classList.add('is-ready');loader.setAttribute('aria-hidden','true');};
+  const loaderTimeout=setTimeout(()=>finishLoader(true),2500);
+  addEventListener('load',()=>{clearTimeout(loaderTimeout);finishLoader(false)},{once:true});
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const yearEl=$('#year');
   if(yearEl) yearEl.textContent=new Date().getFullYear();
@@ -13,8 +17,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Animated mobile navigation
   const toggle=$('.nav-toggle'), nav=$('.main-nav');
   if(toggle&&nav){
-    const close=()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false');};
-    toggle.addEventListener('click',e=>{e.stopPropagation();const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open));});
+    const close=()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation');};
+    toggle.addEventListener('click',e=>{e.stopPropagation();const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');});
     $$('.nav-link',nav).forEach((a,i)=>a.addEventListener('click',()=>setTimeout(close,220)));
     document.addEventListener('click',e=>{if(nav.classList.contains('open')&&!nav.contains(e.target)&&!toggle.contains(e.target))close();});
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
@@ -54,7 +58,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   sections.forEach(s=>so.observe(s));
 
   // Smooth anchor with sticky header compensation
-  $$('a[href^="#"]:not(#backToTopBtn)').forEach(a=>a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const target=$(id);if(!target)return;e.preventDefault();window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-78,behavior:'smooth'});}));
+  $$('a[href^="#"]:not(#backToTopBtn)').forEach(a=>a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const target=$(id);if(!target)return;e.preventDefault();if(id==='#contact') window.dispatchEvent(new CustomEvent('portfolio:cta-clicked',{detail:{type:'contact'}}));window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-78,behavior:'smooth'});}));
+  $$('.whatsapp, .glass-contact').forEach(a=>a.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('portfolio:cta-clicked',{detail:{type:'whatsapp'}}))));
 
   // Large HASNAIN watermark is animated right-to-left by CSS.
   // Keep it deterministic on scroll rather than overriding the CSS animation.
@@ -105,7 +110,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       solution: 'Conducted a complete technical SEO audit, resolved crawl indexation barriers, mapped high-intent target keywords, and structured content architecture with semantic schema.',
       process: 'Technical Audit → Keyword Research → On-Page Optimization → Schema Markup → Search Console Monitoring',
       technologies: ['Technical SEO', 'Google Search Console', 'GA4', 'Schema.org', 'HTML5 Semantic Architecture'],
-      outcome: 'Established clean indexing, improved Core Web Vitals, and structured keyword clusters for sustainable search rankings.',
+      outcome: 'Concept outcome: an SEO audit and keyword-cluster framework for demonstrating technical search strategy.',
       tags: ['TECHNICAL SEO', 'ON-PAGE', 'ANALYTICS'],
       img: 'images/project-seo.svg'
     },
@@ -116,18 +121,19 @@ document.addEventListener('DOMContentLoaded',()=>{
       solution: 'Designed a multi-touchpoint marketing funnel with targeted landing pages, value propositions, and clear conversion paths.',
       process: 'Audience Analysis → Funnel Architecture → Landing Page Messaging → Conversion Tracking',
       technologies: ['Marketing Strategy', 'Content SEO', 'CRO', 'Analytics'],
-      outcome: 'Improved user engagement and established transparent conversion measurement across campaign channels.',
+      outcome: 'Concept outcome: a campaign and measurement framework for planning content, landing pages, and conversion events.',
       tags: ['STRATEGY', 'CONTENT', 'CAMPAIGNS'],
       img: 'images/project-marketing.svg'
     },
     'Web Development': {
       title: 'BUSINESS WEBSITE BUILD',
       type: 'Demo Project',
-      challenge: 'Building a lightning-fast, fully responsive business portfolio with zero layout shifts, dark glassmorphism aesthetic, and accessible controls.',
-      solution: 'Built a clean front-end and Node.js backend architecture with instant response times, fluid mobile navigation, and real-time contact validation.',
-      process: 'UI Prototyping → Responsive Coding → API Integration → Performance Testing',
+      challenge: 'Designing a responsive business portfolio with a dark visual system, accessible controls, and a clear path from discovery to enquiry.',
+      solution: 'Built the front-end structure, responsive navigation, contact flow, SEO foundations, and supporting Node.js API routes for this portfolio demo.',
+      role: 'Portfolio concept: strategy, UX direction, front-end implementation, API integration, and QA.',
+      process: 'UI Prototyping → Responsive Coding → API Integration → Accessibility Testing',
       technologies: ['HTML5', 'CSS3', 'JavaScript', 'Node.js', 'Express', 'REST APIs'],
-      outcome: 'Achieved optimal Core Web Vitals scores and smooth interaction across mobile, tablet, and desktop devices.',
+      outcome: 'Concept outcome: a responsive case-study direction for demonstrating web development and enquiry workflows.',
       tags: ['HTML/CSS', 'JAVASCRIPT', 'RESPONSIVE'],
       img: 'images/project-web.svg'
     },
@@ -138,7 +144,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       solution: 'Constructed end-to-end design specifications, interactive Figma prototypes, and a unified design system with dark-mode aesthetic.',
       process: 'User Journeys → Wireframes → High-Fidelity Mockups → Interactive Prototyping',
       technologies: ['Figma', 'Wireframes', 'Design Systems', 'Interaction Design'],
-      outcome: 'Delivered a refined, accessible UI prototype with tested user task completion flows.',
+      outcome: 'Concept outcome: an accessible UI prototype direction with documented user flows and reusable interface patterns.',
       tags: ['RESEARCH', 'WIREFRAMES', 'SYSTEM'],
       img: 'images/project-ui.svg'
     }
@@ -159,6 +165,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         <div class="case-modal-breakdown" style="display:grid;gap:14px;margin:18px 0;font-size:12px;line-height:1.65;color:#c8c1bc;">
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Challenge</strong><span class="cm-challenge"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Solution</strong><span class="cm-solution"></span></div>
+          <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Role</strong><span class="cm-role"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Process</strong><span class="cm-process"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Outcome</strong><span class="cm-outcome"></span></div>
         </div>
@@ -174,12 +181,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   const modalTypeBadge = $('.case-modal-type-badge', modal);
   const cmChallenge = $('.cm-challenge', modal);
   const cmSolution = $('.cm-solution', modal);
+  const cmRole = $('.cm-role', modal);
   const cmProcess = $('.cm-process', modal);
   const cmOutcome = $('.cm-outcome', modal);
   const modalTags = $('.case-modal-tags', modal);
 
   const openProject = key => {
     const d = projectCopy[key];
+    window.dispatchEvent(new CustomEvent('portfolio:project-viewed', { detail: { project: key } }));
     if (!d) return;
     modalImg.src = d.img;
     modalImg.alt = d.title;
@@ -187,6 +196,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     modalTypeBadge.textContent = d.type;
     cmChallenge.textContent = d.challenge;
     cmSolution.textContent = d.solution;
+    cmRole.textContent = d.role || 'Concept project: strategy, design, implementation, and documentation.';
     cmProcess.textContent = d.process;
     cmOutcome.textContent = d.outcome;
     modalTags.innerHTML = d.tags.map(t => '<span>' + t + '</span>').join('');
@@ -546,6 +556,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       submitBtn.classList.remove('loading');
 
       if (delivered) {
+        window.dispatchEvent(new CustomEvent('portfolio:enquiry-submitted', { detail: { service: serviceVal, contactMethod: payload.contactMethod } }));
         // Persist inquiry to Firestore if Firebase is active
         if (window.FirebaseApp && typeof window.FirebaseApp.persistInquiryToFirestore === 'function') {
           window.FirebaseApp.persistInquiryToFirestore(payload);
@@ -554,7 +565,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         // --- Success state ---
         if (alertBox) {
           alertBox.className = 'form-alert success';
-          alertBox.innerHTML = `<strong>✓ Message Sent Successfully!</strong> Thank you, ${nameVal}. Your message has been delivered directly to Hasnain. I will respond to <em>${emailVal}</em> within 24 hours.`;
+          alertBox.innerHTML = `<strong>Message submitted successfully.</strong> Thank you, ${escapeHtml(nameVal)}. Your enquiry was accepted by the delivery service. I will respond to <em>${escapeHtml(emailVal)}</em> within 24 hours.`;
           alertBox.style.display = 'flex';
           alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
@@ -588,6 +599,15 @@ document.addEventListener('DOMContentLoaded',()=>{
         submitBtn.disabled = false;
       }
     });
+  }
+
+  function safeExternalUrl(value) {
+    try {
+      const parsed = new URL(String(value));
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed.href : null;
+    } catch {
+      return null;
+    }
   }
 
   // Helper function to escape HTML in frontend rendering
@@ -722,7 +742,7 @@ document.addEventListener('DOMContentLoaded',()=>{
               Google Search Data:
             </div>
             <div class="grounding-sources-list">
-              ${groundingSources.map(s => `<a class="grounding-source-chip" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(s.title || s.url)}">↗ ${escapeHtml(s.title || s.url)}</a>`).join('')}
+              ${groundingSources.map(s => { const url = safeExternalUrl(s.url); const label = s.title || s.url || 'Source'; return url ? `<a class="grounding-source-chip" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(label)}">↗ ${escapeHtml(label)}</a>` : `<span class="grounding-source-chip">${escapeHtml(label)}</span>`; }).join('')}
             </div>
           </div>
         `;
@@ -971,7 +991,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 3D Space & Spatial Plexus Network Animation using Three.js
   const initHero3DAnimation = () => {
     const canvas = document.getElementById('hero-3d-canvas');
-    if (!canvas || typeof THREE === 'undefined') return;
+    if (!canvas || typeof THREE === 'undefined' || !window.WebGLRenderingContext || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { if (canvas) canvas.dataset.webglFallback = 'true'; return; }
 
     const container = canvas.parentElement;
     const scene = new THREE.Scene();
@@ -988,7 +1008,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       powerPreference: 'high-performance'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
 
     // Dynamic particles geometry
     const particleCount = window.innerWidth < 768 ? 60 : 120;
@@ -1088,7 +1108,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const h = container.clientHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
+      renderer.setSize(w, h, false);
     };
 
     window.addEventListener('resize', handleResize, { passive: true });
@@ -1104,7 +1125,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     let lineSegments = null;
 
     // Animation Loop
+    let isVisible = true;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) requestAnimationFrame(animate);
+    }, { threshold: 0.01 });
+    visibilityObserver.observe(canvas);
+
     const animate = () => {
+      if (!isVisible) return;
       requestAnimationFrame(animate);
 
       // Move and bounce particles
@@ -1146,7 +1175,10 @@ document.addEventListener('DOMContentLoaded',()=>{
       geometry.attributes.position.needsUpdate = true;
 
       // Rebuild connection lines mesh dynamically for high performance
-      if (lineSegments) scene.remove(lineSegments);
+      if (lineSegments) {
+        scene.remove(lineSegments);
+        lineSegments.geometry.dispose();
+      }
       if (linePositions.length > 0) {
         const lineGeometry = new THREE.BufferGeometry();
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
@@ -1187,7 +1219,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 3D Services Floating Sacred Geometries using Three.js
   const initServices3DAnimation = () => {
     const canvas = document.getElementById('services-3d-canvas');
-    if (!canvas || typeof THREE === 'undefined') return;
+    if (!canvas || typeof THREE === 'undefined' || !window.WebGLRenderingContext || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { if (canvas) canvas.dataset.webglFallback = 'true'; return; }
 
     const container = canvas.parentElement;
     const scene = new THREE.Scene();
@@ -1202,7 +1234,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       powerPreference: 'high-performance'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
 
     // Create floating wireframe geometries
     const group = new THREE.Group();
@@ -1233,7 +1265,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       mesh.position.y = (Math.random() - 0.5) * 3;
       mesh.position.z = (Math.random() - 0.5) * 2;
       
-      mesh.userData = {
+        mesh.userData = {
+        baseY: mesh.position.y,
         floatOffset: Math.random() * Math.PI * 2,
         floatSpeed: 0.004 + Math.random() * 0.004,
         rotSpeedX: (Math.random() - 0.5) * 0.005,
@@ -1258,11 +1291,20 @@ document.addEventListener('DOMContentLoaded',()=>{
       const h = container.clientHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
+      renderer.setSize(w, h, false);
     };
     window.addEventListener('resize', handleResize, { passive: true });
 
+    let isVisible = true;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) requestAnimationFrame(animate);
+    }, { threshold: 0.01 });
+    visibilityObserver.observe(canvas);
+
     const animate = () => {
+      if (!isVisible) return;
       requestAnimationFrame(animate);
 
       targetX += (mouseX - targetX) * 0.05;
@@ -1274,7 +1316,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         mesh.rotation.z += mesh.userData.rotSpeedZ;
 
         mesh.userData.floatOffset += mesh.userData.floatSpeed;
-        mesh.position.y += Math.sin(mesh.userData.floatOffset) * 0.006;
+        mesh.position.y = mesh.userData.baseY + Math.sin(mesh.userData.floatOffset) * 0.18;
       });
 
       group.position.x = targetX * 1.2;
@@ -1293,7 +1335,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 3D Contact Interactive Particle Vortex using Three.js
   const initContact3DAnimation = () => {
     const canvas = document.getElementById('contact-3d-canvas');
-    if (!canvas || typeof THREE === 'undefined') return;
+    if (!canvas || typeof THREE === 'undefined' || !window.WebGLRenderingContext || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { if (canvas) canvas.dataset.webglFallback = 'true'; return; }
 
     const container = canvas.parentElement;
     const scene = new THREE.Scene();
@@ -1308,12 +1350,13 @@ document.addEventListener('DOMContentLoaded',()=>{
       powerPreference: 'high-performance'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
 
     const particleCount = window.innerWidth < 768 ? 140 : 320;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const waveOffsets = new Float32Array(particleCount);
+    const baseY = new Float32Array(particleCount);
 
     for (let i = 0; i < particleCount; i++) {
       const theta = (i / particleCount) * Math.PI * 16;
@@ -1324,6 +1367,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       positions[i * 3 + 1] = y;
       positions[i * 3 + 2] = r * Math.sin(theta);
 
+      baseY[i] = y;
       waveOffsets[i] = Math.random() * Math.PI * 2;
     }
 
@@ -1367,18 +1411,27 @@ document.addEventListener('DOMContentLoaded',()=>{
       const h = container.clientHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
+      renderer.setSize(w, h, false);
     };
     window.addEventListener('resize', handleResize, { passive: true });
 
     let clock = 0;
+    let isVisible = true;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) requestAnimationFrame(animate);
+    }, { threshold: 0.01 });
+    visibilityObserver.observe(canvas);
+
     const animate = () => {
+      if (!isVisible) return;
       requestAnimationFrame(animate);
       clock += 0.005;
 
       const pos = geometry.attributes.position.array;
       for (let i = 0; i < particleCount; i++) {
-        pos[i * 3 + 1] += Math.sin(clock + waveOffsets[i]) * 0.005;
+        pos[i * 3 + 1] = baseY[i] + Math.sin(clock + waveOffsets[i]) * 0.18;
       }
       geometry.attributes.position.needsUpdate = true;
 
