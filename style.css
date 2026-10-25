@@ -135,7 +135,7 @@ a,button{ -webkit-tap-highlight-color:transparent }
 .case-modal-tags span{font:600 9px Oswald,sans-serif;letter-spacing:.11em;padding:8px 10px;border:1px solid rgba(255,255,255,.11);border-radius:999px;color:#cbc4bf}
 .case-modal-close{position:absolute;right:18px;top:18px;width:38px;height:38px;border:1px solid rgba(255,255,255,.18);border-radius:50%;background:rgba(0,0,0,.35);color:#fff;cursor:pointer;font-size:19px;transition:.3s}
 .case-modal-close:hover{border-color:rgba(227,19,27,.65);color:var(--red);transform:rotate(90deg)}
-@media(max-width:520px){.case-modal-content{padding:22px}.case-modal h4{font-size:50px}.case-modal-visual{height:220px}}
+@media(max-width:520px){.case-modal-content{padding:22px}.case-modal h4{font-size:50px}.case-modal-visual{height:220px}.journey-grid,.work-method-grid{grid-template-columns:1fr;gap:12px}.journey-card,.work-method-card{min-height:0;padding:20px}.journey-card h3,.work-method-card h3{margin-top:22px;font-size:13px}.journey-card p,.work-method-card p{font-size:11.5px}}
 
 /* Better keyboard focus */
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid rgba(227,19,27,.78);outline-offset:3px}
@@ -873,7 +873,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   letter-spacing: 0.16em;
   color: #756e69;
 }
-@media(max-width: 960px) {
+.journey-section,.work-method-section{position:relative}.journey-grid,.work-method-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:28px}.journey-card,.work-method-card{position:relative;min-height:205px;padding:22px 20px;overflow:hidden}.journey-card:before,.work-method-card:before{content:"";position:absolute;left:0;top:0;width:36px;height:1px;background:var(--red)}.journey-index,.work-method-card>span{display:block;color:var(--red);font:600 11px Oswald,sans-serif;letter-spacing:.16em}.journey-card h3,.work-method-card h3{margin:28px 0 12px;color:#f7f2ed;font:600 14px Oswald,sans-serif;letter-spacing:.12em}.journey-card p,.work-method-card p{margin:0;color:#a59d97;font-size:12px;line-height:1.7}.journey-tag{display:inline-block;margin-top:18px;color:#d8d0cb;font:600 9px Oswald,sans-serif;letter-spacing:.14em}.work-method-card .text-link{display:inline-flex;margin-top:18px;font-size:10px}.cm-deliverables{color:#e8e0db}.case-modal-breakdown .cm-deliverables{line-height:1.7}@media(max-width:960px) { .journey-grid,.work-method-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
   .footer-grid {
     grid-template-columns: 1fr 1fr;
     gap: 32px;

@@ -114,6 +114,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       solution: 'Conducted a complete technical SEO audit, resolved crawl indexation barriers, mapped high-intent target keywords, and structured content architecture with semantic schema.',
       process: 'Technical Audit → Keyword Research → On-Page Optimization → Schema Markup → Search Console Monitoring',
       technologies: ['Technical SEO', 'Google Search Console', 'GA4', 'Schema.org', 'HTML5 Semantic Architecture'],
+      deliverables: ['Technical audit direction', 'Keyword-cluster framework', 'Search measurement plan'],
       outcome: 'Concept outcome: an SEO audit and keyword-cluster framework for demonstrating technical search strategy.',
       tags: ['TECHNICAL SEO', 'ON-PAGE', 'ANALYTICS'],
       img: 'images/project-seo.svg'
@@ -125,6 +126,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       solution: 'Designed a multi-touchpoint marketing funnel with targeted landing pages, value propositions, and clear conversion paths.',
       process: 'Audience Analysis → Funnel Architecture → Landing Page Messaging → Conversion Tracking',
       technologies: ['Marketing Strategy', 'Content SEO', 'CRO', 'Analytics'],
+      deliverables: ['Funnel architecture', 'Landing-page messaging', 'Conversion tracking framework'],
       outcome: 'Concept outcome: a campaign and measurement framework for planning content, landing pages, and conversion events.',
       tags: ['STRATEGY', 'CONTENT', 'CAMPAIGNS'],
       img: 'images/project-marketing.svg'
@@ -137,6 +139,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       role: 'Portfolio concept: strategy, UX direction, front-end implementation, API integration, and QA.',
       process: 'UI Prototyping → Responsive Coding → API Integration → Accessibility Testing',
       technologies: ['HTML5', 'CSS3', 'JavaScript', 'Node.js', 'Express', 'REST APIs'],
+      deliverables: ['Responsive portfolio structure', 'Contact and enquiry flow', 'SEO and accessibility foundations'],
       outcome: 'Concept outcome: a responsive case-study direction for demonstrating web development and enquiry workflows.',
       tags: ['HTML/CSS', 'JAVASCRIPT', 'RESPONSIVE'],
       img: 'images/project-web.svg'
@@ -148,6 +151,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       solution: 'Constructed end-to-end design specifications, interactive Figma prototypes, and a unified design system with dark-mode aesthetic.',
       process: 'User Journeys → Wireframes → High-Fidelity Mockups → Interactive Prototyping',
       technologies: ['Figma', 'Wireframes', 'Design Systems', 'Interaction Design'],
+      deliverables: ['User-flow direction', 'Wireframe structure', 'Reusable interface patterns'],
       outcome: 'Concept outcome: an accessible UI prototype direction with documented user flows and reusable interface patterns.',
       tags: ['RESEARCH', 'WIREFRAMES', 'SYSTEM'],
       img: 'images/project-ui.svg'
@@ -170,6 +174,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Challenge</strong><span class="cm-challenge"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Solution</strong><span class="cm-solution"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Role</strong><span class="cm-role"></span></div>
+          <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Deliverables</strong><span class="cm-deliverables"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Process</strong><span class="cm-process"></span></div>
           <div><strong style="color:#ffffff;display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Outcome</strong><span class="cm-outcome"></span></div>
         </div>
@@ -186,6 +191,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const cmChallenge = $('.cm-challenge', modal);
   const cmSolution = $('.cm-solution', modal);
   const cmRole = $('.cm-role', modal);
+  const cmDeliverables = $('.cm-deliverables', modal);
   const cmProcess = $('.cm-process', modal);
   const cmOutcome = $('.cm-outcome', modal);
   const modalTags = $('.case-modal-tags', modal);
@@ -201,6 +207,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     cmChallenge.textContent = d.challenge;
     cmSolution.textContent = d.solution;
     cmRole.textContent = d.role || 'Concept project: strategy, design, implementation, and documentation.';
+    cmDeliverables.textContent = (d.deliverables || []).join(' · ');
     cmProcess.textContent = d.process;
     cmOutcome.textContent = d.outcome;
     modalTags.innerHTML = d.tags.map(t => '<span>' + t + '</span>').join('');
