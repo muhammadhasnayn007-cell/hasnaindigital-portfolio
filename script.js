@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded',()=>{
   const loader=document.getElementById('pageLoader');
-  const finishLoader=(failed=false)=>{if(!loader)return;loader.classList.toggle('is-error',failed);loader.classList.add('is-ready');loader.setAttribute('aria-hidden','true');};
-  const loaderTimeout=setTimeout(()=>finishLoader(true),2500);
-  addEventListener('load',()=>{clearTimeout(loaderTimeout);finishLoader(false)},{once:true});
+  const controller=window.__hxsnLoaderController;
+  const finishLoader=(failed=false)=>{if(controller){controller.settle(failed);return;}if(!loader)return;loader.classList.toggle('is-error',failed);loader.classList.add('is-ready');loader.setAttribute('aria-hidden','true');document.documentElement.classList.remove('is-loading');};
+  if (!controller) {
+    const loaderTimeout=setTimeout(()=>finishLoader(true),2500);
+    if (document.readyState === 'complete') finishLoader(false);
+    else addEventListener('load',()=>{clearTimeout(loaderTimeout);finishLoader(false)},{once:true});
+  }
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const yearEl=$('#year');
   if(yearEl) yearEl.textContent=new Date().getFullYear();

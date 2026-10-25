@@ -154,6 +154,34 @@
       <span class="sr-only" id="loaderStatus">Loading portfolio</span>
     </div>
   </div>
+  <script>
+    (() => {
+      const loader = document.getElementById('pageLoader');
+      if (!loader || window.__hxsnLoaderController) return;
+      let settled = false;
+      const settle = (failed = false) => {
+        if (settled) return;
+        settled = true;
+        loader.classList.toggle('is-error', failed);
+        loader.classList.add('is-ready');
+        loader.setAttribute('aria-hidden', 'true');
+        document.documentElement.classList.remove('is-loading');
+      };
+      const timeout = window.setTimeout(() => settle(true), 2500);
+      window.__hxsnLoaderController = { settle };
+      if (document.readyState === 'complete') {
+        window.clearTimeout(timeout);
+        settle(false);
+      } else {
+        window.addEventListener('load', () => {
+          window.clearTimeout(timeout);
+          settle(false);
+        }, { once: true });
+      }
+      window.addEventListener('error', () => settle(true), { once: true });
+      window.addEventListener('unhandledrejection', () => settle(true), { once: true });
+    })();
+  </script>
   <div class="ambient ambient-a"></div>
   <div class="ambient ambient-b"></div>
   <div class="noise"></div>
