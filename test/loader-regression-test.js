@@ -8,5 +8,7 @@ assert.ok(html.includes('window.__hxsnLoaderController'), 'index should include 
 assert.ok(html.includes("document.readyState === 'complete'"), 'loader should handle load already having fired');
 assert.ok(html.includes('window.setTimeout(() => settle(true), 2500)'), 'loader should have a bounded failsafe');
 assert.ok(html.includes('unhandledrejection'), 'loader should recover from rejected promises');
+assert.ok(html.includes('<noscript><style>.page-loader{display:none!important}</style></noscript>'), 'loader should not block no-script visitors');
+assert.ok(html.includes('Experience ready in fallback mode'), 'loader should expose a fallback status');
 assert.ok(script.includes('controller.settle(failed)'), 'runtime should reuse the idempotent loader controller');
 console.log('Loader regression tests passed.');

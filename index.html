@@ -146,6 +146,7 @@
 </head>
 
 <body>
+  <noscript><style>.page-loader{display:none!important}</style></noscript>
   <div class="page-loader" id="pageLoader" role="status" aria-live="polite" aria-label="Loading H.X.S.N Digital Technologies">
     <div class="page-loader-inner">
       <span class="page-loader-kicker">DIGITAL SYSTEMS / 2026</span>
@@ -161,9 +162,11 @@
       const loader = document.getElementById('pageLoader');
       if (!loader || window.__hxsnLoaderController) return;
       let settled = false;
+      const status = document.getElementById('loaderStatus');
       const settle = (failed = false) => {
         if (settled) return;
         settled = true;
+        if (status) status.textContent = failed ? 'Experience ready in fallback mode' : 'Experience ready';
         loader.classList.toggle('is-error', failed);
         loader.classList.add('is-ready');
         loader.setAttribute('aria-hidden', 'true');
