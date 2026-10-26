@@ -879,7 +879,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             scrollChatToBottom();
           }
         } else {
-          appendAssistantMessage(data.error || "I apologize, but I encountered a momentary connection issue. You can also reach Hasnain directly via the Contact Form on this page.");
+          appendAssistantMessage(data.error || "The AI assistant is temporarily unavailable. You can also reach Hasnain directly via the Contact Form on this page.");
         }
       } catch (err) {
         hideTypingIndicator();

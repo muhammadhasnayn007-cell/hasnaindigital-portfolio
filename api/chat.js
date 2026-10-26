@@ -49,7 +49,8 @@ module.exports = async function handler(req, res) {
     const result = await handleChatInteraction({
       sessionId: sessionId || ip,
       message: message.trim(),
-      history: history || []
+      history: history || [],
+      allowFallback: process.env.NODE_ENV !== 'production'
     });
 
     return res.status(200).json({
@@ -60,10 +61,13 @@ module.exports = async function handler(req, res) {
       handoffAvailable: result.handoffAvailable
     });
   } catch (err) {
-    console.error('Serverless Chat error:', err.message);
-    return res.status(500).json({
+    console.error('[v0] Serverless Chat error:', err.message);
+    const isProviderUnavailable = err.code === 'AI_PROVIDER_UNAVAILABLE';
+    return res.status(isProviderUnavailable ? 503 : 500).json({
       success: false,
-      error: 'Hasnain\'s Assistant encountered a temporary processing issue. Please try again or use the Contact Form.'
+      error: isProviderUnavailable
+        ? err.message
+        : 'Hasnain\'s Assistant encountered a temporary processing issue. Please try again or use the Contact Form.'
     });
   }
 };

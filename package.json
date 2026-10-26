@@ -23,6 +23,7 @@
   "author": "H.X.S.N Digital Technologies <muhammadhasnayn007@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@ai-sdk/gateway": "^4.0.126",
     "@google/genai": "^2.27.0",
     "ai": "^7.0.153",
     "cors": "^2.8.5",
