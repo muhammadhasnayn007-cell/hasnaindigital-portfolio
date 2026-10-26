@@ -588,6 +588,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
 }
 .select-wrap.is-open .custom-select-menu {
+  z-index: 100;
+  pointer-events: auto;
   opacity: 1;
   visibility: visible;
   transform: translateY(0) scale(1);
