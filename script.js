@@ -309,13 +309,22 @@ document.addEventListener('DOMContentLoaded',()=>{
         };
         const closeDropdown = () => {
           wrapper.classList.remove('is-open');
+          wrapper.style.zIndex = '';
+          menu.style.zIndex = '';
           trigger.setAttribute('aria-expanded', 'false');
+          menu.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
         };
         const openDropdown = () => {
           document.querySelectorAll('.select-wrap.is-open').forEach((open) => {
-            if (open !== wrapper) open.classList.remove('is-open');
+            if (open !== wrapper) {
+              open.classList.remove('is-open');
+              open.style.zIndex = '';
+              open.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+            }
           });
           wrapper.classList.add('is-open');
+          wrapper.style.zIndex = '1000';
+          menu.style.zIndex = '1001';
           trigger.setAttribute('aria-expanded', 'true');
         };
         trigger.addEventListener('click', () => wrapper.classList.contains('is-open') ? closeDropdown() : openDropdown());
@@ -344,8 +353,14 @@ document.addEventListener('DOMContentLoaded',()=>{
         wrapper.append(trigger, menu);
         setValue();
       });
+      const closeAllDropdowns = () => document.querySelectorAll('.select-wrap.is-open').forEach((wrapper) => {
+        wrapper.classList.remove('is-open');
+        wrapper.style.zIndex = '';
+        wrapper.querySelector('.custom-select-menu')?.style.removeProperty('z-index');
+        wrapper.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+      });
       document.addEventListener('click', (event) => {
-        if (!event.target.closest('.select-wrap')) document.querySelectorAll('.select-wrap.is-open').forEach((wrapper) => wrapper.classList.remove('is-open'));
+        if (!event.target.closest('.select-wrap')) closeAllDropdowns();
       });
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') document.querySelectorAll('.select-wrap.is-open').forEach((wrapper) => {
@@ -842,7 +857,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           body: JSON.stringify({
             sessionId,
             message: messageText,
-            history: conversationHistory
+            history: conversationHistory.slice(0, -1)
           })
         });
 
@@ -864,7 +879,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             scrollChatToBottom();
           }
         } else {
-          appendAssistantMessage(data.error || "I apologize, but I encountered a momentary connection issue. You can also reach Hasnain directly via the Contact Form on this page.");
+          appendAssistantMessage(data.error || "The AI assistant is temporarily unavailable. You can also reach Hasnain directly via the Contact Form on this page.");
         }
       } catch (err) {
         hideTypingIndicator();
@@ -1464,9 +1479,18 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   };
 
-  // Initialize interactive 3D animations
-  initHero3DAnimation();
-  initServices3DAnimation();
-  initContact3DAnimation();
+  // Optional 3D scenes must never prevent the core portfolio and contact form from initializing.
+  const safeInitScene = (initScene, canvasId) => {
+    try {
+      initScene();
+    } catch (error) {
+      console.warn('[v0] Optional 3D scene disabled:', canvasId, error);
+      document.getElementById(canvasId)?.setAttribute('data-webgl-fallback', 'true');
+      window.__hxsnLoaderController?.settle(true);
+    }
+  };
+  safeInitScene(initHero3DAnimation, 'hero-3d-canvas');
+  safeInitScene(initServices3DAnimation, 'services-3d-canvas');
+  safeInitScene(initContact3DAnimation, 'contact-3d-canvas');
 });
 
