@@ -261,6 +261,6 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(` URL: http://localhost:${PORT}`);
   console.log(` Mode: ${process.env.NODE_ENV || 'development'}`);
   console.log(` Contact Delivery: ${(process.env.RESEND_API_KEY || process.env.API_key) ? 'Resend' : process.env.SMTP_HOST ? 'SMTP' : 'Unconfigured'}`);
-  console.log(` AI Assistant: ${process.env.GEMINI_API_KEY ? 'Google Gemini' : process.env.OPENAI_API_KEY ? 'OpenAI' : 'Built-in Semantic Engine'}`);
+  console.log(` AI Assistant: ${process.env.AI_GATEWAY_API_KEY ? `AI Gateway (${process.env.AI_CHAT_MODEL || 'openai/gpt-oss-20b'})` : 'Built-in Semantic Engine fallback'}`);
   console.log(`=================================================================`);
 });

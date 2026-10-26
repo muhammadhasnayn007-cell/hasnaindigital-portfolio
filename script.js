@@ -857,7 +857,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           body: JSON.stringify({
             sessionId,
             message: messageText,
-            history: conversationHistory
+            history: conversationHistory.slice(0, -1)
           })
         });
 
