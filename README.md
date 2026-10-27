@@ -32,7 +32,7 @@ Populate your environment variables (see [Environment Variables](#-environment-v
 Create a Gemini API key in Google AI Studio, then add it to your local `.env` file:
 ```bash
 GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-2.5-flash-lite
+GEMINI_MODEL=gemini-3.5-flash-lite
 ```
 Never commit this file or expose the key in browser code. Free-tier requests are subject to Google's current per-model requests-per-minute, tokens-per-minute, daily quota, region, and billing rules; check Google AI Studio for the live limits.
 
@@ -67,9 +67,9 @@ Open `http://localhost:3000` in your browser.
 | `SMTP_USER` | SMTP username / email address | **YES** | `your_email@gmail.com` |
 | `SMTP_PASS` | SMTP application password | **YES** | `your_16_char_password` |
 | `GEMINI_API_KEY` | Google Gemini API key for AI Assistant | **YES** | `AIza...` |
-| `GEMINI_MODEL` | Gemini model identifier | No | `gemini-2.5-flash-lite` |
+| `GEMINI_MODEL` | Gemini model identifier | No | `gemini-3.5-flash-lite` |
 
-`gemini-2.5-flash-lite` is the default cost-effective text model and is commonly available on Gemini API free-tier plans, subject to Google's current regional quota and model availability. Set `GEMINI_MODEL` to another supported model when needed. The API key is server-only and must never be added to frontend code.
+`gemini-3.5-flash-lite` is the default cost-effective text model and is commonly available on Gemini API free-tier plans, subject to Google's current regional quota and model availability. Set `GEMINI_MODEL` to another supported model when needed. The API key is server-only and must never be added to frontend code.
 | `RATE_LIMIT_CONTACT` | Max contact form submissions per IP / minute | No | `5` |
 | `RATE_LIMIT_CHAT` | Max chat queries per IP / minute | No | `20` |
 
@@ -90,7 +90,7 @@ Open `http://localhost:3000` in your browser.
 2. Root directory: `./`
 3. Framework Preset: `Other`
 4. The serverless functions under `/api/` (`contact.js`, `chat.js`, `health.js`) will execute automatically on edge/serverless runtimes.
-5. In Vercel Project Settings → Environment Variables, add `GEMINI_API_KEY` for Production and `GEMINI_MODEL` with value `gemini-2.5-flash-lite` (or another currently supported model).
+5. In Vercel Project Settings → Environment Variables, add `GEMINI_API_KEY` for Production and `GEMINI_MODEL` with value `gemini-3.5-flash-lite` (or another currently supported model).
 6. Redeploy after saving the variables. The production `/api/chat` route uses Gemini server-side; the key is never returned to clients.
 
 Do not claim a live AI response is verified until a real request succeeds with an active key and available Gemini quota.

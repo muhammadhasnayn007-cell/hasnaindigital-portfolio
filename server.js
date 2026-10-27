@@ -272,6 +272,10 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(` URL: http://localhost:${PORT}`);
   console.log(` Mode: ${process.env.NODE_ENV || 'development'}`);
   console.log(` Contact Delivery: ${(process.env.RESEND_API_KEY || process.env.API_key) ? 'Resend' : process.env.SMTP_HOST ? 'SMTP' : 'Unconfigured'}`);
-  console.log(` AI Assistant: ${process.env.GEMINI_API_KEY ? `Gemini (${process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite'})` : 'Gemini API key not configured'}`);
+  const configuredGeminiModel = process.env.GEMINI_MODEL?.trim();
+  const geminiModel = configuredGeminiModel && /^gemini-[a-z0-9.-]+$/i.test(configuredGeminiModel)
+    ? configuredGeminiModel
+    : 'gemini-3.5-flash-lite';
+  console.log(` AI Assistant: ${process.env.GEMINI_API_KEY ? `Gemini (${geminiModel})` : 'Gemini API key not configured'}`);
   console.log(`=================================================================`);
 });
