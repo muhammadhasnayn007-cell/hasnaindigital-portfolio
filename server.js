@@ -246,11 +246,22 @@ app.post('/api/chat', async (req, res) => {
   if (sessionId !== undefined && (typeof sessionId !== 'string' || sessionId.length > 128 || !/^[a-zA-Z0-9_-]+$/.test(sessionId))) return res.status(400).json({ success: false, error: 'Invalid session.' });
   if (history !== undefined && (!Array.isArray(history) || history.length > 20 || history.some(item => !item || typeof item.role !== 'string' || typeof item.content !== 'string' || item.content.length > 2000))) return res.status(400).json({ success: false, error: 'Chat history is invalid or too large.' });
   try {
-    const result = await handleChatInteraction({ sessionId: sessionId || ip, message: message.trim(), history: history || [] });
+    const result = await handleChatInteraction({
+      sessionId: sessionId || ip,
+      message: message.trim(),
+      history: history || [],
+      allowFallback: process.env.NODE_ENV !== 'production'
+    });
     return res.status(200).json({ success: true, reply: result.reply, groundingSources: result.groundingSources || [], leadStatus: result.leadStatus, handoffAvailable: result.handoffAvailable });
   } catch (err) {
-    console.error('Chat error:', err.message);
-    return res.status(500).json({ success: false, error: "Hasnain's Assistant encountered a temporary processing issue. Please feel free to ask again or reach out directly." });
+    console.error('[v0] Chat error:', err.message, err.cause?.message || '');
+    const isProviderUnavailable = err.code === 'AI_PROVIDER_UNAVAILABLE';
+    return res.status(isProviderUnavailable ? 503 : 500).json({
+      success: false,
+      error: isProviderUnavailable
+        ? err.message
+        : "Hasnain's Assistant encountered a temporary processing issue. Please feel free to ask again or reach out directly."
+    });
   }
 });
 
