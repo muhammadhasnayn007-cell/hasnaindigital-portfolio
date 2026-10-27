@@ -1,21 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "index.html",
-          "style.css",
-          "script.js",
-          "firebase-client.js",
-          "images/**",
-          "fonts/**"
-        ]
-      }
+  "functions": {
+    "server.js": {
+      "includeFiles": "{index.html,style.css,script.js,firebase-client.js,images/**,fonts/**}"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/(.*)",
