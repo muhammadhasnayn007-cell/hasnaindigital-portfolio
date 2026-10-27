@@ -23,14 +23,12 @@
   "author": "H.X.S.N Digital Technologies <muhammadhasnayn007@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@ai-sdk/gateway": "^4.0.126",
-    "@google/genai": "^2.27.0",
-    "ai": "^7.0.153",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "firebase": "^12.19.0",
-    "nodemailer": "^10.0.10"
+    "nodemailer": "^10.0.10",
+    "openai": "^7.45.1"
   },
   "engines": {
     "node": ">=18.0.0"
