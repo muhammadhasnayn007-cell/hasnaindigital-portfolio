@@ -50,7 +50,7 @@ module.exports = async function handler(req, res) {
       sessionId: sessionId || ip,
       message: message.trim(),
       history: history || [],
-      allowFallback: process.env.NODE_ENV !== 'production'
+      allowFallback: false
     });
 
     return res.status(200).json({
