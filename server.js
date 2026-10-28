@@ -17,6 +17,7 @@ const {
 } = require('./lib/security');
 const { sendContactFormEmail } = require('./lib/mailer');
 const { handleChatInteraction } = require('./lib/ai');
+const { createProjectInquiry } = require('./lib/supabase-server');
 const knowledge = require('./lib/knowledge.json');
 
 const app = express();
@@ -218,11 +219,27 @@ app.post('/api/contact', async (req, res) => {
   }
 
   try {
+    const inquiry = await createProjectInquiry({
+      full_name: name,
+      email,
+      phone: contactMethod === 'WhatsApp' ? whatsapp : null,
+      preferred_contact_method: contactMethod.toLowerCase(),
+      project_type: service,
+      project_title: subject,
+      current_website_url: websiteUrl || null,
+      description: message,
+      budget: budget || null,
+      timeline: timeline || null,
+      privacy_consent: true,
+      marketing_consent: false
+    });
     const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });
     recordSubmissionSuccess(name, email, message);
     return res.status(200).json({
       success: true,
       message: 'Your message was submitted successfully and accepted by the delivery service. You will receive a response within 24 hours.',
+      inquiryId: inquiry.id,
+      referenceId: inquiry.reference_id,
       deliveryId: delivery.id
     });
   } catch (err) {

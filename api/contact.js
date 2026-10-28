@@ -1,6 +1,7 @@
 // Serverless Contact Form Handler for Vercel, Netlify, and Serverless Platforms
 const { isValidEmail, checkRateLimit, isDuplicateSubmission, recordSubmissionSuccess, clearSubmissionLock, getClientIp, applyCors, readRequestBody, parseRequestBody, MAX_SERVERLESS_BODY_BYTES } = require('../lib/security');
 const { sendContactFormEmail } = require('../lib/mailer');
+const { createProjectInquiry } = require('../lib/supabase-server');
 
 module.exports = async function handler(req, res) {
   applyCors(req, res, 'POST, OPTIONS');
@@ -49,7 +50,7 @@ module.exports = async function handler(req, res) {
   const budget = textField(body.budget, 120);
   const timeline = textField(body.timeline, 120);
   const websiteUrl = textField(body.websiteUrl, 500);
-  const contactMethod = body.contactMethod === 'WhatsApp' ? 'WhatsApp' : 'Email';
+  const contactMethod = body.contactMethod === 'WhatsApp' ? 'whatsapp' : 'email';
   const whatsapp = textField(body.whatsapp, 40);
   if (websiteUrl) {
     try { new URL(websiteUrl); } catch { return res.status(400).json({ success: false, error: 'Please provide a valid website URL.' }); }
@@ -84,6 +85,20 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const inquiry = await createProjectInquiry({
+      full_name: name,
+      email,
+      phone: contactMethod === 'whatsapp' ? whatsapp : null,
+      preferred_contact_method: contactMethod,
+      project_type: service,
+      project_title: subject,
+      current_website_url: websiteUrl || null,
+      description: message,
+      budget: budget || null,
+      timeline: timeline || null,
+      privacy_consent: true,
+      marketing_consent: false
+    });
     const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });
     
     // Only lock after successful acceptance by email provider
@@ -92,6 +107,8 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       success: true,
       message: 'Your enquiry was accepted by the delivery service. You will receive a response within 24 hours.',
+      inquiryId: inquiry.id,
+      referenceId: inquiry.reference_id,
       deliveryId: delivery.id
     });
   } catch (err) {
