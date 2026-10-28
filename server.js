@@ -17,6 +17,7 @@ const {
 } = require('./lib/security');
 const { sendContactFormEmail } = require('./lib/mailer');
 const { handleChatInteraction } = require('./lib/ai');
+const { createProjectInquiry } = require('./lib/supabase-server');
 const knowledge = require('./lib/knowledge.json');
 
 const app = express();
@@ -218,11 +219,30 @@ app.post('/api/contact', async (req, res) => {
   }
 
   try {
+    if (req.body?.privacyConsent !== true) {
+      return res.status(400).json({ success: false, error: 'Please accept the privacy notice before submitting.' });
+    }
+    const inquiry = await createProjectInquiry({
+      full_name: name,
+      email,
+      phone: contactMethod === 'WhatsApp' ? whatsapp : null,
+      preferred_contact_method: contactMethod.toLowerCase(),
+      project_type: service,
+      project_title: subject,
+      current_website_url: websiteUrl || null,
+      description: message,
+      budget: budget || null,
+      timeline: timeline || null,
+      privacy_consent: true,
+      marketing_consent: false
+    });
     const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });
     recordSubmissionSuccess(name, email, message);
     return res.status(200).json({
       success: true,
       message: 'Your message was submitted successfully and accepted by the delivery service. You will receive a response within 24 hours.',
+      inquiryId: inquiry.id,
+      referenceId: inquiry.reference_id,
       deliveryId: delivery.id
     });
   } catch (err) {
@@ -246,11 +266,22 @@ app.post('/api/chat', async (req, res) => {
   if (sessionId !== undefined && (typeof sessionId !== 'string' || sessionId.length > 128 || !/^[a-zA-Z0-9_-]+$/.test(sessionId))) return res.status(400).json({ success: false, error: 'Invalid session.' });
   if (history !== undefined && (!Array.isArray(history) || history.length > 20 || history.some(item => !item || typeof item.role !== 'string' || typeof item.content !== 'string' || item.content.length > 2000))) return res.status(400).json({ success: false, error: 'Chat history is invalid or too large.' });
   try {
-    const result = await handleChatInteraction({ sessionId: sessionId || ip, message: message.trim(), history: history || [] });
+    const result = await handleChatInteraction({
+      sessionId: sessionId || ip,
+      message: message.trim(),
+      history: history || [],
+      allowFallback: process.env.NODE_ENV !== 'production'
+    });
     return res.status(200).json({ success: true, reply: result.reply, groundingSources: result.groundingSources || [], leadStatus: result.leadStatus, handoffAvailable: result.handoffAvailable });
   } catch (err) {
-    console.error('Chat error:', err.message);
-    return res.status(500).json({ success: false, error: "Hasnain's Assistant encountered a temporary processing issue. Please feel free to ask again or reach out directly." });
+    console.error('[v0] Chat error:', err.message, err.cause?.message || '');
+    const isProviderUnavailable = err.code === 'AI_PROVIDER_UNAVAILABLE';
+    return res.status(isProviderUnavailable ? 503 : 500).json({
+      success: false,
+      error: isProviderUnavailable
+        ? err.message
+        : "Hasnain's Assistant encountered a temporary processing issue. Please feel free to ask again or reach out directly."
+    });
   }
 });
 
@@ -261,6 +292,10 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(` URL: http://localhost:${PORT}`);
   console.log(` Mode: ${process.env.NODE_ENV || 'development'}`);
   console.log(` Contact Delivery: ${(process.env.RESEND_API_KEY || process.env.API_key) ? 'Resend' : process.env.SMTP_HOST ? 'SMTP' : 'Unconfigured'}`);
-  console.log(` AI Assistant: ${process.env.OPENAI_API_KEY ? `OpenAI Responses (${process.env.OPENAI_MODEL || 'gpt-4o-mini'})` : 'OpenAI API key not configured'}`);
+  const configuredGeminiModel = process.env.GEMINI_MODEL?.trim();
+  const geminiModel = configuredGeminiModel && /^gemini-[a-z0-9.-]+$/i.test(configuredGeminiModel)
+    ? configuredGeminiModel
+    : 'gemini-3.5-flash-lite';
+  console.log(` AI Assistant: ${process.env.GEMINI_API_KEY ? `Gemini (${geminiModel})` : 'Gemini API key not configured'}`);
   console.log(`=================================================================`);
 });

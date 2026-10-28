@@ -460,8 +460,67 @@ document.addEventListener('DOMContentLoaded',()=>{
     contactMethodInput?.addEventListener('change', syncContactMethod);
     syncContactMethod();
 
+    const inquirySteps = [...contactForm.querySelectorAll('[data-inquiry-step]')];
+    const stepIndicators = [...contactForm.querySelectorAll('[data-step-indicator]')];
+    const stepTitle = $('#inquiryStepTitle');
+    const nextStepBtn = contactForm.querySelector('.inquiry-next');
+    const backStepBtn = contactForm.querySelector('.inquiry-back');
+    const reviewValues = {
+      name: contactForm.querySelector('[data-review="name"]'),
+      email: contactForm.querySelector('[data-review="email"]'),
+      service: contactForm.querySelector('[data-review="service"]'),
+      budget: contactForm.querySelector('[data-review="budget"]'),
+      message: contactForm.querySelector('[data-review="message"]')
+    };
+    let currentInquiryStep = 1;
+    const stepTitles = ['Tell me who you are', 'Shape the project brief', 'Review and send your enquiry'];
+    const renderInquiryStep = (step) => {
+      currentInquiryStep = step;
+      inquirySteps.forEach((element) => { element.hidden = Number(element.dataset.inquiryStep) !== step; });
+      stepIndicators.forEach((element) => element.classList.toggle('active', Number(element.dataset.stepIndicator) === step));
+      if (stepTitle) stepTitle.textContent = stepTitles[step - 1];
+      if (backStepBtn) backStepBtn.hidden = step === 1;
+      if (nextStepBtn) nextStepBtn.hidden = step === 3;
+      if (submitBtn) submitBtn.closest('.form-bottom').hidden = step !== 3;
+      if (step === 3) {
+        reviewValues.name.textContent = nameInput.value.trim() || '—';
+        reviewValues.email.textContent = emailInput.value.trim() || '—';
+        reviewValues.service.textContent = serviceSelect.value || '—';
+        reviewValues.budget.textContent = budgetInput.value || 'Not specified';
+        reviewValues.message.textContent = messageInput.value.trim() || '—';
+      }
+    };
+    const validateInquiryStep = (step) => {
+      if (step === 1) {
+        nameInput?.dispatchEvent(new Event('blur'));
+        emailInput?.dispatchEvent(new Event('blur'));
+        subjectInput?.dispatchEvent(new Event('blur'));
+        return Boolean(nameInput?.value.trim().length >= 2 && emailRegex.test(emailInput?.value.trim() || '') && subjectInput?.value.trim().length >= 3);
+      }
+      if (step === 2) {
+        messageInput?.dispatchEvent(new Event('blur'));
+        urlInput?.dispatchEvent(new Event('blur'));
+        if (contactMethodInput?.value === 'WhatsApp' && (!whatsappInput?.value.trim() || whatsappInput.value.trim().length < 7)) setFieldError(whatsappInput, 'whatsapp-error', 'Please enter a valid WhatsApp number.');
+        return Boolean(messageInput?.value.trim().length >= 10 && (!urlInput?.value.trim() || urlInput.checkValidity()) && (contactMethodInput?.value !== 'WhatsApp' || whatsappInput?.value.trim().length >= 7));
+      }
+      return true;
+    };
+    nextStepBtn?.addEventListener('click', () => {
+      if (validateInquiryStep(currentInquiryStep)) renderInquiryStep(Math.min(currentInquiryStep + 1, 3));
+    });
+    backStepBtn?.addEventListener('click', () => renderInquiryStep(Math.max(currentInquiryStep - 1, 1)));
+    renderInquiryStep(1);
+
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (currentInquiryStep !== 3 || contactForm.dataset.submitting === 'true') return;
+      const privacyConsent = $('#contact-privacy');
+      if (!privacyConsent?.checked) {
+        privacyConsent?.focus();
+        if (alertBox) { alertBox.className = 'form-alert error'; alertBox.textContent = 'Please confirm the privacy notice before submitting.'; alertBox.style.display = 'flex'; }
+        return;
+      }
+      contactForm.dataset.submitting = 'true';
 
       // Honeypot spam protection check
       const honey = contactForm.querySelector('[name="_honey"]');
@@ -549,7 +608,8 @@ document.addEventListener('DOMContentLoaded',()=>{
         timeline: timelineInput?.value.trim() || '',
         websiteUrl: urlVal,
         contactMethod: contactMethodInput?.value || 'Email',
-        whatsapp: whatsappInput?.value.trim() || ''
+        whatsapp: whatsappInput?.value.trim() || '',
+        privacyConsent: privacyConsent.checked
       };
 
       let delivered = false;
@@ -599,6 +659,9 @@ document.addEventListener('DOMContentLoaded',()=>{
         if (btnText) btnText.textContent = 'MESSAGE SENT ✓';
 
         contactForm.reset();
+        delete contactForm.dataset.submitting;
+        syncContactMethod();
+        renderInquiryStep(1);
         $$('.form-group', contactForm).forEach(g => g.classList.remove('is-valid', 'has-error'));
 
         setTimeout(() => {
@@ -623,6 +686,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         if (note) note.textContent = serverErrorMsg || 'Submission encountered an issue. You can retry or click the email link above.';
         if (btnText) btnText.textContent = 'RETRY SEND ↗';
         submitBtn.disabled = false;
+        delete contactForm.dataset.submitting;
       }
     });
   }
