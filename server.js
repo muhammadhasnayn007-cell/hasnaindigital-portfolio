@@ -219,6 +219,9 @@ app.post('/api/contact', async (req, res) => {
   }
 
   try {
+    if (req.body?.privacyConsent !== true) {
+      return res.status(400).json({ success: false, error: 'Please accept the privacy notice before submitting.' });
+    }
     const inquiry = await createProjectInquiry({
       full_name: name,
       email,

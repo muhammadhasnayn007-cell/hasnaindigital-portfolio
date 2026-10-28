@@ -52,10 +52,12 @@ module.exports = async function handler(req, res) {
   const websiteUrl = textField(body.websiteUrl, 500);
   const contactMethod = body.contactMethod === 'WhatsApp' ? 'whatsapp' : 'email';
   const whatsapp = textField(body.whatsapp, 40);
+  const privacyConsent = body.privacyConsent === true;
+  if (!privacyConsent) return res.status(400).json({ success: false, error: 'Please accept the privacy notice before submitting.' });
   if (websiteUrl) {
     try { new URL(websiteUrl); } catch { return res.status(400).json({ success: false, error: 'Please provide a valid website URL.' }); }
   }
-  if (contactMethod === 'WhatsApp' && whatsapp.length < 7) {
+  if (contactMethod === 'whatsapp' && whatsapp.length < 7) {
     return res.status(400).json({ success: false, error: 'Please provide a valid WhatsApp number.' });
   }
 
@@ -96,7 +98,7 @@ module.exports = async function handler(req, res) {
       description: message,
       budget: budget || null,
       timeline: timeline || null,
-      privacy_consent: true,
+      privacy_consent: privacyConsent,
       marketing_consent: false
     });
     const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });

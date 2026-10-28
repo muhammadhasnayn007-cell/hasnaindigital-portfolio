@@ -682,7 +682,14 @@
             <!-- Accessible Alert / Status Message Banner -->
             <div id="formAlert" class="form-alert" role="status" aria-live="polite" style="display:none"></div>
 
-            <div class="field-row">
+            <div class="inquiry-stepper" aria-label="Inquiry progress">
+              <span class="inquiry-step active" data-step-indicator="1">01 <em>PROFILE</em></span>
+              <span class="inquiry-step" data-step-indicator="2">02 <em>BRIEF</em></span>
+              <span class="inquiry-step" data-step-indicator="3">03 <em>REVIEW</em></span>
+            </div>
+            <p class="inquiry-step-title" id="inquiryStepTitle">Tell me who you are</p>
+
+            <div class="field-row inquiry-fields" data-inquiry-step="1">
               <div class="form-group">
                 <label for="contact-name">FULL NAME <span class="req" aria-hidden="true">*</span></label>
                 <div class="input-wrapper">
@@ -706,7 +713,7 @@
               </div>
             </div>
 
-            <div class="field-row">
+            <div class="field-row inquiry-fields" data-inquiry-step="1">
               <div class="form-group">
                 <label for="contact-subject">SUBJECT <span class="req" aria-hidden="true">*</span></label>
                 <div class="input-wrapper">
@@ -736,7 +743,7 @@
               </div>
             </div>
 
-            <div class="field-row">
+            <div class="field-row inquiry-fields" data-inquiry-step="2">
               <div class="form-group">
                 <label for="contact-budget">ESTIMATED BUDGET <span class="optional">(optional)</span></label>
                 <div class="input-wrapper select-wrap">
@@ -760,7 +767,7 @@
               </div>
             </div>
 
-            <div class="field-row">
+            <div class="field-row inquiry-fields" data-inquiry-step="2">
               <div class="form-group">
                 <label for="contact-url">WEBSITE / BUSINESS URL <span class="optional">(optional)</span></label>
                 <div class="input-wrapper"><span class="input-icon-glyph" aria-hidden="true">↗</span>
@@ -777,7 +784,7 @@
               </div>
             </div>
 
-            <div class="form-group" id="whatsapp-group" hidden>
+            <div class="form-group inquiry-fields" id="whatsapp-group" data-inquiry-step="2" hidden>
               <label for="contact-whatsapp">WHATSAPP NUMBER <span class="req" aria-hidden="true">*</span></label>
               <div class="input-wrapper"><span class="input-icon-glyph" aria-hidden="true">WA</span>
                 <input id="contact-whatsapp" name="whatsapp" type="tel" inputmode="tel" placeholder="+92 300 1234567" aria-describedby="whatsapp-error">
@@ -785,7 +792,7 @@
               </div><span id="whatsapp-error" class="field-error" aria-live="polite"></span>
             </div>
 
-            <div class="form-group full-width">
+            <div class="form-group full-width inquiry-fields" data-inquiry-step="2">
               <label for="contact-message">PROJECT DETAILS <span class="req" aria-hidden="true">*</span></label>
               <div class="input-wrapper">
                 <textarea id="contact-message" name="message" required minlength="10" rows="6"
@@ -796,12 +803,30 @@
               <span id="message-error" class="field-error" aria-live="polite"></span>
             </div>
 
+            <div class="inquiry-review" data-inquiry-step="3" hidden>
+              <p class="review-kicker">FINAL REVIEW</p>
+              <h3>Ready to send your project brief?</h3>
+              <dl class="review-grid">
+                <div><dt>CONTACT</dt><dd data-review="name">—</dd></div>
+                <div><dt>EMAIL</dt><dd data-review="email">—</dd></div>
+                <div><dt>SERVICE</dt><dd data-review="service">—</dd></div>
+                <div><dt>BUDGET</dt><dd data-review="budget">—</dd></div>
+                <div class="review-wide"><dt>PROJECT</dt><dd data-review="message">—</dd></div>
+              </dl>
+              <label class="consent-check"><input id="contact-privacy" name="privacyConsent" type="checkbox" required><span>I agree to share these details so H.X.S.N Digital Technologies can respond to my enquiry.</span></label>
+            </div>
+
+            <div class="inquiry-navigation">
+              <button class="btn secondary inquiry-back" type="button" hidden>BACK</button>
+              <button class="btn secondary inquiry-next" type="button">CONTINUE</button>
+            </div>
+
             <div class="form-bottom">
               <div class="form-assurance">
                 <span id="formNote" class="form-note">We collect your name, email, project brief, and optional website or WhatsApp details only to respond to your enquiry. We do not ask for unnecessary data.</span>
               </div>
               <button id="contactSubmitBtn" class="btn primary ripple submit-btn magnetic" type="submit">
-                <span class="btn-text">SEND MESSAGE</span>
+                <span class="btn-text">SUBMIT INQUIRY</span>
                 <span class="btn-icon">↗</span>
                 <span class="btn-spinner" aria-hidden="true"></span>
               </button>
