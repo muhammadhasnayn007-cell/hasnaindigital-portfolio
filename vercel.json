@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "server.js": {
-      "includeFiles": "{index.html,style.css,script.js,firebase-client.js,images/**,fonts/**}"
+      "includeFiles": "{index.html,style.css,script.js,analytics-client.js,firebase-client.js,images/**,fonts/**}"
     }
   },
   "routes": [
@@ -21,6 +21,13 @@
     },
     {
       "source": "/script.js",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/analytics-client.js",
       "headers": [
         { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }

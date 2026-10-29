@@ -18,6 +18,11 @@ const {
 const { sendContactFormEmail } = require('./lib/mailer');
 const { handleChatInteraction } = require('./lib/ai');
 const { createProjectInquiry } = require('./lib/supabase-server');
+const analyticsHandler = require('./api/analytics');
+const adminAuthHandler = require('./api/admin-auth');
+const adminInquiriesHandler = require('./api/admin-inquiries');
+const adminAnalyticsHandler = require('./api/admin-analytics');
+const adminProcessHandler = require('./api/admin-process-inquiry');
 const knowledge = require('./lib/knowledge.json');
 
 const app = express();
@@ -37,7 +42,7 @@ app.use(cors({
     return callback(null, false);
   },
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 204
 }));
 
@@ -51,6 +56,9 @@ app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (process.env.NODE_ENV === 'production') res.setHeader('Strict-Transport-Security', 'max-age=63072000');
+  if (req.path.startsWith('/api/admin')) res.setHeader('Cache-Control', 'no-store');
   next();
 });
 
@@ -65,7 +73,7 @@ app.use((req, res, next) => {
     reqPath.endsWith('.env') ||
     reqPath.endsWith('.json') ||
     reqPath.endsWith('.lock') ||
-    (reqPath.endsWith('.js') && reqPath !== '/script.js' && reqPath !== '/firebase-client.js')
+    (reqPath.endsWith('.js') && reqPath !== '/script.js' && reqPath !== '/firebase-client.js' && reqPath !== '/analytics-client.js')
   ) {
     if (reqPath.startsWith('/api/')) return next();
     return res.status(404).end();
@@ -90,6 +98,12 @@ app.get('/firebase-client.js', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=86400');
   res.sendFile(path.join(__dirname, 'firebase-client.js'));
+});
+
+app.get('/analytics-client.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(path.join(__dirname, 'analytics-client.js'));
 });
 
 app.get('/robots.txt', (req, res) => {
@@ -119,6 +133,12 @@ app.use(express.static(__dirname, {
 // ==============================================================================
 // 1. Health & Status Endpoint
 // ==============================================================================
+app.post('/api/analytics', analyticsHandler);
+app.post('/api/admin-auth', adminAuthHandler);
+app.get('/api/admin-inquiries', adminInquiriesHandler);
+app.patch('/api/admin-inquiries', adminInquiriesHandler);
+app.get('/api/admin-analytics', adminAnalyticsHandler);
+app.post('/api/admin-process-inquiry', adminProcessHandler);
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',

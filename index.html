@@ -816,16 +816,16 @@
               <label class="consent-check"><input id="contact-privacy" name="privacyConsent" type="checkbox" required><span>I agree to share these details so H.X.S.N Digital Technologies can respond to my enquiry.</span></label>
             </div>
 
-            <div class="inquiry-navigation">
-              <button class="btn secondary inquiry-back" type="button" hidden>BACK</button>
-              <button class="btn secondary inquiry-next" type="button">CONTINUE</button>
+<div class="inquiry-navigation" aria-label="Inquiry navigation">
+ <button class="btn secondary inquiry-back" type="button" hidden aria-label="Go back to the previous inquiry step">BACK</button>
+ <button class="btn primary inquiry-next" type="button" aria-label="Continue to the next inquiry step">CONTINUE</button>
             </div>
 
             <div class="form-bottom">
               <div class="form-assurance">
                 <span id="formNote" class="form-note">We collect your name, email, project brief, and optional website or WhatsApp details only to respond to your enquiry. We do not ask for unnecessary data.</span>
               </div>
-              <button id="contactSubmitBtn" class="btn primary ripple submit-btn magnetic" type="submit">
+              <button id="contactSubmitBtn" class="btn primary ripple submit-btn magnetic" type="submit" aria-label="Submit project inquiry">
                 <span class="btn-text">SUBMIT INQUIRY</span>
                 <span class="btn-icon">↗</span>
                 <span class="btn-spinner" aria-hidden="true"></span>
@@ -986,7 +986,8 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="/script.js?v=navbar-fix-2026-10-23"></script>
+  <script src="/analytics-client.js?v=analytics-2026-10-29"></script>
+ <script src="/script.js?v=navbar-fix-2026-10-23"></script>
   <script type="module" src="/firebase-client.js"></script>
 </body>
 

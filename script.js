@@ -248,6 +248,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const alertBox = $('#formAlert');
     const submitBtn = $('#contactSubmitBtn');
     const note = $('#formNote');
+    const trackAnalytics = window.hxsnTrack || (() => {});
 
     const nameInput = $('#contact-name');
     const emailInput = $('#contact-email');
@@ -513,6 +514,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      trackAnalytics('contact_start');
       if (currentInquiryStep !== 3 || contactForm.dataset.submitting === 'true') return;
       const privacyConsent = $('#contact-privacy');
       if (!privacyConsent?.checked) {
@@ -520,11 +522,10 @@ document.addEventListener('DOMContentLoaded',()=>{
         if (alertBox) { alertBox.className = 'form-alert error'; alertBox.textContent = 'Please confirm the privacy notice before submitting.'; alertBox.style.display = 'flex'; }
         return;
       }
-      contactForm.dataset.submitting = 'true';
-
       // Honeypot spam protection check
       const honey = contactForm.querySelector('[name="_honey"]');
       if (honey && honey.value) return;
+      contactForm.dataset.submitting = 'true';
 
       // Validate all fields
       let isValid = true;
@@ -576,6 +577,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       } else if (whatsappInput?.value.trim()) clearFieldError(whatsappInput, 'whatsapp-error');
 
       if (!isValid) {
+        delete contactForm.dataset.submitting;
         if (firstInvalid) firstInvalid.focus();
         return;
       }
@@ -629,6 +631,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         const data = await apiRes.json().catch(() => ({}));
 
         if (apiRes.ok && data.success) {
+          trackAnalytics('contact_success', { service: serviceSelect?.value || 'unknown' });
           delivered = true;
         } else {
           serverErrorMsg = data.error || (apiRes.status === 429 ? 'Too many requests. Please wait a minute before retrying.' : 'Server encountered an issue sending your email.');
