@@ -1,4 +1,16 @@
+const analyticsSession = (() => {
+  try { const key='hxsn_analytics_session'; let value=sessionStorage.getItem(key); if(!value){value=crypto.randomUUID().replace(/[^a-z0-9-]/gi,'');sessionStorage.setItem(key,value);} return value; } catch { return null; }
+})();
+const trackAnalytics = (eventName, metadata = {}) => {
+  if (navigator.doNotTrack === '1') return;
+  const deviceCategory = innerWidth < 640 ? 'mobile' : innerWidth < 1024 ? 'tablet' : 'desktop';
+  const payload = { eventName, path: location.pathname, metadata, sessionId: analyticsSession, deviceCategory, referrerHost: document.referrer ? new URL(document.referrer).hostname : null };
+  if (navigator.sendBeacon) navigator.sendBeacon('/api/analytics', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+  else fetch('/api/analytics', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), keepalive:true }).catch(()=>{});
+};
+window.hxsnTrack = trackAnalytics;
 document.addEventListener('DOMContentLoaded',()=>{
+  trackAnalytics('page_view');
   const loader=document.getElementById('pageLoader');
   const controller=window.__hxsnLoaderController;
   const finishLoader=(failed=false)=>{if(controller){controller.settle(failed);return;}if(!loader)return;loader.classList.toggle('is-error',failed);loader.classList.add('is-ready');loader.setAttribute('aria-hidden','true');document.documentElement.classList.remove('is-loading');};
@@ -513,6 +525,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      trackAnalytics('contact_start');
       if (currentInquiryStep !== 3 || contactForm.dataset.submitting === 'true') return;
       const privacyConsent = $('#contact-privacy');
       if (!privacyConsent?.checked) {
@@ -629,6 +642,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         const data = await apiRes.json().catch(() => ({}));
 
         if (apiRes.ok && data.success) {
+          trackAnalytics('contact_success', { service: serviceSelect?.value || 'unknown' });
           delivered = true;
         } else {
           serverErrorMsg = data.error || (apiRes.status === 429 ? 'Too many requests. Please wait a minute before retrying.' : 'Server encountered an issue sending your email.');

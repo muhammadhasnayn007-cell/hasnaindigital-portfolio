@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const { getClientIp, checkRateLimit } = require('../lib/security');
 
 function client() {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -17,6 +18,8 @@ async function authenticate(req) {
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Method not allowed.' });
+  const rateCheck = checkRateLimit(`${getClientIp(req)}:admin-login`, 8, 300000);
+  if (!rateCheck.allowed) return res.status(429).json({ success: false, error: 'Too many sign-in attempts. Please wait before trying again.' });
   const email = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
   const password = typeof req.body?.password === 'string' ? req.body.password : '';
   if (!email || !password) return res.status(400).json({ success: false, error: 'Email and password are required.' });
