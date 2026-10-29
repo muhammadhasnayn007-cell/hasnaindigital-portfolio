@@ -1,7 +1,7 @@
 // Serverless Contact Form Handler for Vercel, Netlify, and Serverless Platforms
 const { isValidEmail, checkRateLimit, isDuplicateSubmission, recordSubmissionSuccess, clearSubmissionLock, getClientIp, applyCors, readRequestBody, parseRequestBody, MAX_SERVERLESS_BODY_BYTES } = require('../lib/security');
 const { sendContactFormEmail } = require('../lib/mailer');
-const { createProjectInquiry } = require('../lib/supabase-server');
+const { createProjectInquiry, uploadInquiryAttachment } = require('../lib/supabase-server');
 
 module.exports = async function handler(req, res) {
   applyCors(req, res, 'POST, OPTIONS');
@@ -101,6 +101,13 @@ module.exports = async function handler(req, res) {
       privacy_consent: privacyConsent,
       marketing_consent: false
     });
+    const attachment = body.attachment;
+    if (attachment?.data && typeof attachment.data === 'string' && attachment.data.length <= 4_000_000) {
+      const match = attachment.data.match(/^data:(application\/pdf|image\/(?:png|jpeg|webp));base64,(.+)$/);
+      if (match) {
+        await uploadInquiryAttachment({ inquiryId: inquiry.id, fileName: String(attachment.name || 'project-attachment').slice(0, 120), contentType: match[1], buffer: Buffer.from(match[2], 'base64') });
+      }
+    }
     const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });
     
     // Only lock after successful acceptance by email provider

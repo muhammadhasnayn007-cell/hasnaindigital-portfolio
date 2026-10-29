@@ -7,6 +7,14 @@ function client() {
   return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
 }
 
+async function authenticate(req) {
+  const token = req.headers.authorization?.replace(/^Bearer\s+/i, '');
+  if (!token) return null;
+  const admin = require('../lib/supabase-server').getSupabaseAdmin();
+  const { data, error } = await admin.auth.getUser(token);
+  return error || data.user?.app_metadata?.role !== 'admin' ? null : { admin, user: data.user };
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Method not allowed.' });
   const email = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
@@ -23,3 +31,5 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ success: false, error: 'Administrator authentication is temporarily unavailable.' });
   }
 };
+
+module.exports.authenticate = authenticate;
