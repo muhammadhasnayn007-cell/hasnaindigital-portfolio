@@ -1474,10 +1474,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .privacy-notice { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.08); }
 .privacy-notice p { margin: 0 0 12px; color: #9f9398; font-size: 11px; line-height: 1.6; }
 .privacy-notice p strong { color: #fff; }
-.consent-check { display: flex; gap: 10px; align-items: flex-start; color: #d4c9cd; font-size: 12px; line-height: 1.5; }
-.consent-check input { margin-top: 3px; accent-color: #e83d4f; }
+.contact-form .consent-check { display: flex; align-items: flex-start; gap: 7px; color: #d4c9cd; font: 400 12px/1.5 inherit; letter-spacing: normal; text-transform: none; margin-bottom: 0; cursor: pointer; }
+.consent-check input { flex: 0 0 15px; width: 15px; height: 15px; margin: 2px 0 0; accent-color: #e83d4f; cursor: pointer; }
+.consent-check span { flex: 1 1 auto; min-width: 0; }
+.consent-check input:checked { accent-color: #ff596b; }
 #privacy-error { display: block; margin-top: 7px; }
-.consent-check input { accent-color: #ff596b; margin-top: 3px; }
 .inquiries-pill-btn {
   background: rgba(255, 77, 90, 0.15);
   border: 1px solid rgba(255, 77, 90, 0.4);
