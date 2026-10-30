@@ -1474,11 +1474,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .privacy-notice { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.08); }
 .privacy-notice p { margin: 0 0 12px; color: #9f9398; font-size: 11px; line-height: 1.6; }
 .privacy-notice p strong { color: #fff; }
-.contact-form .privacy-notice .consent-check { display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start !important; gap: 8px; width: 100%; color: #d4c9cd; font: 400 12px/1.5 inherit; letter-spacing: normal; text-transform: none; margin: 0; cursor: pointer; }
-.contact-form .privacy-notice .consent-check input { flex: 0 0 15px; width: 15px; min-width: 15px; max-width: 15px; height: 15px; margin: 2px 0 0 !important; padding: 0; accent-color: #e83d4f; cursor: pointer; }
-.contact-form .privacy-notice .consent-check span { display: block; flex: 1 1 auto; width: auto; min-width: 0; margin: 0; }
+.privacy-consent { display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; gap: 8px; width: 100%; }
+.privacy-consent .consent-check { display: flex; flex: 1 1 auto; flex-direction: row; align-items: flex-start; justify-content: flex-start !important; gap: 8px; width: auto; min-width: 0; color: #d4c9cd; font: 400 12px/1.5 inherit; letter-spacing: normal; text-transform: none; margin: 0; cursor: pointer; }
+.privacy-consent input[type="checkbox"] { appearance: auto; -webkit-appearance: auto; width: 15px !important; height: 15px !important; min-width: 15px; max-width: 15px; flex: 0 0 15px; padding: 0 !important; margin: 2px 0 0 !important; accent-color: #e83d4f; cursor: pointer; }
+.privacy-consent .consent-check span { display: block; flex: 1 1 auto; width: auto; min-width: 0; margin: 0; }
 .consent-check input:checked { accent-color: #ff596b; }
-#privacy-error { display: block; margin-top: 7px; }
+.privacy-notice > #privacy-error { display: block; margin-top: 7px; }
 .inquiries-pill-btn {
   background: rgba(255, 77, 90, 0.15);
   border: 1px solid rgba(255, 77, 90, 0.4);
