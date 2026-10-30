@@ -465,7 +465,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     const stepIndicators = [...contactForm.querySelectorAll('[data-step-indicator]')];
     const stepTitle = $('#inquiryStepTitle');
     const nextStepBtn = contactForm.querySelector('.inquiry-next');
-    const backStepBtn = contactForm.querySelector('.inquiry-back');
+    let backStepBtn = null;
+    const navigation = contactForm.querySelector('.inquiry-navigation');
     const reviewValues = {
       name: contactForm.querySelector('[data-review="name"]'),
       email: contactForm.querySelector('[data-review="email"]'),
@@ -480,7 +481,19 @@ document.addEventListener('DOMContentLoaded',()=>{
       inquirySteps.forEach((element) => { element.hidden = Number(element.dataset.inquiryStep) !== step; });
       stepIndicators.forEach((element) => element.classList.toggle('active', Number(element.dataset.stepIndicator) === step));
       if (stepTitle) stepTitle.textContent = stepTitles[step - 1];
-      if (backStepBtn) backStepBtn.hidden = step === 1;
+      if (step > 1 && !backStepBtn && navigation) {
+        backStepBtn = document.createElement('button');
+        backStepBtn.className = 'btn secondary inquiry-back';
+        backStepBtn.type = 'button';
+        backStepBtn.setAttribute('aria-label', 'Go back to the previous inquiry step');
+        backStepBtn.textContent = 'BACK';
+        backStepBtn.addEventListener('click', () => renderInquiryStep(Math.max(currentInquiryStep - 1, 1)));
+        navigation.prepend(backStepBtn);
+      }
+      if (step === 1 && backStepBtn) {
+        backStepBtn.remove();
+        backStepBtn = null;
+      }
       if (nextStepBtn) nextStepBtn.hidden = step === 3;
       if (submitBtn) submitBtn.closest('.form-bottom').hidden = step !== 3;
       if (step === 3) {
@@ -509,7 +522,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     nextStepBtn?.addEventListener('click', () => {
       if (validateInquiryStep(currentInquiryStep)) renderInquiryStep(Math.min(currentInquiryStep + 1, 3));
     });
-    backStepBtn?.addEventListener('click', () => renderInquiryStep(Math.max(currentInquiryStep - 1, 1)));
+    contactForm.querySelector('#contact-privacy')?.addEventListener('change', (event) => {
+      if (event.currentTarget.checked) {
+        event.currentTarget.removeAttribute('aria-invalid');
+        const privacyError = contactForm.querySelector('#privacy-error');
+        if (privacyError) privacyError.textContent = '';
+      }
+    });
     renderInquiryStep(1);
 
     contactForm.addEventListener('submit', async (e) => {
@@ -517,11 +536,15 @@ document.addEventListener('DOMContentLoaded',()=>{
       trackAnalytics('contact_start');
       if (currentInquiryStep !== 3 || contactForm.dataset.submitting === 'true') return;
       const privacyConsent = $('#contact-privacy');
+      const privacyError = $('#privacy-error');
       if (!privacyConsent?.checked) {
+        if (privacyError) privacyError.textContent = 'Please accept the privacy notice before submitting.';
+        privacyConsent?.setAttribute('aria-invalid', 'true');
         privacyConsent?.focus();
-        if (alertBox) { alertBox.className = 'form-alert error'; alertBox.textContent = 'Please confirm the privacy notice before submitting.'; alertBox.style.display = 'flex'; }
         return;
       }
+      if (privacyError) privacyError.textContent = '';
+      privacyConsent?.removeAttribute('aria-invalid');
       // Honeypot spam protection check
       const honey = contactForm.querySelector('[name="_honey"]');
       if (honey && honey.value) return;
@@ -616,6 +639,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
       let delivered = false;
       let serverErrorMsg = '';
+      let showMailtoFallback = false;
 
       // Direct Production Flow: Visitor → Frontend → Backend (/api/contact) → Email Service → Inbox
       try {
@@ -634,9 +658,11 @@ document.addEventListener('DOMContentLoaded',()=>{
           trackAnalytics('contact_success', { service: serviceSelect?.value || 'unknown' });
           delivered = true;
         } else {
+          showMailtoFallback = apiRes.status >= 500;
           serverErrorMsg = data.error || (apiRes.status === 429 ? 'Too many requests. Please wait a minute before retrying.' : 'Server encountered an issue sending your email.');
         }
       } catch (err) {
+        showMailtoFallback = true;
         serverErrorMsg = 'Network connection error. Could not reach backend server.';
       }
 
@@ -682,7 +708,10 @@ document.addEventListener('DOMContentLoaded',()=>{
 
         if (alertBox) {
           alertBox.className = 'form-alert error';
-          alertBox.innerHTML = `<strong>✕ Delivery Notice:</strong> ${escapeHtml(serverErrorMsg)} <a href="${mailtoUrl}" id="directEmailFallback" style="color:#ffffff;text-decoration:underline;font-weight:700;margin-left:6px;">Send directly via email app ↗</a>`;
+          const fallbackLink = showMailtoFallback
+            ? ` <a href="${mailtoUrl}" id="directEmailFallback" style="color:#ffffff;text-decoration:underline;font-weight:700;margin-left:6px;">Send directly via email app ↗</a>`
+            : '';
+          alertBox.innerHTML = `<strong>✕ Delivery Notice:</strong> ${escapeHtml(serverErrorMsg)}${fallbackLink}`;
           alertBox.style.display = 'flex';
           alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
@@ -1006,16 +1035,8 @@ document.addEventListener('DOMContentLoaded',()=>{
           if (matchOption) serviceSelect.value = matchOption.value;
         }
 
-        if (messageInput) {
-          const userNotes = conversationHistory
-            .filter(m => m.role === 'user')
-            .map(m => m.content)
-            .join(' | ');
-
-          messageInput.value = userNotes
-            ? `Discussion via HXSN Assistant:\n${userNotes}`
-            : messageInput.value;
-          messageInput.closest('.form-group')?.classList.add('is-valid');
+        if (messageInput && !messageInput.value.trim()) {
+          messageInput.focus();
         }
 
         if (alertBox) {

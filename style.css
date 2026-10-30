@@ -1471,7 +1471,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .review-grid dt { color: #84787c; font-size: 9px; letter-spacing: .12em; }
 .review-grid dd { color: #fff; margin: 4px 0 0; font-size: 13px; overflow-wrap: anywhere; }
 .review-wide { grid-column: 1 / -1; }
-.consent-check { display: flex; gap: 10px; align-items: flex-start; color: #b9adb1; font-size: 12px; line-height: 1.5; margin-top: 18px; }
+.privacy-notice { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.08); }
+.privacy-notice p { margin: 0 0 12px; color: #9f9398; font-size: 11px; line-height: 1.6; }
+.privacy-notice p strong { color: #fff; }
+.consent-check { display: flex; gap: 10px; align-items: flex-start; color: #d4c9cd; font-size: 12px; line-height: 1.5; }
+.consent-check input { margin-top: 3px; accent-color: #e83d4f; }
+#privacy-error { display: block; margin-top: 7px; }
 .consent-check input { accent-color: #ff596b; margin-top: 3px; }
 .inquiries-pill-btn {
   background: rgba(255, 77, 90, 0.15);
