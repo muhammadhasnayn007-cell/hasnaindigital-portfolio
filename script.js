@@ -30,14 +30,21 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Scroll reveal with stagger
   const reveals=$$('.reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-up');
-  const ro=new IntersectionObserver(entries=>entries.forEach(entry=>{
-    if(!entry.isIntersecting)return;
-    const d=Number(entry.target.dataset.delay||0);
-    entry.target.style.transitionDelay=`${d}ms`;
-    entry.target.classList.add('show');
-    ro.unobserve(entry.target);
-  }),{threshold:.12,rootMargin:'0px 0px -7% 0px'});
-  reveals.forEach(el=>ro.observe(el));
+  const revealImmediately = () => reveals.forEach(el => {
+    el.style.transitionDelay = '0ms';
+    el.classList.add('show');
+  });
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const ro=new IntersectionObserver(entries=>entries.forEach(entry=>{
+      if(!entry.isIntersecting)return;
+      const d=Number(entry.target.dataset.delay||0);
+      entry.target.style.transitionDelay=`${d}ms`;
+      entry.target.classList.add('show');
+      ro.unobserve(entry.target);
+    }),{threshold:.12,rootMargin:'0px 0px -7% 0px'});
+    reveals.forEach(el=>ro.observe(el));
+    setTimeout(() => reveals.filter(el => !el.classList.contains('show')).forEach(el => el.classList.add('show')), 2400);
+  } else revealImmediately();
 
   // Timeline trigger
   const timelines=$$('.timeline');
@@ -58,7 +65,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Active nav by section
   const links=$$('.nav-link');
   const sections=links.map(a=>$(a.getAttribute('href'))).filter(Boolean);
-  const so=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)links.forEach(a=>a.classList.toggle('active',a.hash===`#${entry.target.id}`));}),{rootMargin:'-35% 0px -50% 0px'});
+  const so=new IntersectionObserver(entries=>entries.forEach(entry=>{
+    if(!entry.isIntersecting)return;
+    links.forEach(a=>{
+      const active = a.hash === `#${entry.target.id}`;
+      a.classList.toggle('active', active);
+      if(active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }),{rootMargin:'-35% 0px -50% 0px'});
   sections.forEach(s=>so.observe(s));
 
   // Smooth anchor with sticky header compensation
@@ -478,7 +492,18 @@ document.addEventListener('DOMContentLoaded',()=>{
     const stepTitles = ['Tell me who you are', 'Shape the project brief', 'Review and send your enquiry'];
     const renderInquiryStep = (step) => {
       currentInquiryStep = step;
-      inquirySteps.forEach((element) => { element.hidden = Number(element.dataset.inquiryStep) !== step; });
+      inquirySteps.forEach((element) => {
+        const isActive = Number(element.dataset.inquiryStep) === step;
+        element.hidden = !isActive;
+        element.classList.toggle('inquiry-step-active', isActive);
+        if (isActive) {
+          element.classList.remove('inquiry-step-enter');
+          requestAnimationFrame(() => {
+            element.classList.add('inquiry-step-enter');
+            setTimeout(() => element.classList.remove('inquiry-step-enter'), 720);
+          });
+        }
+      });
       stepIndicators.forEach((element) => element.classList.toggle('active', Number(element.dataset.stepIndicator) === step));
       if (stepTitle) stepTitle.textContent = stepTitles[step - 1];
       if (step > 1 && !backStepBtn && navigation) {
