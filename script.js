@@ -872,7 +872,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       if (actionLabel) {
         actionHtml = `
           <div class="chat-action-container">
-            <button type="button" class="chat-action-btn magnetic" data-action="contact">
+            <button type="button" class="chat-action-btn magnetic" data-action="contact" data-service="${escapeHtml(detectedService)}">
               <span>${actionLabel}</span>
               <b>↗</b>
             </button>
@@ -919,6 +919,12 @@ document.addEventListener('DOMContentLoaded',()=>{
               behavior: 'smooth'
             });
             const contactForm = document.getElementById('contactForm');
+            const serviceSelect = document.getElementById('contact-service');
+            const selectedService = actionBtn.dataset.service;
+            if (serviceSelect && selectedService) {
+              const option = [...serviceSelect.options].find(item => item.value.toLowerCase().includes(selectedService.toLowerCase().split(' & ')[0]));
+              if (option) serviceSelect.value = option.value;
+            }
             if (contactForm) {
               contactForm.classList.add('focused-glow');
               setTimeout(() => contactForm.classList.remove('focused-glow'), 2200);
