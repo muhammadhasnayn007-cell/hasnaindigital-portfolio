@@ -17,12 +17,17 @@ const {
 } = require('./lib/security');
 const { sendContactFormEmail } = require('./lib/mailer');
 const { handleChatInteraction } = require('./lib/ai');
-const { createProjectInquiry } = require('./lib/supabase-server');
+const {
+  createProjectInquiry,
+  createNotificationDelivery,
+  updateNotificationDelivery
+} = require('./lib/supabase-server');
 const analyticsHandler = require('./api/analytics');
 const adminAuthHandler = require('./api/admin-auth');
 const adminInquiriesHandler = require('./api/admin-inquiries');
 const adminAnalyticsHandler = require('./api/admin-analytics');
 const adminProcessHandler = require('./api/admin-process-inquiry');
+const adminAttachmentHandler = require('./api/admin-attachment');
 const knowledge = require('./lib/knowledge.json');
 
 const app = express();
@@ -47,7 +52,7 @@ app.use(cors({
 }));
 
 // Body parsers with sensible size limits
-app.use(express.json({ limit: '100kb' }));
+app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 
 // Lightweight security headers
@@ -139,6 +144,7 @@ app.get('/api/admin-inquiries', adminInquiriesHandler);
 app.patch('/api/admin-inquiries', adminInquiriesHandler);
 app.get('/api/admin-analytics', adminAnalyticsHandler);
 app.post('/api/admin-process-inquiry', adminProcessHandler);
+app.get('/api/admin-attachment', adminAttachmentHandler);
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -256,15 +262,41 @@ app.post('/api/contact', async (req, res) => {
       privacy_consent: true,
       marketing_consent: false
     });
-    const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });
-    recordSubmissionSuccess(name, email, message);
-    return res.status(200).json({
-      success: true,
-      message: 'Your message was submitted successfully and accepted by the delivery service. You will receive a response within 24 hours.',
-      inquiryId: inquiry.id,
-      referenceId: inquiry.reference_id,
-      deliveryId: delivery.id
+    const notification = await createNotificationDelivery(inquiry.id);
+    await updateNotificationDelivery(notification.id, {
+      status: 'sending',
+      attempt_count: notification.attempt_count + 1
     });
+    try {
+      const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });
+      await updateNotificationDelivery(notification.id, {
+        status: 'delivered',
+        provider_id: delivery.id || null,
+        delivered_at: new Date().toISOString()
+      });
+      recordSubmissionSuccess(name, email, message);
+      return res.status(200).json({
+        success: true,
+        message: 'Your message was submitted successfully and accepted by the delivery service. You will receive a response within 24 hours.',
+        inquiryId: inquiry.id,
+        referenceId: inquiry.reference_id,
+        deliveryId: delivery.id
+      });
+    } catch (deliveryError) {
+      await updateNotificationDelivery(notification.id, {
+        status: 'failed',
+        last_error: String(deliveryError.message || 'Notification delivery failed').slice(0, 500)
+      });
+      clearSubmissionLock(name, email, message);
+      console.error('Contact notification delivery error:', deliveryError.message);
+      return res.status(202).json({
+        success: true,
+        message: 'Your enquiry was received securely. Our team will follow up shortly.',
+        inquiryId: inquiry.id,
+        referenceId: inquiry.reference_id,
+        deliveryPending: true
+      });
+    }
   } catch (err) {
     clearSubmissionLock(name, email, message);
     console.error('Contact Form Delivery Error:', err.message);
