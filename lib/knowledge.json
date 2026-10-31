@@ -99,6 +99,19 @@
     "design": ["Figma", "Adobe Photoshop", "Wireframing", "Design Systems"],
     "seoAndAnalytics": ["Google Search Console", "Google Analytics 4 (GA4)", "Technical SEO", "Ahrefs", "Keyword Research"]
   },
+  "skills": {
+    "seoAndGrowth": ["Technical SEO", "On-page SEO", "Off-page SEO", "Keyword Research", "Local SEO", "SEO Audit", "Digital Marketing", "Content Strategy", "Link Building", "Google Search Console", "GA4"],
+    "development": ["HTML5", "CSS3", "JavaScript", "React JS", "WordPress", "Python", "Node.js", "Express", "REST APIs"],
+    "design": ["UI/UX Design", "Figma", "Adobe Photoshop", "Wireframing", "Design Systems", "Prototyping"],
+    "growth": ["Content Strategy", "Campaigns", "Conversion Rate Optimization", "Analytics", "Social Media Marketing"]
+  },
+  "websiteSections": {
+    "skills": "#about",
+    "services": "#services",
+    "projects": "#projects",
+    "contact": "#contact",
+    "faq": "#faq"
+  },
   "projects": [
     {
       "id": "seo-case-study",
