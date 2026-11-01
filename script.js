@@ -90,11 +90,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Pointer light inside cards + subtle 3D tilt
   if(matchMedia('(pointer:fine)').matches){
     $$('[data-tilt]').forEach(card=>{
-      const move=e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;card.style.setProperty('--mx',(x*100)+'%');card.style.setProperty('--my',(y*100)+'%');card.style.transform=`perspective(1100px) rotateX(${(0.5-y)*3.5}deg) rotateY(${(x-0.5)*5}deg) translateY(-7px)`;};
-      card.addEventListener('pointermove',move);card.addEventListener('pointerleave',()=>card.style.transform='');
+      const move=e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;card.style.setProperty('--mx',(x*100)+'%');card.style.setProperty('--my',(y*100)+'%');card.style.setProperty('--pointer-rx', `${(0.5-y)*3.5}deg`); card.style.setProperty('--pointer-ry', `${(x-0.5)*5}deg`); card.style.setProperty('--pointer-y', '-7px');};
+      card.addEventListener('pointermove',move);card.addEventListener('pointerleave',()=>{card.style.removeProperty('--pointer-rx');card.style.removeProperty('--pointer-ry');card.style.removeProperty('--pointer-y');});
     });
     const portrait=$('.tilt-target');
-    if(portrait){portrait.addEventListener('pointermove',e=>{const r=portrait.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;portrait.style.transform=`perspective(1100px) rotateX(${(0.5-y)*4}deg) rotateY(${(x-0.5)*6}deg) translateZ(7px)`});portrait.addEventListener('pointerleave',()=>portrait.style.transform='');}
+    if(portrait){portrait.addEventListener('pointermove',e=>{const r=portrait.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;portrait.style.setProperty('--pointer-rx', `${(0.5-y)*4}deg`); portrait.style.setProperty('--pointer-ry', `${(x-0.5)*6}deg`); portrait.style.setProperty('--pointer-z', '7px')});portrait.addEventListener('pointerleave',()=>{portrait.style.removeProperty('--pointer-rx');portrait.style.removeProperty('--pointer-ry');portrait.style.removeProperty('--pointer-z')});}
   }
 
   // Magnetic hover for CTAs
@@ -1096,6 +1096,30 @@ document.addEventListener('DOMContentLoaded',()=>{
       }
     })
     .catch(() => {});
+
+  // Cinematic scroll depth: keep all visual work on a single animation frame.
+  const scrollDepthTargets = $$('[data-scroll-depth], .service-card, .project, .about-card, .tool, .testimonial, .journey-card, .work-method-card');
+  let depthRaf = false;
+  const updateScrollDepth = () => {
+    depthRaf = false;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    scrollDepthTargets.forEach((element, index) => {
+      const rect = element.getBoundingClientRect();
+      if (rect.bottom < -120 || rect.top > innerHeight + 120) return;
+      const distance = (innerHeight * .5 - (rect.top + rect.height * .5)) / Math.max(innerHeight * .5, 1);
+      const progress = Math.max(-1, Math.min(1, distance));
+      const direction = index % 2 === 0 ? 1 : -1;
+      element.style.setProperty('--scroll-depth-y', `${progress * -18}px`);
+      element.style.setProperty('--scroll-depth-rx', `${progress * -3.2}deg`);
+      element.style.setProperty('--scroll-depth-ry', `${progress * direction * 1.8}deg`);
+      element.style.setProperty('--scroll-depth-scale', `${1 - Math.abs(progress) * 0.018}`);
+      const visual = element.querySelector('.project-visual, img[data-depth-image]');
+      if (visual) visual.style.setProperty('--image-depth-y', `${progress * -22}px`);
+    });
+  };
+  addEventListener('scroll', () => { if (!depthRaf) { depthRaf = true; requestAnimationFrame(updateScrollDepth); } }, { passive: true });
+  addEventListener('resize', updateScrollDepth, { passive: true });
+  updateScrollDepth();
 
   // Contact image subtle scroll parallax
   const contact = $('.contact'), contactImg = $('.contact-bg img');
