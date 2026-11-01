@@ -1112,6 +1112,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       element.style.setProperty('--scroll-depth-y', `${progress * -18}px`);
       element.style.setProperty('--scroll-depth-rx', `${progress * -3.2}deg`);
       element.style.setProperty('--scroll-depth-ry', `${progress * direction * 1.8}deg`);
+      element.style.setProperty('--scroll-depth-scale', `${1 - Math.abs(progress) * 0.018}`);
       const visual = element.querySelector('.project-visual, img[data-depth-image]');
       if (visual) visual.style.setProperty('--image-depth-y', `${progress * -22}px`);
     });
