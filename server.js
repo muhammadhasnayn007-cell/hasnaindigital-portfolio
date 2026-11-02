@@ -1,5 +1,17 @@
 // Hasnain Digital Marketer - Production Express Server
-require('dotenv').config();
+const dotenv = require('dotenv');
+const localEnvPath = require('path').join(process.cwd(), '.env.development.local');
+const shouldLoadLocalEnv = !process.env.VERCEL && process.env.NODE_ENV !== 'production';
+const envPath = shouldLoadLocalEnv && require('fs').existsSync(localEnvPath) ? localEnvPath : '.env';
+const envLoad = dotenv.config({ path: envPath });
+
+if (envLoad.error && envLoad.error.code !== 'ENOENT') {
+  console.warn('[v0] Environment file load warning:', envLoad.error.message);
+}
+
+const hasSupabaseUrl = Boolean(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL);
+const hasSupabaseServiceKey = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY);
+console.info(`[v0] Supabase server credentials: url=${hasSupabaseUrl ? 'configured' : 'missing'}, serviceKey=${hasSupabaseServiceKey ? 'configured' : 'missing'}`);
 
 const express = require('express');
 const fs = require('fs');
