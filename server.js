@@ -27,13 +27,8 @@ const {
   clearSubmissionLock,
   escapeHtml
 } = require('./lib/security');
-const { sendContactFormEmail } = require('./lib/mailer');
 const { handleChatInteraction } = require('./lib/ai');
-const {
-  createProjectInquiry,
-  createNotificationDelivery,
-  updateNotificationDelivery
-} = require('./lib/supabase-server');
+const { processContactSubmission } = require('./lib/contact-submission');
 const analyticsHandler = require('./api/analytics');
 const adminAuthHandler = require('./api/admin-auth');
 const adminInquiriesHandler = require('./api/admin-inquiries');
@@ -260,55 +255,37 @@ app.post('/api/contact', async (req, res) => {
     if (req.body?.privacyConsent !== true) {
       return res.status(400).json({ success: false, error: 'Please accept the privacy notice before submitting.' });
     }
-    const inquiry = await createProjectInquiry({
-      full_name: name,
-      email,
-      phone: contactMethod === 'WhatsApp' ? whatsapp : null,
-      preferred_contact_method: contactMethod.toLowerCase(),
-      project_type: service,
-      project_title: subject,
-      current_website_url: websiteUrl || null,
-      description: message,
-      budget: budget || null,
-      timeline: timeline || null,
-      privacy_consent: true,
-      marketing_consent: false
+    const result = await processContactSubmission({
+      inquiryData: {
+        full_name: name,
+        email,
+        phone: contactMethod === 'WhatsApp' ? whatsapp : null,
+        preferred_contact_method: contactMethod.toLowerCase(),
+        project_type: service,
+        project_title: subject,
+        current_website_url: websiteUrl || null,
+        description: message,
+        budget: budget || null,
+        timeline: timeline || null,
+        privacy_consent: true,
+        marketing_consent: false
+      },
+      emailData: { name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp }
     });
-    const notification = await createNotificationDelivery(inquiry.id);
-    await updateNotificationDelivery(notification.id, {
-      status: 'sending',
-      attempt_count: notification.attempt_count + 1
-    });
-    try {
-      const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });
-      await updateNotificationDelivery(notification.id, {
-        status: 'delivered',
-        provider_id: delivery.id || null,
-        delivered_at: new Date().toISOString()
-      });
-      recordSubmissionSuccess(name, email, message);
-      return res.status(200).json({
-        success: true,
-        message: 'Your message was submitted successfully and accepted by the delivery service. You will receive a response within 24 hours.',
-        inquiryId: inquiry.id,
-        referenceId: inquiry.reference_id,
-        deliveryId: delivery.id
-      });
-    } catch (deliveryError) {
-      await updateNotificationDelivery(notification.id, {
-        status: 'failed',
-        last_error: String(deliveryError.message || 'Notification delivery failed').slice(0, 500)
-      });
+
+    if (result.deliveryError) {
       clearSubmissionLock(name, email, message);
-      console.error('Contact notification delivery error:', deliveryError.message);
-      return res.status(202).json({
-        success: true,
-        message: 'Your enquiry was received securely. Our team will follow up shortly.',
-        inquiryId: inquiry.id,
-        referenceId: inquiry.reference_id,
-        deliveryPending: true
-      });
+      return res.status(202).json({ success: true, message: 'Your enquiry was received securely. Our team will follow up shortly.', inquiryId: result.inquiry.id, referenceId: result.inquiry.reference_id, deliveryPending: true });
     }
+
+    recordSubmissionSuccess(name, email, message);
+    return res.status(200).json({
+      success: true,
+      message: result.alreadyProcessing ? 'Your enquiry is already being delivered.' : 'Your message was submitted successfully and accepted by the delivery service. You will receive a response within 24 hours.',
+      inquiryId: result.inquiry.id,
+      referenceId: result.inquiry.reference_id,
+      deliveryId: result.delivery.id
+    });
   } catch (err) {
     clearSubmissionLock(name, email, message);
     console.error('Contact Form Delivery Error:', err.message);

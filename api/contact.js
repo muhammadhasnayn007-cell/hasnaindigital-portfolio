@@ -1,7 +1,6 @@
 // Serverless Contact Form Handler for Vercel, Netlify, and Serverless Platforms
 const { isValidEmail, checkRateLimit, isDuplicateSubmission, recordSubmissionSuccess, clearSubmissionLock, getClientIp, applyCors, readRequestBody, parseRequestBody, MAX_SERVERLESS_BODY_BYTES } = require('../lib/security');
-const { sendContactFormEmail } = require('../lib/mailer');
-const { createProjectInquiry, uploadInquiryAttachment } = require('../lib/supabase-server');
+const { processContactSubmission } = require('../lib/contact-submission');
 
 module.exports = async function handler(req, res) {
   applyCors(req, res, 'POST, OPTIONS');
@@ -87,47 +86,41 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const inquiry = await createProjectInquiry({
-      full_name: name,
-      email,
-      phone: contactMethod === 'whatsapp' ? whatsapp : null,
-      preferred_contact_method: contactMethod,
-      project_type: service,
-      project_title: subject,
-      current_website_url: websiteUrl || null,
-      description: message,
-      budget: budget || null,
-      timeline: timeline || null,
-      privacy_consent: privacyConsent,
-      marketing_consent: false
+    const result = await processContactSubmission({
+      inquiryData: {
+        full_name: name,
+        email,
+        phone: contactMethod === 'whatsapp' ? whatsapp : null,
+        preferred_contact_method: contactMethod,
+        project_type: service,
+        project_title: subject,
+        current_website_url: websiteUrl || null,
+        description: message,
+        budget: budget || null,
+        timeline: timeline || null,
+        privacy_consent: privacyConsent,
+        marketing_consent: false
+      },
+      emailData: { name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp },
+      attachment: body.attachment
     });
-    const attachment = body.attachment;
-    if (attachment?.data && typeof attachment.data === 'string' && attachment.data.length <= 4_000_000) {
-      const match = attachment.data.match(/^data:(application\/pdf|image\/(?:png|jpeg|webp));base64,(.+)$/);
-      if (match) {
-        await uploadInquiryAttachment({ inquiryId: inquiry.id, fileName: String(attachment.name || 'project-attachment').slice(0, 120), contentType: match[1], buffer: Buffer.from(match[2], 'base64') });
-      }
-    }
-    const delivery = await sendContactFormEmail({ name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp });
-    
-    // Only lock after successful acceptance by email provider
-    recordSubmissionSuccess(name, email, message);
 
+    if (result.deliveryError) {
+      clearSubmissionLock(name, email, message);
+      return res.status(202).json({ success: true, message: 'Your enquiry was received securely. Our team will follow up shortly.', inquiryId: result.inquiry.id, referenceId: result.inquiry.reference_id, deliveryPending: true });
+    }
+
+    recordSubmissionSuccess(name, email, message);
     return res.status(200).json({
       success: true,
-      message: 'Your enquiry was accepted by the delivery service. You will receive a response within 24 hours.',
-      inquiryId: inquiry.id,
-      referenceId: inquiry.reference_id,
-      deliveryId: delivery.id
+      message: result.alreadyProcessing ? 'Your enquiry is already being delivered.' : 'Your enquiry was accepted by the delivery service. You will receive a response within 24 hours.',
+      inquiryId: result.inquiry.id,
+      referenceId: result.inquiry.reference_id,
+      deliveryId: result.delivery.id
     });
   } catch (err) {
-    // Clear lock immediately so user can retry
     clearSubmissionLock(name, email, message);
     console.error('Contact Form Delivery Error:', err.message);
-
-    return res.status(500).json({
-      success: false,
-      error: 'We could not deliver your enquiry right now. Please retry or use the direct email fallback.'
-    });
+    return res.status(500).json({ success: false, error: 'We could not deliver your enquiry right now. Please retry or use the direct email fallback.' });
   }
 };
