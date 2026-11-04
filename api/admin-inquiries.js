@@ -28,7 +28,21 @@ module.exports = async function handler(req, res) {
       if (search) query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,reference_id.ilike.%${search}%,project_title.ilike.%${search}%`);
       const { data, error } = await query;
       if (error) throw error;
-      return res.status(200).json({ success: true, inquiries: data || [] });
+      const inquiries = data || [];
+      const inquiryIds = inquiries.map(inquiry => inquiry.id);
+      let deliveriesByInquiry = new Map();
+      if (inquiryIds.length) {
+        const { data: deliveries, error: deliveryError } = await auth.admin
+          .from('notification_deliveries')
+          .select('inquiry_id, delivery_type, status, attempt_count, provider_id, last_error, delivered_at, updated_at')
+          .in('inquiry_id', inquiryIds);
+        if (deliveryError) throw deliveryError;
+        deliveriesByInquiry = new Map((deliveries || []).map(delivery => [delivery.inquiry_id, delivery]));
+      }
+      return res.status(200).json({
+        success: true,
+        inquiries: inquiries.map(inquiry => ({ ...inquiry, notification_delivery: deliveriesByInquiry.get(inquiry.id) || null }))
+      });
     }
     if (req.method === 'PATCH') {
       const id = typeof req.body?.id === 'string' ? req.body.id : '';
