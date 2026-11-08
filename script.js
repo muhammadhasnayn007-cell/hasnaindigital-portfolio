@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         menu.id = menuId;
         menu.setAttribute('role', 'listbox');
         menu.setAttribute('tabindex', '-1');
-        const options = [...select.options].map((option, optionIndex) => {
+        const options = [...(select.options || [])].map((option, optionIndex) => {
           const item = document.createElement('button');
           item.type = 'button';
           item.className = 'custom-select-option';

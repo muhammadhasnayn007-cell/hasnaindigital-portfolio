@@ -267,17 +267,18 @@ function listenToUserInquiries(userId) {
   }
 }
 
-function renderInquiriesList(inquiries) {
+function renderInquiriesList(inquiries = []) {
+  const safeInquiries = Array.isArray(inquiries) ? inquiries : [];
   const container = document.getElementById('inquiriesList');
   const badge = document.getElementById('inquiryCountBadge');
   if (badge) {
-    badge.textContent = inquiries.length > 0 ? String(inquiries.length) : '';
-    badge.style.display = inquiries.length > 0 ? 'inline-block' : 'none';
+    badge.textContent = safeInquiries.length > 0 ? String(safeInquiries.length) : '';
+    badge.style.display = safeInquiries.length > 0 ? 'inline-block' : 'none';
   }
 
   if (!container) return;
 
-  if (inquiries.length === 0) {
+  if (safeInquiries.length === 0) {
     container.innerHTML = `
       <div class="empty-inquiries">
         <p>No project inquiries submitted yet.</p>
@@ -287,7 +288,7 @@ function renderInquiriesList(inquiries) {
     return;
   }
 
-  container.innerHTML = inquiries.map(inq => `
+  container.innerHTML = safeInquiries.map(inq => `
     <div class="inquiry-card">
       <div class="inquiry-card-header">
         <span class="inquiry-service">${escapeText(inq.service || 'General Project')}</span>
