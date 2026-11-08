@@ -54,7 +54,10 @@ module.exports = async function handler(req, res) {
   const privacyConsent = body.privacyConsent === true;
   if (!privacyConsent) return res.status(400).json({ success: false, error: 'Please accept the privacy notice before submitting.' });
   if (websiteUrl) {
-    try { new URL(websiteUrl); } catch { return res.status(400).json({ success: false, error: 'Please provide a valid website URL.' }); }
+    try {
+      const parsedUrl = new URL(websiteUrl);
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error('Unsupported protocol');
+    } catch { return res.status(400).json({ success: false, error: 'Please provide a valid HTTP or HTTPS website URL.' }); }
   }
   if (contactMethod === 'whatsapp' && whatsapp.length < 7) {
     return res.status(400).json({ success: false, error: 'Please provide a valid WhatsApp number.' });
@@ -121,6 +124,12 @@ module.exports = async function handler(req, res) {
   } catch (err) {
     clearSubmissionLock(name, email, message);
     console.error('Contact Form Delivery Error:', err.message);
-    return res.status(500).json({ success: false, error: 'We could not deliver your enquiry right now. Please retry or use the direct email fallback.' });
+    const serviceUnavailable = err.code === 'SUPABASE_NOT_CONFIGURED';
+    return res.status(serviceUnavailable ? 503 : 500).json({
+      success: false,
+      error: serviceUnavailable
+        ? 'The contact service is temporarily unavailable. Please use the direct email fallback.'
+        : 'We could not process your enquiry right now. Please retry or use the direct email fallback.'
+    });
   }
 };

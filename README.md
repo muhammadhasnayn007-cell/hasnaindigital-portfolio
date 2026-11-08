@@ -58,7 +58,7 @@ Open `http://localhost:3000` in your browser.
 | `CONTACT_EMAIL` | Target email for contact submissions and AI lead notifications | No | `muhammadhasnayn007@gmail.com` |
 | `SITE_URL` | Canonical URL of the production website | No | `https://hasnaindigitalmarketer.com` |
 | `AVAILABILITY_STATUS` | Real-time availability indicator | No | `"Available for Projects"` |
-| `ALLOWED_ORIGINS` | CORS allowed origins (comma-separated or `*`) | No | `https://hasnaindigitalmarketer.com` |
+| `ALLOWED_ORIGINS` | CORS allowed origins (comma-separated) | No | `https://hasnaindigital-portfolio.vercel.app,https://hasnaindigitalmarketer.com` |
 | `RESEND_API_KEY` | Resend API key for outbound transactional emails | **YES** | `re_...` |
 | `RESEND_FROM` | Verified sender address in Resend dashboard | No | `Hasnain Digital Marketer <onboarding@resend.dev>` |
 | `SMTP_HOST` | Standard SMTP server host (Alternative to Resend) | No | `smtp.gmail.com` |

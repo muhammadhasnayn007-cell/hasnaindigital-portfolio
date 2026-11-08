@@ -219,8 +219,14 @@ app.post('/api/contact', async (req, res) => {
   const contactMethod = body.contactMethod === 'WhatsApp' ? 'WhatsApp' : 'Email';
   const whatsapp = (body.whatsapp || '').trim();
 
+  if (name.length > 120 || subject.length > 200 || service.length > 120 || message.length > 8000 || budget.length > 120 || timeline.length > 120 || websiteUrl.length > 500 || whatsapp.length > 40) {
+    return res.status(400).json({ success: false, error: 'One or more fields exceed the allowed length.' });
+  }
   if (websiteUrl) {
-    try { new URL(websiteUrl); } catch { return res.status(400).json({ success: false, error: 'Please provide a valid website URL.' }); }
+    try {
+      const parsedUrl = new URL(websiteUrl);
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error('Unsupported protocol');
+    } catch { return res.status(400).json({ success: false, error: 'Please provide a valid HTTP or HTTPS website URL.' }); }
   }
   if (contactMethod === 'WhatsApp' && whatsapp.length < 7) {
     return res.status(400).json({ success: false, error: 'Please provide a valid WhatsApp number.' });
@@ -290,9 +296,12 @@ app.post('/api/contact', async (req, res) => {
     clearSubmissionLock(name, email, message);
     console.error('Contact Form Delivery Error:', err.message);
 
-    return res.status(500).json({
+    const serviceUnavailable = err.code === 'SUPABASE_NOT_CONFIGURED';
+    return res.status(serviceUnavailable ? 503 : 500).json({
       success: false,
-      error: 'A server error occurred. Please try again later.'
+      error: serviceUnavailable
+        ? 'The contact service is temporarily unavailable. Please use the direct email option below.'
+        : 'We could not process your enquiry right now. Please retry or use the direct email option below.'
     });
   }
 });
