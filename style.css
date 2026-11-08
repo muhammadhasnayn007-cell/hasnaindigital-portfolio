@@ -1083,10 +1083,36 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   transition: all 0.25s ease;
 }
 .chat-header-actions .chat-action-btn:hover {
-  background: rgba(227, 19, 27, 0.18);
-  border-color: rgba(227, 19, 27, 0.5);
-  color: #fff;
+  background: rgba(255,255,255,.1);
+  color: var(--text-primary);
 }
+
+.chat-header-actions #chatClearBtn {
+  width: auto;
+  min-width: 42px;
+  padding: 0 8px;
+  font-size: .58rem;
+  letter-spacing: .08em;
+}
+
+.chat-retry-btn {
+  margin-top: 10px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 6px 11px;
+  font: inherit;
+  font-size: .68rem;
+  cursor: pointer;
+}
+
+.chat-retry-btn:hover,
+.chat-retry-btn:focus-visible {
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
 .chat-action-container {
   display: flex;
   width: 100%;

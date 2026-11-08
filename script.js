@@ -774,6 +774,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const chatLauncher = $('#chatLauncher');
   const chatDrawer = $('#chatDrawer');
   const chatMinimizeBtn = $('#chatMinimizeBtn');
+  const chatClearBtn = $('#chatClearBtn');
   const chatMessages = $('#chatMessages');
   const chatForm = $('#chatForm');
   const chatInput = $('#chatInput');
@@ -820,6 +821,17 @@ document.addEventListener('DOMContentLoaded',()=>{
       chatMinimizeBtn.addEventListener('click', closeChat);
     }
 
+    const clearChat = () => {
+      if (isWaitingResponse) return;
+      conversationHistory.length = 0;
+      detectedService = '';
+      if (chatMessages) chatMessages.innerHTML = '';
+      if (chatHandoffBanner) chatHandoffBanner.style.display = 'none';
+      appendAssistantMessage('Chat cleared. I am HXSN Assistant, ready to help with Hasnain\'s services, projects, or your next digital project.');
+    };
+
+    chatClearBtn?.addEventListener('click', clearChat);
+
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && chatDrawer.classList.contains('open')) {
         closeChat();
@@ -845,7 +857,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       scrollChatToBottom();
     };
 
-    const appendAssistantMessage = (text, groundingSources = []) => {
+    const appendAssistantMessage = (text, groundingSources = [], retryMessage = '') => {
       const bubble = document.createElement('div');
       bubble.className = 'chat-bubble assistant';
       
@@ -880,6 +892,10 @@ document.addEventListener('DOMContentLoaded',()=>{
         `;
       }
 
+      const retryHtml = retryMessage
+        ? '<button type="button" class="chat-retry-btn" aria-label="Retry the last message">Retry</button>'
+        : '';
+
       let groundingHtml = '';
       if (groundingSources && groundingSources.length > 0) {
         groundingHtml = `
@@ -900,9 +916,16 @@ document.addEventListener('DOMContentLoaded',()=>{
           ${contentHtml}
           ${actionHtml}
           ${groundingHtml}
+          ${retryHtml}
         </div>
         <span class="bubble-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
       `;
+
+      const retryBtn = bubble.querySelector('.chat-retry-btn');
+      retryBtn?.addEventListener('click', () => {
+        bubble.remove();
+        sendChatMessage(retryMessage);
+      });
 
       // Wire up Contact Hasnain / Start a Project action button
       const actionBtn = bubble.querySelector('.chat-action-btn');
@@ -975,6 +998,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
       if (chatInput) chatInput.value = '';
       isWaitingResponse = true;
+      if (chatSendBtn) chatSendBtn.disabled = true;
       showTypingIndicator();
 
       try {
@@ -1006,13 +1030,14 @@ document.addEventListener('DOMContentLoaded',()=>{
             scrollChatToBottom();
           }
         } else {
-          appendAssistantMessage(data.error || "The AI assistant is temporarily unavailable. You can also reach Hasnain directly via the Contact Form on this page.");
+          appendAssistantMessage(data.error || "The AI assistant is temporarily unavailable. You can also reach Hasnain directly via the Contact Form on this page.", [], messageText);
         }
       } catch (err) {
         hideTypingIndicator();
-        appendAssistantMessage("Network communication error. Please feel free to retry or send a message directly using the Contact Form.");
+        appendAssistantMessage("Network communication error. Please feel free to retry or send a message directly using the Contact Form.", [], messageText);
       } finally {
         isWaitingResponse = false;
+        if (chatSendBtn) chatSendBtn.disabled = false;
       }
     };
 
