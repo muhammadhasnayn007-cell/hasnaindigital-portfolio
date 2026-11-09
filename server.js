@@ -35,6 +35,9 @@ const adminInquiriesHandler = require('./api/admin-inquiries');
 const adminAnalyticsHandler = require('./api/admin-analytics');
 const adminProcessHandler = require('./api/admin-process-inquiry');
 const adminAttachmentHandler = require('./api/admin-attachment');
+const newsletterHandler = require('./api/newsletter');
+const adminNewsletterHandler = require('./api/admin-newsletter');
+const adminChatHandler = require('./api/admin-chat');
 const knowledge = require('./lib/knowledge.json');
 
 const app = express();
@@ -152,6 +155,9 @@ app.patch('/api/admin-inquiries', adminInquiriesHandler);
 app.get('/api/admin-analytics', adminAnalyticsHandler);
 app.post('/api/admin-process-inquiry', adminProcessHandler);
 app.get('/api/admin-attachment', adminAttachmentHandler);
+app.post('/api/newsletter', newsletterHandler);
+app.get('/api/admin-newsletter', adminNewsletterHandler);
+app.post('/api/admin-chat', adminChatHandler);
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',

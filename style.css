@@ -1075,6 +1075,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   width: 100%;
 }
 .premium-footer .footer-link { width: max-content; max-width: 100%; }
+.premium-footer .social-icon img { width: 15px; height: 15px; display: block; object-fit: contain; }
+.premium-footer .social-icon { display: inline-flex; align-items: center; justify-content: center; }
+.premium-footer .newsletter-form button:disabled { opacity: .65; cursor: wait; }
 .premium-footer .footer-bottom-bar { width: 100%; }
 @media (max-width: 960px) {
   .premium-footer { width: min(var(--max), calc(100% - 72px)); }

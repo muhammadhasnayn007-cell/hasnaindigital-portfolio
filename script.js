@@ -18,6 +18,38 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   }
 
+  const newsletterForm = $('.newsletter-form');
+  const newsletterEmail = $('#newsletter-email');
+  const newsletterNote = $('#newsletter-note');
+  if (newsletterForm && newsletterEmail && newsletterNote) {
+    newsletterForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const email = newsletterEmail.value.trim();
+      if (!newsletterEmail.checkValidity()) {
+        newsletterEmail.reportValidity();
+        return;
+      }
+      const submitButton = newsletterForm.querySelector('button[type="submit"]');
+      if (submitButton) { submitButton.disabled = true; submitButton.setAttribute('aria-busy', 'true'); }
+      newsletterNote.textContent = 'Saving your subscription…';
+      try {
+        const response = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) throw new Error(data.error || 'Subscription failed.');
+        newsletterNote.textContent = 'You are on the list. Thank you for subscribing.';
+        newsletterEmail.value = '';
+      } catch (error) {
+        newsletterNote.textContent = error.message || 'We could not save your subscription. Please try again.';
+      } finally {
+        if (submitButton) { submitButton.disabled = false; submitButton.removeAttribute('aria-busy'); }
+      }
+    });
+  }
+
   // Animated mobile navigation
   const toggle=$('.nav-toggle'), nav=$('.main-nav');
   if(toggle&&nav){
