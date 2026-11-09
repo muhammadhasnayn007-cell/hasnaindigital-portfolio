@@ -1078,6 +1078,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .premium-footer .social-icon img { width: 15px; height: 15px; display: block; object-fit: contain; }
 .premium-footer .social-icon { display: inline-flex; align-items: center; justify-content: center; }
 .premium-footer .newsletter-form button:disabled { opacity: .65; cursor: wait; }
+.premium-footer .newsletter-consent { display: flex; gap: 9px; align-items: flex-start; margin-top: 13px; color: #827773; font-size: 10px; line-height: 1.5; letter-spacing: .04em; }
+.premium-footer .newsletter-consent input { width: 14px; height: 14px; flex: 0 0 auto; accent-color: #d71920; margin: 0; }
 .premium-footer .footer-bottom-bar { width: 100%; }
 @media (max-width: 960px) {
   .premium-footer { width: min(var(--max), calc(100% - 72px)); }

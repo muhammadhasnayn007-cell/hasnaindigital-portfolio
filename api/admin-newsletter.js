@@ -6,13 +6,13 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ success: false, error: 'Method not allowed.' });
 
   try {
-    const status = typeof req.query?.status === 'string' ? req.query.status : 'subscribed';
+    const status = typeof req.query?.status === 'string' ? req.query.status : 'active';
     let query = auth.admin
       .from('newsletter_subscribers')
       .select('id, email, source, status, subscribed_at, unsubscribed_at, created_at, updated_at')
       .order('created_at', { ascending: false })
       .limit(500);
-    if (['subscribed', 'unsubscribed'].includes(status)) query = query.eq('status', status);
+    if (['pending', 'active', 'unsubscribed'].includes(status)) query = query.eq('status', status);
     const { data, error } = await query;
     if (error) throw error;
     return res.status(200).json({ success: true, subscribers: data || [] });

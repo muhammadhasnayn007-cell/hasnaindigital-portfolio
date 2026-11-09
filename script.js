@@ -20,13 +20,15 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const newsletterForm = $('.newsletter-form');
   const newsletterEmail = $('#newsletter-email');
+  const newsletterConsent = $('#newsletter-consent');
   const newsletterNote = $('#newsletter-note');
-  if (newsletterForm && newsletterEmail && newsletterNote) {
+  if (newsletterForm && newsletterEmail && newsletterConsent && newsletterNote) {
     newsletterForm.addEventListener('submit', async event => {
       event.preventDefault();
       const email = newsletterEmail.value.trim();
-      if (!newsletterEmail.checkValidity()) {
-        newsletterEmail.reportValidity();
+      if (!newsletterEmail.checkValidity() || !newsletterConsent.checkValidity()) {
+        const invalidField = !newsletterEmail.checkValidity() ? newsletterEmail : newsletterConsent;
+        invalidField.reportValidity();
         return;
       }
       const submitButton = newsletterForm.querySelector('button[type="submit"]');
@@ -36,12 +38,13 @@ document.addEventListener('DOMContentLoaded',()=>{
         const response = await fetch('/api/newsletter', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
+          body: JSON.stringify({ email, consent: newsletterConsent.checked })
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok || !data.success) throw new Error(data.error || 'Subscription failed.');
-        newsletterNote.textContent = 'You are on the list. Thank you for subscribing.';
+        newsletterNote.textContent = data.message || 'Check your inbox to confirm your subscription.';
         newsletterEmail.value = '';
+        newsletterConsent.checked = false;
       } catch (error) {
         newsletterNote.textContent = error.message || 'We could not save your subscription. Please try again.';
       } finally {
