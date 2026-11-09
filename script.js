@@ -18,6 +18,41 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   }
 
+  const newsletterForm = $('.newsletter-form');
+  const newsletterEmail = $('#newsletter-email');
+  const newsletterConsent = $('#newsletter-consent');
+  const newsletterNote = $('#newsletter-note');
+  if (newsletterForm && newsletterEmail && newsletterConsent && newsletterNote) {
+    newsletterForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const email = newsletterEmail.value.trim();
+      if (!newsletterEmail.checkValidity() || !newsletterConsent.checkValidity()) {
+        const invalidField = !newsletterEmail.checkValidity() ? newsletterEmail : newsletterConsent;
+        invalidField.reportValidity();
+        return;
+      }
+      const submitButton = newsletterForm.querySelector('button[type="submit"]');
+      if (submitButton) { submitButton.disabled = true; submitButton.setAttribute('aria-busy', 'true'); }
+      newsletterNote.textContent = 'Saving your subscription…';
+      try {
+        const response = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, consent: newsletterConsent.checked })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) throw new Error(data.error || 'Subscription failed.');
+        newsletterNote.textContent = data.message || 'Check your inbox to confirm your subscription.';
+        newsletterEmail.value = '';
+        newsletterConsent.checked = false;
+      } catch (error) {
+        newsletterNote.textContent = error.message || 'We could not save your subscription. Please try again.';
+      } finally {
+        if (submitButton) { submitButton.disabled = false; submitButton.removeAttribute('aria-busy'); }
+      }
+    });
+  }
+
   // Animated mobile navigation
   const toggle=$('.nav-toggle'), nav=$('.main-nav');
   if(toggle&&nav){
@@ -774,7 +809,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   const chatLauncher = $('#chatLauncher');
   const chatDrawer = $('#chatDrawer');
   const chatMinimizeBtn = $('#chatMinimizeBtn');
-  const chatClearBtn = $('#chatClearBtn');
   const chatMessages = $('#chatMessages');
   const chatForm = $('#chatForm');
   const chatInput = $('#chatInput');
@@ -820,17 +854,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     if (chatMinimizeBtn) {
       chatMinimizeBtn.addEventListener('click', closeChat);
     }
-
-    const clearChat = () => {
-      if (isWaitingResponse) return;
-      conversationHistory.length = 0;
-      detectedService = '';
-      if (chatMessages) chatMessages.innerHTML = '';
-      if (chatHandoffBanner) chatHandoffBanner.style.display = 'none';
-      appendAssistantMessage('Chat cleared. I am HXSN Assistant, ready to help with Hasnain\'s services, projects, or your next digital project.');
-    };
-
-    chatClearBtn?.addEventListener('click', clearChat);
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && chatDrawer.classList.contains('open')) {
