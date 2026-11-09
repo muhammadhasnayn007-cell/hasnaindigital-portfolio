@@ -134,7 +134,8 @@ runTest('AI: Lead intent qualification logic', () => {
 
 runTest('AI: Semantic assistant fallback produces professional responses', () => {
   const greeting = fallbackSemanticAssistant('Hi there', [], 'en');
-  assert.ok(greeting.includes("HXSN Assistant"), 'Should identify as Hasnain\'s Assistant');
+  assert.ok(greeting.length < 90, 'Should keep casual greetings concise');
+  assert.ok(!greeting.includes('Web Development') && !greeting.includes('SEO'), 'Should not promote services during casual greetings');
 
   const webDev = fallbackSemanticAssistant('Tell me about your web development', [], 'en');
   assert.ok(webDev.includes('Web Development') || webDev.includes('HTML5'), 'Should describe web dev');
