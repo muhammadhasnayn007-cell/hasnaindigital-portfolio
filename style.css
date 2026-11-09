@@ -1075,8 +1075,15 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   width: 100%;
 }
 .premium-footer .footer-link { width: max-content; max-width: 100%; }
-.premium-footer .social-icon img { width: 15px; height: 15px; display: block; object-fit: contain; }
+.premium-footer .footer-socials { gap: 18px; }
+.premium-footer .social-icon img { width: 18px; height: 18px; display: block; object-fit: contain; opacity: 1; visibility: visible; }
 .premium-footer .social-icon { display: inline-flex; align-items: center; justify-content: center; }
+.premium-footer .social-icon.github img { filter: invert(1) !important; }
+.premium-footer .social-icon.icon-fallback::before { content: attr(data-fallback); display: block; color: #f8f2ed; font: 700 10px/1 Arial, sans-serif; letter-spacing: .02em; }
+@media (max-width: 600px) {
+  .premium-footer .footer-socials { gap: 15px; }
+  .premium-footer .social-icon img { width: 17px; height: 17px; }
+}
 .premium-footer .newsletter-form button:disabled { opacity: .65; cursor: wait; }
 .premium-footer .newsletter-consent { display: flex; gap: 9px; align-items: flex-start; margin-top: 13px; color: #827773; font-size: 10px; line-height: 1.5; letter-spacing: .04em; }
 .premium-footer .newsletter-consent input { width: 14px; height: 14px; flex: 0 0 auto; accent-color: #d71920; margin: 0; }
