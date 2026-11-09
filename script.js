@@ -774,7 +774,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   const chatLauncher = $('#chatLauncher');
   const chatDrawer = $('#chatDrawer');
   const chatMinimizeBtn = $('#chatMinimizeBtn');
-  const chatClearBtn = $('#chatClearBtn');
   const chatMessages = $('#chatMessages');
   const chatForm = $('#chatForm');
   const chatInput = $('#chatInput');
@@ -820,17 +819,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     if (chatMinimizeBtn) {
       chatMinimizeBtn.addEventListener('click', closeChat);
     }
-
-    const clearChat = () => {
-      if (isWaitingResponse) return;
-      conversationHistory.length = 0;
-      detectedService = '';
-      if (chatMessages) chatMessages.innerHTML = '';
-      if (chatHandoffBanner) chatHandoffBanner.style.display = 'none';
-      appendAssistantMessage('Chat cleared. I am HXSN Assistant, ready to help with Hasnain\'s services, projects, or your next digital project.');
-    };
-
-    chatClearBtn?.addEventListener('click', clearChat);
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && chatDrawer.classList.contains('open')) {

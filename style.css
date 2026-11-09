@@ -1087,14 +1087,6 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   color: var(--text-primary);
 }
 
-.chat-header-actions #chatClearBtn {
-  width: auto;
-  min-width: 42px;
-  padding: 0 8px;
-  font-size: .58rem;
-  letter-spacing: .08em;
-}
-
 .chat-retry-btn {
   margin-top: 10px;
   border: 1px solid rgba(255,255,255,.2);
