@@ -2112,3 +2112,8 @@ body{width:100%;max-width:100%;overflow-x:clip}
 @media(max-width:520px){.hero-portrait .portrait-frame{width:min(100%,390px);height:500px;border-radius:24px}.hero-portrait .float-tag{padding:9px 11px;font-size:8px;letter-spacing:.1em;gap:6px}.hero-portrait .float-tag .badge-mark{width:15px;height:15px;font-size:10px}.hero-portrait .float-tag.t1{top:7%;left:-3%}.hero-portrait .float-tag.t2{top:30%;right:-3%}.hero-portrait .float-tag.t3{bottom:21%;left:-3%}.hero-portrait .float-tag.t4{bottom:5%;right:-3%}}
 @media (prefers-reduced-motion:reduce){.hero-portrait .float-tag,.hero-portrait .float-tag .robot-mark{animation:none!important}.hero-portrait .portrait-frame{transform:none!important;transition:none!important}}
 
+/* Extra depth stays subtle so the badges feel suspended without competing with the portrait. */
+.hero-portrait .float-tag.t1{animation-duration:7.8s;animation-delay:.25s}.hero-portrait .float-tag.t2{animation-name:heroBadgeFloatX;animation-duration:8.6s;animation-delay:1.15s}.hero-portrait .float-tag.t3{animation-duration:7.4s;animation-delay:.65s}.hero-portrait .float-tag.t4{animation-name:heroBadgeFloatZ;animation-duration:9.2s;animation-delay:1.9s}
+@media (pointer:fine) and (min-width:821px){.hero-portrait{perspective:1200px;transform-style:preserve-3d}.hero-portrait .float-tag{transform-style:preserve-3d}}
+@keyframes heroBadgeFloatZ{0%,100%{transform:translate3d(0,2px,0) rotateY(-1deg)}50%{transform:translate3d(0,-5px,12px) rotateY(1deg)}}
+
