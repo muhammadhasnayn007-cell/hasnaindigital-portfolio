@@ -63,22 +63,35 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
   }
 
-  // Scroll reveal with stagger
+  // Scroll reveal with stagger. Elements remain observed so they can replay in both directions.
   const reveals=$$('.reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-up');
+  const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  let previousScrollY=window.scrollY;
+  const updateScrollDirection=()=>{
+    const currentScrollY=window.scrollY;
+    if(Math.abs(currentScrollY-previousScrollY)>1){
+      document.documentElement.dataset.scrollDirection=currentScrollY>previousScrollY?'down':'up';
+      previousScrollY=currentScrollY;
+    }
+  };
+  addEventListener('scroll',updateScrollDirection,{passive:true});
   const revealImmediately = () => reveals.forEach(el => {
     el.style.transitionDelay = '0ms';
     el.classList.add('show');
   });
-  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if ('IntersectionObserver' in window && !reducedMotion.matches) {
     const ro=new IntersectionObserver(entries=>entries.forEach(entry=>{
-      if(!entry.isIntersecting)return;
-      const d=Number(entry.target.dataset.delay||0);
-      entry.target.style.transitionDelay=`${d}ms`;
-      entry.target.classList.add('show');
-      ro.unobserve(entry.target);
-    }),{threshold:.12,rootMargin:'0px 0px -7% 0px'});
+      const element=entry.target;
+      if(entry.isIntersecting){
+        const d=Number(element.dataset.delay||0);
+        element.style.transitionDelay=`${d}ms`;
+        element.classList.add('show');
+      } else {
+        element.style.transitionDelay='0ms';
+        element.classList.remove('show');
+      }
+    }),{threshold:.12,rootMargin:'-8% 0px -8% 0px'});
     reveals.forEach(el=>ro.observe(el));
-    setTimeout(() => reveals.filter(el => !el.classList.contains('show')).forEach(el => el.classList.add('show')), 2400);
   } else revealImmediately();
 
   // Timeline trigger
