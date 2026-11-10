@@ -345,17 +345,21 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`=================================================================`);
-  console.log(` Hasnain Digital Marketer - Full-Stack Portfolio Running`);
-  console.log(` URL: http://localhost:${PORT}`);
-  console.log(` Mode: ${process.env.NODE_ENV || 'development'}`);
-  console.log(` Contact Delivery: ${(process.env.RESEND_API_KEY || process.env.API_key) ? 'Resend' : process.env.SMTP_HOST ? 'SMTP' : 'Unconfigured'}`);
-  const configuredGeminiModel = process.env.GEMINI_MODEL?.trim();
-  const geminiModel = configuredGeminiModel && /^gemini-[a-z0-9.-]+$/i.test(configuredGeminiModel)
-    ? configuredGeminiModel
-    : 'gemini-3.5-flash-lite';
-  console.log(` AI Assistant: ${process.env.GEMINI_API_KEY ? `Gemini (${geminiModel})` : 'Gemini API key not configured'}`);
-  console.log(`=================================================================`);
-});
+// Vercel invokes the Express app as a serverless handler. Keep the listener for local development only.
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`=================================================================`);
+    console.log(` Hasnain Digital Marketer - Full-Stack Portfolio Running`);
+    console.log(` URL: http://localhost:${PORT}`);
+    console.log(` Mode: ${process.env.NODE_ENV || 'development'}`);
+    console.log(` Contact Delivery: ${(process.env.RESEND_API_KEY || process.env.API_key) ? 'Resend' : process.env.SMTP_HOST ? 'SMTP' : 'Unconfigured'}`);
+    const configuredGeminiModel = process.env.GEMINI_MODEL?.trim();
+    const geminiModel = configuredGeminiModel && /^gemini-[a-z0-9.-]+$/i.test(configuredGeminiModel)
+      ? configuredGeminiModel
+      : 'gemini-3.5-flash-lite';
+    console.log(` AI Assistant: ${process.env.GEMINI_API_KEY ? `Gemini (${geminiModel})` : 'Gemini API key not configured'}`);
+    console.log(`=================================================================`);
+  });
+}
+
+module.exports = app;
