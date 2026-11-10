@@ -142,7 +142,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       card.addEventListener('pointermove',move);card.addEventListener('pointerleave',()=>{card.style.removeProperty('--pointer-rx');card.style.removeProperty('--pointer-ry');card.style.removeProperty('--pointer-y');});
     });
     const portrait=$('.tilt-target');
-    if(portrait){portrait.addEventListener('pointermove',e=>{const r=portrait.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;portrait.style.setProperty('--pointer-rx', `${(0.5-y)*4}deg`); portrait.style.setProperty('--pointer-ry', `${(x-0.5)*6}deg`); portrait.style.setProperty('--pointer-z', '7px')});portrait.addEventListener('pointerleave',()=>{portrait.style.removeProperty('--pointer-rx');portrait.style.removeProperty('--pointer-ry');portrait.style.removeProperty('--pointer-z')});}
+    if(portrait){
+      const stage=portrait.closest('.hero-portrait');
+      portrait.addEventListener('pointermove',e=>{const r=portrait.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;portrait.style.setProperty('--pointer-rx', `${(0.5-y)*4}deg`); portrait.style.setProperty('--pointer-ry', `${(x-0.5)*6}deg`);portrait.style.setProperty('--pointer-z', '7px');if(stage){stage.style.setProperty('--hero-parallax-x', `${(x-0.5)*8}px`);stage.style.setProperty('--hero-parallax-y', `${(y-0.5)*8}px`);}});
+      portrait.addEventListener('pointerleave',()=>{portrait.style.removeProperty('--pointer-rx');portrait.style.removeProperty('--pointer-ry');portrait.style.removeProperty('--pointer-z');if(stage){stage.style.removeProperty('--hero-parallax-x');stage.style.removeProperty('--hero-parallax-y');}});
+    }
   }
 
   // Magnetic hover for CTAs
