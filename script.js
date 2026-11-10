@@ -18,41 +18,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   }
 
-  const newsletterForm = $('.newsletter-form');
-  const newsletterEmail = $('#newsletter-email');
-  const newsletterConsent = $('#newsletter-consent');
-  const newsletterNote = $('#newsletter-note');
-  if (newsletterForm && newsletterEmail && newsletterConsent && newsletterNote) {
-    newsletterForm.addEventListener('submit', async event => {
-      event.preventDefault();
-      const email = newsletterEmail.value.trim();
-      if (!newsletterEmail.checkValidity() || !newsletterConsent.checkValidity()) {
-        const invalidField = !newsletterEmail.checkValidity() ? newsletterEmail : newsletterConsent;
-        invalidField.reportValidity();
-        return;
-      }
-      const submitButton = newsletterForm.querySelector('button[type="submit"]');
-      if (submitButton) { submitButton.disabled = true; submitButton.setAttribute('aria-busy', 'true'); }
-      newsletterNote.textContent = 'Saving your subscription…';
-      try {
-        const response = await fetch('/api/newsletter', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, consent: newsletterConsent.checked })
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || !data.success) throw new Error(data.error || 'Subscription failed.');
-        newsletterNote.textContent = data.message || 'Check your inbox to confirm your subscription.';
-        newsletterEmail.value = '';
-        newsletterConsent.checked = false;
-      } catch (error) {
-        newsletterNote.textContent = error.message || 'We could not save your subscription. Please try again.';
-      } finally {
-        if (submitButton) { submitButton.disabled = false; submitButton.removeAttribute('aria-busy'); }
-      }
-    });
-  }
-
   // Animated mobile navigation
   const toggle=$('.nav-toggle'), nav=$('.main-nav');
   if(toggle&&nav){
@@ -63,22 +28,35 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
   }
 
-  // Scroll reveal with stagger
+  // Scroll reveal with stagger. Elements remain observed so they can replay in both directions.
   const reveals=$$('.reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-up');
+  const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  let previousScrollY=window.scrollY;
+  const updateScrollDirection=()=>{
+    const currentScrollY=window.scrollY;
+    if(Math.abs(currentScrollY-previousScrollY)>1){
+      document.documentElement.dataset.scrollDirection=currentScrollY>previousScrollY?'down':'up';
+      previousScrollY=currentScrollY;
+    }
+  };
+  addEventListener('scroll',updateScrollDirection,{passive:true});
   const revealImmediately = () => reveals.forEach(el => {
     el.style.transitionDelay = '0ms';
     el.classList.add('show');
   });
-  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if ('IntersectionObserver' in window && !reducedMotion.matches) {
     const ro=new IntersectionObserver(entries=>entries.forEach(entry=>{
-      if(!entry.isIntersecting)return;
-      const d=Number(entry.target.dataset.delay||0);
-      entry.target.style.transitionDelay=`${d}ms`;
-      entry.target.classList.add('show');
-      ro.unobserve(entry.target);
-    }),{threshold:.12,rootMargin:'0px 0px -7% 0px'});
+      const element=entry.target;
+      if(entry.isIntersecting){
+        const d=Number(element.dataset.delay||0);
+        element.style.transitionDelay=`${d}ms`;
+        element.classList.add('show');
+      } else {
+        element.style.transitionDelay='0ms';
+        element.classList.remove('show');
+      }
+    }),{threshold:.12,rootMargin:'-8% 0px -8% 0px'});
     reveals.forEach(el=>ro.observe(el));
-    setTimeout(() => reveals.filter(el => !el.classList.contains('show')).forEach(el => el.classList.add('show')), 2400);
   } else revealImmediately();
 
   // Timeline trigger
@@ -129,7 +107,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       card.addEventListener('pointermove',move);card.addEventListener('pointerleave',()=>{card.style.removeProperty('--pointer-rx');card.style.removeProperty('--pointer-ry');card.style.removeProperty('--pointer-y');});
     });
     const portrait=$('.tilt-target');
-    if(portrait){portrait.addEventListener('pointermove',e=>{const r=portrait.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;portrait.style.setProperty('--pointer-rx', `${(0.5-y)*4}deg`); portrait.style.setProperty('--pointer-ry', `${(x-0.5)*6}deg`); portrait.style.setProperty('--pointer-z', '7px')});portrait.addEventListener('pointerleave',()=>{portrait.style.removeProperty('--pointer-rx');portrait.style.removeProperty('--pointer-ry');portrait.style.removeProperty('--pointer-z')});}
+    if(portrait){
+      const stage=portrait.closest('.hero-portrait');
+      portrait.addEventListener('pointermove',e=>{const r=portrait.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;portrait.style.setProperty('--pointer-rx', `${(0.5-y)*4}deg`); portrait.style.setProperty('--pointer-ry', `${(x-0.5)*6}deg`);portrait.style.setProperty('--pointer-z', '7px');if(stage){stage.style.setProperty('--hero-parallax-x', `${(x-0.5)*8}px`);stage.style.setProperty('--hero-parallax-y', `${(y-0.5)*8}px`);}});
+      portrait.addEventListener('pointerleave',()=>{portrait.style.removeProperty('--pointer-rx');portrait.style.removeProperty('--pointer-ry');portrait.style.removeProperty('--pointer-z');if(stage){stage.style.removeProperty('--hero-parallax-x');stage.style.removeProperty('--hero-parallax-y');}});
+    }
   }
 
   // Magnetic hover for CTAs
