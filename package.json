@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build": "node -e \"console.log('Build successful')\"",
+    "build": "node scripts/build.js",
     "quality": "npm test && npm run lint && npm run build && npm audit --omit=dev --audit-level=high",
-    "lint": "node --check server.js lib/ai.js lib/mailer.js lib/security.js lib/supabase-server.js lib/api/chat.js lib/api/contact.js lib/api/health.js api/analytics.js api/admin-auth.js api/admin-inquiries.js api/admin-analytics.js api/admin-process-inquiry.js script.js",
-    "test": "node test/api-test.js && node test/server-test.js && node test/serverless-test.js && node test/static-asset-test.js && node test/security-hardening-test.js && node test/loader-regression-test.js && node test/gemini-test.js"
+    "lint": "node scripts/lint.js",
+    "test": "node test/api-test.js && node test/server-test.js && node test/serverless-test.js && node test/static-asset-test.js && node test/security-hardening-test.js && node test/admin-report-test.js && node test/analytics-consent-test.js && node test/loader-regression-test.js && node test/gemini-test.js"
   },
   "keywords": [
     "portfolio",

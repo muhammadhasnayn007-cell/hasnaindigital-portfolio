@@ -42,10 +42,11 @@ setTimeout(async () => {
     console.log(`✓ [PASS] /script.js returns 200 OK with ${js.contentType} (${js.length} bytes)`);
 
     // 3. firebase-client.js verification
-    const fbJs = await fetchPath('/firebase-client.js');
+    const fbJs = await fetchPath('/firebase-client.mjs');
     assert.strictEqual(fbJs.statusCode, 200);
     assert.ok(fbJs.contentType.includes('javascript'), `Expected javascript but got ${fbJs.contentType}`);
-    console.log(`✓ [PASS] /firebase-client.js returns 200 OK with ${fbJs.contentType}`);
+    assert.ok(fbJs.body.includes('import { initializeApp }'), 'Firebase browser client must remain an ES module.');
+    console.log(`✓ [PASS] /firebase-client.mjs returns 200 OK as an ES module with ${fbJs.contentType}`);
 
     // 4. robots.txt verification
     const robots = await fetchPath('/robots.txt');

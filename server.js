@@ -71,7 +71,6 @@ app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   if (process.env.NODE_ENV === 'production') res.setHeader('Strict-Transport-Security', 'max-age=63072000');
@@ -90,7 +89,7 @@ app.use((req, res, next) => {
     reqPath.endsWith('.env') ||
     reqPath.endsWith('.json') ||
     reqPath.endsWith('.lock') ||
-    (reqPath.endsWith('.js') && reqPath !== '/script.js' && reqPath !== '/firebase-client.js' && reqPath !== '/analytics-client.js')
+    ((reqPath.endsWith('.js') && reqPath !== '/script.js' && reqPath !== '/analytics-client.js') || (reqPath.endsWith('.mjs') && reqPath !== '/firebase-client.mjs'))
   ) {
     if (reqPath.startsWith('/api/')) return next();
     return res.status(404).end();
@@ -111,10 +110,10 @@ app.get('/script.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'script.js'));
 });
 
-app.get('/firebase-client.js', (req, res) => {
+app.get('/firebase-client.mjs', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=86400');
-  res.sendFile(path.join(__dirname, 'firebase-client.js'));
+  res.sendFile(path.join(__dirname, 'public', 'firebase-client.mjs'));
 });
 
 app.get('/analytics-client.js', (req, res) => {
