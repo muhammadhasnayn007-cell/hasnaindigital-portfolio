@@ -4,18 +4,19 @@
   const setConsent = (value) => {
     document.cookie = `${consentCookie}=${value}; Max-Age=31536000; Path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
   };
-  const sessionId = (() => {
+  const privacySignal = () => navigator.doNotTrack === '1' || navigator.globalPrivacyControl === true;
+  const getSessionId = () => {
     try {
       const key = 'hxsn_analytics_session';
       let value = sessionStorage.getItem(key);
       if (!value) { value = crypto.randomUUID().replace(/[^a-z0-9-]/gi, ''); sessionStorage.setItem(key, value); }
       return value;
     } catch { return null; }
-  })();
+  };
 
   window.hxsnTrack = (eventName, metadata = {}) => {
-    if (consentValue() !== 'granted' || navigator.doNotTrack === '1') return;
-    const payload = { eventName, path: location.pathname, metadata, sessionId, deviceCategory: innerWidth < 640 ? 'mobile' : innerWidth < 1024 ? 'tablet' : 'desktop', referrerHost: document.referrer ? new URL(document.referrer).hostname : null };
+    if (consentValue() !== 'granted' || privacySignal()) return;
+    const payload = { eventName, path: location.pathname, metadata, sessionId: getSessionId(), deviceCategory: innerWidth < 640 ? 'mobile' : innerWidth < 1024 ? 'tablet' : 'desktop', referrerHost: document.referrer ? new URL(document.referrer).hostname : null };
     const body = JSON.stringify(payload);
     if (navigator.sendBeacon) navigator.sendBeacon('/api/analytics', new Blob([body], { type: 'application/json' }));
     else fetch('/api/analytics', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true }).catch(() => {});
@@ -46,7 +47,7 @@
 
   const init = () => {
     addPrivacySettings();
-    if (!consentValue() && navigator.doNotTrack !== '1') renderConsent();
+    if (!consentValue() && !privacySignal()) renderConsent();
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();

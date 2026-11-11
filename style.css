@@ -2117,3 +2117,7 @@ body{width:100%;max-width:100%;overflow-x:clip}
 @media (pointer:fine) and (min-width:821px){.hero-portrait{perspective:1200px;transform-style:preserve-3d}.hero-portrait .float-tag{transform-style:preserve-3d}}
 @keyframes heroBadgeFloatZ{0%,100%{transform:translate3d(0,2px,0) rotateY(-1deg)}50%{transform:translate3d(0,-5px,12px) rotateY(1deg)}}
 
+.premium-footer .social-icon img{display:block;width:18px;height:18px;object-fit:contain;filter:brightness(0) invert(1);transition:filter .25s ease,transform .25s ease}
+.premium-footer .social-icon:hover img{filter:brightness(0) saturate(100%) invert(25%) sepia(87%) saturate(2615%) hue-rotate(337deg) brightness(95%) contrast(97%)}
+.premium-footer .social-icon:focus-visible{outline:2px solid #ff596b;outline-offset:4px;border-color:#ff596b;box-shadow:0 0 18px rgba(227,19,27,.35)}
+

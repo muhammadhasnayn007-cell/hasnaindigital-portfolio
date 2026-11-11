@@ -2,10 +2,20 @@
   "version": 2,
   "functions": {
     "server.js": {
-      "includeFiles": "{index.html,style.css,script.js,analytics-client.js,firebase-client.js,images/**,fonts/**}"
+      "includeFiles": "{index.html,admin.html,style.css,script.js,analytics-client.js,robots.txt,sitemap.xml,images/**,fonts/**,digital-marketing/**,python-development/**,seo-services/**,ui-ux-design/**,web-development/**}"
     }
   },
   "routes": [
+    {
+      "src": "/firebase-client.mjs",
+      "dest": "/firebase-client.mjs",
+      "check": true
+    },
+    {
+      "src": "/social-icons/(.*)",
+      "dest": "/social-icons/$1",
+      "check": true
+    },
     {
       "src": "/(.*)",
       "dest": "server.js"
@@ -37,15 +47,6 @@
       "source": "/images/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
   ]
