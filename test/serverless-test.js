@@ -1,6 +1,6 @@
 // Serverless Handler Simulation Test
 const assert = require('assert');
-const healthHandler = require('../lib/api/health.js');
+const analyticsHandler = require('../api/analytics.js');
 const contactHandler = require('../lib/api/contact.js');
 const chatHandler = require('../lib/api/chat.js');
 
@@ -20,14 +20,14 @@ function createMockRes() {
 async function runServerlessTests() {
   console.log('=== RUNNING SERVERLESS HANDLERS TEST ===\n');
 
-  // 1. Health Handler
-  const reqHealth = { method: 'GET', headers: {} };
+  // 1. Health endpoint dispatch through the existing analytics function
+  const reqHealth = { method: 'GET', headers: {}, query: { health: '1' } };
   const resHealth = createMockRes();
-  healthHandler(reqHealth, resHealth);
+  await analyticsHandler(reqHealth, resHealth);
   assert.strictEqual(resHealth.statusCode, 200);
   assert.strictEqual(resHealth.body.status, 'ok');
   assert.strictEqual(resHealth.body.brand, 'H.X.S.N Digital Technologies');
-  console.log('✓ [PASS] api/health handler returned 200 OK');
+  console.log('✓ [PASS] health endpoint dispatch returned 200 OK');
 
   // 2. Contact Handler Options (CORS preflight)
   const reqOpt = { method: 'OPTIONS', headers: {} };
