@@ -48,9 +48,9 @@ function get(path) {
       res.on('data', chunk => (body += chunk));
       res.on('end', () => {
         try {
-          resolve({ statusCode: res.statusCode, data: JSON.parse(body) });
+          resolve({ statusCode: res.statusCode, headers: res.headers, location: res.headers.location, data: JSON.parse(body) });
         } catch {
-          resolve({ statusCode: res.statusCode, text: body });
+          resolve({ statusCode: res.statusCode, headers: res.headers, location: res.headers.location, text: body });
         }
       });
     }).on('error', reject);
@@ -109,6 +109,31 @@ setTimeout(async () => {
     assert.ok(htmlRes.text.includes('H.X.S.N Digital Technologies'));
     assert.ok(htmlRes.text.includes("HXSN Assistant"));
     console.log('✓ [PASS] GET / serves index.html with Hasnain\'s Assistant widget');
+
+    const homeRedirect = await get('/index.html');
+    assert.strictEqual(homeRedirect.statusCode, 301, 'The duplicate homepage path should redirect permanently');
+    assert.strictEqual(homeRedirect.location, '/', 'The homepage redirect should use the canonical path');
+    console.log('✓ [PASS] GET /index.html redirects to the canonical homepage');
+
+    const serviceRedirect = await get('/seo-services/index.html');
+    assert.strictEqual(serviceRedirect.statusCode, 301, 'The duplicate service index should redirect permanently');
+    assert.strictEqual(serviceRedirect.location, '/seo-services/', 'The service redirect should use its canonical path');
+    console.log('✓ [PASS] Service index redirects to its canonical route');
+
+    const adminPage = await get('/admin.html');
+    assert.strictEqual(adminPage.statusCode, 200, 'Admin sign-in page should remain available');
+    assert.strictEqual(adminPage.headers['x-robots-tag'], 'noindex, nofollow', 'Admin page should send a noindex response header');
+    console.log('✓ [PASS] Admin page remains available but is non-indexable');
+
+    const missingPage = await get('/route-that-does-not-exist');
+    assert.strictEqual(missingPage.statusCode, 404, 'Unknown public routes should return 404');
+    assert.match(missingPage.text, /PAGE NOT FOUND/i, 'Unknown public routes should render the custom 404 page');
+    const directNotFound = await get('/404.html');
+    assert.strictEqual(directNotFound.statusCode, 404, 'The custom 404 document should not return 200 directly');
+    const missingApi = await get('/api/route-that-does-not-exist');
+    assert.strictEqual(missingApi.statusCode, 404, 'Unknown API routes should return 404');
+    assert.strictEqual(missingApi.data.success, false, 'Unknown API routes should retain a JSON error response');
+    console.log('✓ [PASS] Unknown page and API routes return correct 404 responses');
 
     console.log('\n=================================================');
     console.log(' ALL E2E SERVER INTEGRATION TESTS PASSED!');
