@@ -4,7 +4,7 @@
   "buildCommand": "env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm run build",
   "functions": {
     "server.js": {
-      "includeFiles": "{index.html,admin.html,style.css,script.js,analytics-client.js,robots.txt,sitemap.xml,firebase-applet-config.json,public/firebase-client.mjs,images/**,fonts/**,social-icons/**,digital-marketing/**,python-development/**,seo-services/**,ui-ux-design/**,web-development/**}"
+      "includeFiles": "{*.html,*.css,*.js,*.txt,*.xml,firebase-applet-config.json,public/firebase-client.mjs,{images,fonts,social-icons,digital-marketing,python-development,seo-services,ui-ux-design,web-development}/**}"
     }
   },
   "headers": [

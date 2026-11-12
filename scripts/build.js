@@ -34,7 +34,7 @@ function validateBuildInputs() {
     throw new Error('Reviewed dependency lifecycle scripts must remain explicitly blocked.');
   }
   const expressFunctionFiles = config.functions?.['server.js']?.includeFiles;
-  if (!expressFunctionFiles || !['firebase-applet-config.json', 'public/firebase-client.mjs', 'social-icons/**'].every(file => expressFunctionFiles.includes(file))) {
+  if (!expressFunctionFiles || !['firebase-applet-config.json', 'public/firebase-client.mjs', 'social-icons'].every(file => expressFunctionFiles.includes(file))) {
     throw new Error('The Vercel Express function must include the files it serves dynamically.');
   }
   if (!packageJson.dependencies?.express || !packageJson.engines?.node) {
