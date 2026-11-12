@@ -1,6 +1,6 @@
 // Serverless Handler Simulation Test
 const assert = require('assert');
-const healthHandler = require('../lib/api/health.js');
+const healthHandler = require('../api/health.js');
 const contactHandler = require('../lib/api/contact.js');
 const chatHandler = require('../lib/api/chat.js');
 
