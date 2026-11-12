@@ -25,6 +25,14 @@ const requiredFiles = [
 function validateBuildInputs() {
   const config = JSON.parse(fs.readFileSync(path.join(projectRoot, 'vercel.json'), 'utf8'));
   const packageJson = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
+  const expectedInstallCommand = 'env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm install';
+  const expectedBuildCommand = 'env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm run build';
+  if (config.installCommand !== expectedInstallCommand || config.buildCommand !== expectedBuildCommand) {
+    throw new Error('Vercel npm commands must remove its unsupported cache-dir environment variable.');
+  }
+  if (packageJson.allowScripts?.['@google/genai'] !== false || packageJson.allowScripts?.protobufjs !== false) {
+    throw new Error('Reviewed dependency lifecycle scripts must remain explicitly blocked.');
+  }
   if (!config.functions?.['server.js']?.includeFiles || !config.routes?.some(route => route.dest === 'server.js')) {
     throw new Error('Vercel Express function or catch-all route configuration is missing.');
   }
