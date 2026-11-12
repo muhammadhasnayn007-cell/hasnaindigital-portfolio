@@ -74,6 +74,7 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   if (process.env.NODE_ENV === 'production') res.setHeader('Strict-Transport-Security', 'max-age=63072000');
+  if (req.path === '/admin.html') res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   if (req.path.startsWith('/api/admin')) res.setHeader('Cache-Control', 'no-store');
   next();
 });
@@ -130,6 +131,23 @@ app.get('/robots.txt', (req, res) => {
 app.get('/sitemap.xml', (req, res) => {
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   res.sendFile(path.join(__dirname, 'sitemap.xml'));
+});
+
+const canonicalRedirects = new Map([
+  ['/index.html', '/'],
+  ['/seo-services/index.html', '/seo-services/'],
+  ['/web-development/index.html', '/web-development/'],
+  ['/digital-marketing/index.html', '/digital-marketing/'],
+  ['/python-development/index.html', '/python-development/'],
+  ['/ui-ux-design/index.html', '/ui-ux-design/']
+]);
+app.get([...canonicalRedirects.keys()], (req, res) => {
+  res.redirect(301, canonicalRedirects.get(req.path));
+});
+
+app.get('/404.html', (req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
 // Serve images directory statically
@@ -342,6 +360,14 @@ app.post('/api/chat', async (req, res) => {
         : "Hasnain's Assistant encountered a temporary processing issue. Please feel free to ask again or reach out directly."
     });
   }
+});
+
+app.use((req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ success: false, error: 'API endpoint not found.' });
+  }
+  return res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
 // Vercel invokes the Express app as a serverless handler. Keep the listener for local development only.

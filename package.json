@@ -9,7 +9,7 @@
     "build": "node scripts/build.js",
     "quality": "npm test && npm run lint && npm run build && npm audit --omit=dev --audit-level=high",
     "lint": "node scripts/lint.js",
-    "test": "node test/api-test.js && node test/server-test.js && node test/serverless-test.js && node test/static-asset-test.js && node test/security-hardening-test.js && node test/admin-report-test.js && node test/analytics-consent-test.js && node test/loader-regression-test.js && node test/gemini-test.js"
+    "test": "node test/api-test.js && node test/server-test.js && node test/serverless-test.js && node test/static-asset-test.js && node test/security-hardening-test.js && node test/admin-report-test.js && node test/analytics-consent-test.js && node test/loader-regression-test.js && node test/gemini-test.js && node test/seo-test.js"
   },
   "keywords": [
     "portfolio",

@@ -7,6 +7,7 @@ const requiredFiles = [
   'server.js',
   'index.html',
   'admin.html',
+  '404.html',
   'style.css',
   'script.js',
   'analytics-client.js',
