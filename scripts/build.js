@@ -33,11 +33,9 @@ function validateBuildInputs() {
   if (packageJson.allowScripts?.['@google/genai'] !== false || packageJson.allowScripts?.protobufjs !== false) {
     throw new Error('Reviewed dependency lifecycle scripts must remain explicitly blocked.');
   }
-  if (!config.functions?.['server.js']?.includeFiles || !config.routes?.some(route => route.dest === 'server.js')) {
-    throw new Error('Vercel Express function or catch-all route configuration is missing.');
-  }
-  if (!config.routes.some(route => route.src === '/firebase-client.mjs' && route.check === true)) {
-    throw new Error('The Firebase ES module must resolve to the static filesystem before the Express function.');
+  const expressFunctionFiles = config.functions?.['server.js']?.includeFiles;
+  if (!expressFunctionFiles || !['firebase-applet-config.json', 'public/firebase-client.mjs', 'social-icons/**'].every(file => expressFunctionFiles.includes(file))) {
+    throw new Error('The Vercel Express function must include the files it serves dynamically.');
   }
   if (!packageJson.dependencies?.express || !packageJson.engines?.node) {
     throw new Error('The production server dependency or Node.js runtime is not configured.');
