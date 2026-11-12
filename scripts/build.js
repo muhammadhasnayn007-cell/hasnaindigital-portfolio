@@ -37,6 +37,9 @@ function validateBuildInputs() {
   if (!expressFunctionFiles || !['firebase-applet-config.json', 'public/firebase-client.mjs', 'social-icons'].every(file => expressFunctionFiles.includes(file))) {
     throw new Error('The Vercel Express function must include the files it serves dynamically.');
   }
+  if (!config.rewrites?.some(rewrite => rewrite.source === '/api/health' && rewrite.destination === '/api/analytics?health=1')) {
+    throw new Error('The health endpoint must be routed through the existing analytics function.');
+  }
   if (!packageJson.dependencies?.express || !packageJson.engines?.node) {
     throw new Error('The production server dependency or Node.js runtime is not configured.');
   }

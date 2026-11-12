@@ -7,6 +7,12 @@
       "includeFiles": "{*.html,*.css,*.js,*.txt,*.xml,firebase-applet-config.json,public/firebase-client.mjs,{images,fonts,social-icons,digital-marketing,python-development,seo-services,ui-ux-design,web-development}/**}"
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/analytics?health=1"
+    }
+  ],
   "headers": [
     {
       "source": "/style.css",

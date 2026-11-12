@@ -1,5 +1,6 @@
 const { getSupabaseAdmin } = require('../lib/supabase-server');
 const { getClientIp, checkRateLimit } = require('../lib/security');
+const healthHandler = require('../lib/api/health');
 
 const allowedEvents = new Set(['page_view','project_view','project_click','service_engagement','contact_start','contact_validation_error','contact_success','resume_download','assistant_interaction','suggestion_submit']);
 const allowedMetadataKeys = new Set(['service', 'project', 'action', 'source']);
@@ -27,6 +28,7 @@ function sanitizeReferrerHost(value) {
 }
 
 module.exports = async function analytics(req, res) {
+  if (req.method === 'GET' && req.query?.health === '1') return healthHandler(req, res);
   if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Method not allowed.' });
   if (!hasAnalyticsConsent(req)) return res.status(204).end();
   const limit = checkRateLimit(`${getClientIp(req)}:analytics`, 120, 60_000);
