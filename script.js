@@ -8,6 +8,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     else addEventListener('load',()=>{clearTimeout(loaderTimeout);finishLoader(false)},{once:true});
   }
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const loadFirebaseApp = async () => {
+    if (window.FirebaseApp) return window.FirebaseApp;
+    try {
+      await import('/firebase-client.mjs?v=portfolio-performance-2026-11-13');
+      return window.FirebaseApp || null;
+    } catch {
+      return null;
+    }
+  };
   const yearEl=$('#year');
   if(yearEl) yearEl.textContent=new Date().getFullYear();
   const backToTop=$('#backToTopBtn');
@@ -714,10 +723,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 
       if (delivered) {
         window.dispatchEvent(new CustomEvent('portfolio:enquiry-submitted', { detail: { service: serviceVal, contactMethod: payload.contactMethod } }));
-        // Persist inquiry to Firestore if Firebase is active
-        if (window.FirebaseApp && typeof window.FirebaseApp.persistInquiryToFirestore === 'function') {
-          window.FirebaseApp.persistInquiryToFirestore(payload);
-        }
+        // Load the optional persistence SDK only after a successful enquiry.
+        void loadFirebaseApp().then(firebase => firebase?.persistInquiryToFirestore(payload));
 
         // --- Success state ---
         if (alertBox) {
@@ -1024,10 +1031,8 @@ document.addEventListener('DOMContentLoaded',()=>{
           appendAssistantMessage(data.reply, data.groundingSources || []);
           conversationHistory.push({ role: 'assistant', content: data.reply });
 
-          // Persist chat session to Firestore if authenticated
-          if (window.FirebaseApp && typeof window.FirebaseApp.persistChatSessionToFirestore === 'function') {
-            window.FirebaseApp.persistChatSessionToFirestore(sessionId, messageText, data.leadStatus);
-          }
+          // Load the optional persistence SDK only after a chat response.
+          void loadFirebaseApp().then(firebase => firebase?.persistChatSessionToFirestore(sessionId, messageText, data.leadStatus));
 
           // If lead qualification triggered, display handoff banner
           if (data.handoffAvailable && chatHandoffBanner) {
@@ -1163,12 +1168,21 @@ document.addEventListener('DOMContentLoaded',()=>{
   update();
 
   // Universal click feedback: links, buttons and cards get a tiny tactile pulse.
+  const clickFeedbackTimers = new WeakMap();
   $$('a, button, .project, .glass-contact, .tech-card, .service-line').forEach(el => {
     el.addEventListener('pointerdown', () => {
       el.classList.remove('clicking');
-      void el.offsetWidth;
-      el.classList.add('clicking');
-      setTimeout(() => el.classList.remove('clicking'), 420);
+      const previousTimer = clickFeedbackTimers.get(el);
+      if (previousTimer) clearTimeout(previousTimer);
+      requestAnimationFrame(() => {
+        if (!el.isConnected) return;
+        el.classList.add('clicking');
+        const timer = setTimeout(() => {
+          el.classList.remove('clicking');
+          clickFeedbackTimers.delete(el);
+        }, 420);
+        clickFeedbackTimers.set(el, timer);
+      });
     }, { passive: true });
   });
 
@@ -1652,18 +1666,41 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   };
 
-  // Optional 3D scenes must never prevent the core portfolio and contact form from initializing.
+  // Optional WebGL scenes are downloaded only after load and skipped on mobile/save-data devices.
+  const sceneInitializers = [
+    ['hero-3d-canvas', initHero3DAnimation],
+    ['services-3d-canvas', initServices3DAnimation],
+    ['contact-3d-canvas', initContact3DAnimation]
+  ].filter(([canvasId]) => document.getElementById(canvasId));
+  const disableWebGL = matchMedia('(max-width: 820px), (prefers-reduced-motion: reduce)').matches || navigator.connection?.saveData;
+  const markScenesAsFallback = () => sceneInitializers.forEach(([canvasId]) => {
+    document.getElementById(canvasId)?.setAttribute('data-webgl-fallback', 'true');
+  });
   const safeInitScene = (initScene, canvasId) => {
     try {
       initScene();
     } catch (error) {
       console.warn('[v0] Optional 3D scene disabled:', canvasId, error);
       document.getElementById(canvasId)?.setAttribute('data-webgl-fallback', 'true');
-      window.__hxsnLoaderController?.settle(true);
     }
   };
-  safeInitScene(initHero3DAnimation, 'hero-3d-canvas');
-  safeInitScene(initServices3DAnimation, 'services-3d-canvas');
-  safeInitScene(initContact3DAnimation, 'contact-3d-canvas');
+  if (sceneInitializers.length && disableWebGL) {
+    markScenesAsFallback();
+  } else if (sceneInitializers.length) {
+    const loadScenes = () => {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+      script.async = true;
+      script.onload = () => sceneInitializers.forEach(([canvasId, initScene]) => safeInitScene(initScene, canvasId));
+      script.onerror = markScenesAsFallback;
+      document.head.append(script);
+    };
+    const scheduleScenes = () => {
+      if ('requestIdleCallback' in window) requestIdleCallback(loadScenes, { timeout: 1800 });
+      else setTimeout(loadScenes, 600);
+    };
+    if (document.readyState === 'complete') scheduleScenes();
+    else window.addEventListener('load', scheduleScenes, { once: true });
+  }
 });
 
