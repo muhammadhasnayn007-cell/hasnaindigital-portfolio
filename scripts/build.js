@@ -11,6 +11,7 @@ const requiredFiles = [
   'style.css',
   'script.js',
   'analytics-client.js',
+  'google1de57ef96b630118.html',
   'public/firebase-client.mjs',
   'api/admin-chat.js',
   'images/logo.png',
@@ -39,6 +40,12 @@ function validateBuildInputs() {
   }
   if (!config.routes.some(route => route.src === '/firebase-client.mjs' && route.check === true)) {
     throw new Error('The Firebase ES module must resolve to the static filesystem before the Express function.');
+  }
+  if (
+    !config.routes.some(route => route.src === '/google1de57ef96b630118.html' && route.dest === '/google1de57ef96b630118.html' && route.check === true) ||
+    !config.functions['server.js'].includeFiles.includes('google1de57ef96b630118.html')
+  ) {
+    throw new Error('Google Search Console verification must resolve at the origin root and be included in the Vercel function bundle.');
   }
   if (!packageJson.dependencies?.express || !packageJson.engines?.node) {
     throw new Error('The production server dependency or Node.js runtime is not configured.');

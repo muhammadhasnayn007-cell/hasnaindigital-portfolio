@@ -4,7 +4,7 @@
   "buildCommand": "env -u npm_config_cache_dir -u NPM_CONFIG_CACHE_DIR npm run build",
   "functions": {
     "server.js": {
-      "includeFiles": "{index.html,admin.html,404.html,style.css,script.js,analytics-client.js,robots.txt,sitemap.xml,images/**,fonts/**,digital-marketing/**,python-development/**,seo-services/**,ui-ux-design/**,web-development/**}"
+      "includeFiles": "{index.html,admin.html,404.html,style.css,script.js,analytics-client.js,robots.txt,sitemap.xml,images/**,fonts/**,digital-marketing/**,python-development/**,seo-services/**,ui-ux-design/**,web-development/**,google1de57ef96b630118.html}"
     }
   },
   "routes": [
@@ -16,6 +16,11 @@
     {
       "src": "/social-icons/(.*)",
       "dest": "/social-icons/$1",
+      "check": true
+    },
+    {
+      "src": "/google1de57ef96b630118.html",
+      "dest": "/google1de57ef96b630118.html",
       "check": true
     },
     {
@@ -59,6 +64,12 @@
     },
     {
       "source": "/firebase-client.mjs",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/google1de57ef96b630118.html",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
