@@ -101,25 +101,25 @@ app.use((req, res, next) => {
 // Explicit static handlers for core assets to guarantee correct Content-Type on Serverless & Node runtimes
 app.get('/style.css', (req, res) => {
   res.setHeader('Content-Type', 'text/css; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   res.sendFile(path.join(__dirname, 'style.css'));
 });
 
 app.get('/script.js', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   res.sendFile(path.join(__dirname, 'script.js'));
 });
 
 app.get('/firebase-client.mjs', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   res.sendFile(path.join(__dirname, 'public', 'firebase-client.mjs'));
 });
 
 app.get('/analytics-client.js', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   res.sendFile(path.join(__dirname, 'analytics-client.js'));
 });
 
@@ -152,7 +152,14 @@ app.get('/404.html', (req, res) => {
 
 // Serve images directory statically
 app.use('/images', express.static(path.join(__dirname, 'images'), {
-  maxAge: '1d',
+  maxAge: '1y',
+  immutable: true,
+  etag: true
+}));
+
+app.use('/fonts', express.static(path.join(__dirname, 'fonts'), {
+  maxAge: '1y',
+  immutable: true,
   etag: true
 }));
 

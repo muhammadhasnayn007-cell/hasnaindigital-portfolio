@@ -27,12 +27,8 @@
 
   <!-- Clean, modern favicon implementation -->
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,600;1,700&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="/style.css?v=hero-badge-motion-2026-11-10b">
+  <link rel="preload" href="/fonts/bebas-neue-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css?v=portfolio-performance-2026-11-13">
 
   <script type="application/ld+json">
   {
@@ -134,7 +130,7 @@
   <div class="site-shell" id="top">
     <header class="topbar" id="topbar">
       <a class="brand" href="#home" aria-label="H.X.S.N Digital Technologies home">
-        <img class="navbar-logo" src="/images/brand-logo.png" alt="H.X.S.N Digital Technologies Logo" width="180" height="42">
+        <img class="navbar-logo" src="/images/brand-logo-320.webp" srcset="/images/brand-logo-320.webp 320w, /images/brand-logo-640.webp 640w" sizes="(max-width: 380px) 52vw, (max-width: 640px) 155px, 132px" alt="H.X.S.N Digital Technologies Logo" width="180" height="60">
       </a>
       <button class="nav-toggle" type="button" aria-label="Open navigation" aria-controls="mainNav" aria-expanded="false"><span></span><span></span></button>
       <nav class="main-nav" id="mainNav" aria-label="Primary">
@@ -165,7 +161,7 @@
           <div class="orbit orbit-a"></div>
           <div class="orbit orbit-b"></div>
           <div class="portrait-frame tilt-target">
-<img src="/images/hasnain-photo-from-reference.png" width="1254" height="1254" fetchpriority="high" decoding="async"
+<img src="/images/hero-portrait-648.webp" srcset="/images/hero-portrait-648.webp 648w, /images/hero-portrait-864.webp 864w" sizes="(max-width: 820px) min(100vw, 430px), 430px" width="430" height="570" loading="eager" fetchpriority="high" decoding="async"
               alt="Portrait of Muhammad Hasnain, digital marketer and web developer">
             <div class="portrait-shine"></div>
             <div class="portrait-vignette"></div>
@@ -258,7 +254,7 @@
         </div>
         <div class="project-grid">
           <article class="project glass-card reveal" data-tilt data-project="SEO">
-            <div class="project-visual p-seo"><img src="/images/project-seo.svg"
+            <div class="project-visual p-seo"><img src="/images/project-seo.svg" width="1200" height="700" loading="lazy" decoding="async"
                 alt="Illustration for a search growth strategy concept"><span>01</span>
               <div class="project-overlay"><strong>SEO STRATEGY</strong><small>TECHNICAL SEO · KEYWORDS ·
                   RANKINGS</small></div>
@@ -272,7 +268,7 @@
             </div>
           </article>
           <article class="project glass-card reveal" data-delay="100" data-tilt data-project="Digital Marketing">
-            <div class="project-visual p-marketing"><img src="/images/project-marketing.svg"
+            <div class="project-visual p-marketing"><img src="/images/project-marketing.svg" width="1200" height="700" loading="lazy" decoding="async"
                 alt="Illustration for a digital marketing campaign concept"><span>02</span>
               <div class="project-overlay"><strong>DIGITAL MARKETING</strong><small>CAMPAIGNS · CONTENT ·
                   CONVERSION</small></div>
@@ -286,7 +282,7 @@
             </div>
           </article>
           <article class="project glass-card reveal" data-delay="180" data-tilt data-project="Web Development">
-            <div class="project-visual p-web"><img src="/images/project-web.svg"
+            <div class="project-visual p-web"><img src="/images/project-web.svg" width="1200" height="700" loading="lazy" decoding="async"
                 alt="Illustration for a business website development concept"><span>03</span>
               <div class="project-overlay"><strong>WEB DEVELOPMENT</strong><small>FAST · CORE WEB VITALS ·
                   ACCESSIBLE</small></div>
@@ -300,7 +296,7 @@
             </div>
           </article>
           <article class="project glass-card reveal" data-delay="260" data-tilt data-project="UI/UX Design">
-            <div class="project-visual p-ui"><img src="/images/project-ui.svg"
+            <div class="project-visual p-ui"><img src="/images/project-ui.svg" width="1200" height="700" loading="lazy" decoding="async"
                 alt="Illustration for a user interface and experience concept"><span>04</span>
               <div class="project-overlay"><strong>UI/UX DESIGN</strong><small>RESEARCH · WIREFRAMES · SYSTEMS</small>
               </div>
@@ -319,9 +315,10 @@
       <section class="section about" id="about">
         <div class="about-visual reveal-left">
           <div class="about-card glass-card about-photo-card">
-            <div class="about-photo"><img src="/images/hasnain-photo-from-reference.png"
-                alt="Portrait of Muhammad Hasnain" width="1254"
-                height="1254" loading="lazy" decoding="async"></div>
+            <div class="about-photo"><img src="/images/hasnain-photo-640.webp"
+                srcset="/images/hasnain-photo-640.webp 640w, /images/hasnain-photo-960.webp 960w" sizes="(max-width: 820px) 90vw, 45vw"
+                alt="Portrait of Muhammad Hasnain" width="960"
+                height="960" loading="lazy" decoding="async"></div>
             <div class="about-photo-glow"></div>
             <div class="about-badge">SEO <span>×</span> MARKETING <span>×</span> WEB</div>
           </div>
@@ -553,7 +550,8 @@
       </section>
 
       <section class="contact section" id="contact" aria-labelledby="contact-heading">
-          <div class="contact-bg"><img src="/images/contact-profile.png"
+          <div class="contact-bg"><img src="/images/contact-profile-640.webp"
+            srcset="/images/contact-profile-640.webp 640w, /images/contact-profile-960.webp 960w" sizes="110vw"
             alt="" aria-hidden="true" width="640" height="640" loading="lazy" decoding="async">
           <canvas id="contact-3d-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; opacity: 0.35;"></canvas>
           <div class="contact-fade"></div>
@@ -563,7 +561,7 @@
         <div class="contact-grid">
           <div class="contact-copy reveal-left">
             <div class="contact-brand-badge">
-              <img src="/images/brand-logo.png" alt="H.X.S.N Digital Technologies Logo" width="34" height="34">
+              <img src="/images/logo-mark.svg" alt="H.X.S.N Digital Technologies Monogram" width="34" height="34">
               <span>H.X.S.N DIGITAL TECHNOLOGIES</span>
             </div>
             <span class="eyebrow">GET IN TOUCH</span>
@@ -780,7 +778,7 @@
     <footer class="footer" id="siteFooter">
       <div class="footer-main">
         <a class="footer-brand" href="#home" aria-label="H.X.S.N Digital Technologies">
-          <img src="/images/brand-logo.png" alt="H.X.S.N Digital Technologies Logo" class="footer-logo" width="145" height="40">
+          <img src="/images/brand-logo-320.webp" srcset="/images/brand-logo-320.webp 320w, /images/brand-logo-640.webp 640w" sizes="(max-width: 380px) 52vw, (max-width: 640px) 155px, 132px" alt="H.X.S.N Digital Technologies Logo" class="footer-logo" width="180" height="60" loading="lazy" decoding="async">
         </a>
       </div>
       <p class="footer-copyright footer-centered">© <span id="year">2026</span> H.X.S.N DIGITAL TECHNOLOGIES · ALL RIGHTS RESERVED.</p>
@@ -902,10 +900,8 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="/analytics-client.js?v=3d-consent-fixes-2026-11-01"></script>
- <script src="/script.js?v=hero-motion-2026-11-10"></script>
-  <script type="module" src="/firebase-client.mjs"></script>
+  <script defer src="/analytics-client.js?v=portfolio-performance-2026-11-13"></script>
+  <script defer src="/script.js?v=portfolio-performance-2026-11-13"></script>
 </body>
 
 </html>
