@@ -354,7 +354,7 @@ app.post('/api/chat', async (req, res) => {
       sessionId: sessionId || ip,
       message: message.trim(),
       history: history || [],
-      allowFallback: process.env.NODE_ENV !== 'production'
+      allowFallback: true
     });
     return res.status(200).json({ success: true, reply: result.reply, groundingSources: result.groundingSources || [], leadStatus: result.leadStatus, handoffAvailable: result.handoffAvailable });
   } catch (err) {
@@ -385,11 +385,7 @@ if (!process.env.VERCEL) {
     console.log(` URL: http://localhost:${PORT}`);
     console.log(` Mode: ${process.env.NODE_ENV || 'development'}`);
     console.log(` Contact Delivery: ${(process.env.RESEND_API_KEY || process.env.API_key) ? 'Resend' : process.env.SMTP_HOST ? 'SMTP' : 'Unconfigured'}`);
-    const configuredGeminiModel = process.env.GEMINI_MODEL?.trim();
-    const geminiModel = configuredGeminiModel && /^gemini-[a-z0-9.-]+$/i.test(configuredGeminiModel)
-      ? configuredGeminiModel
-      : 'gemini-3.5-flash-lite';
-    console.log(` AI Assistant: ${process.env.GEMINI_API_KEY ? `Gemini (${geminiModel})` : 'Gemini API key not configured'}`);
+    console.log(' AI Assistant: Vercel AI Gateway with portfolio-aware fallback');
     console.log(`=================================================================`);
   });
 }
