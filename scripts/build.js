@@ -14,6 +14,7 @@ const requiredFiles = [
   'google1de57ef96b630118.html',
   'public/firebase-client.mjs',
   'api/admin-chat.js',
+  'api/contact.js',
   'images/logo.png',
   'robots.txt',
   'sitemap.xml',

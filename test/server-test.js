@@ -3,7 +3,7 @@ const assert = require('assert');
 const http = require('http');
 
 process.env.PORT = '3001';
-process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = 'production';
 process.env.AVAILABILITY_STATUS = 'Available for Projects';
 
 console.log('Starting Express server on port 3001 for integration test...');

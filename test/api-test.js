@@ -18,6 +18,7 @@ const {
 } = require('../lib/ai');
 const {
   buildContactEmailHtml,
+  buildContactEmailText,
   buildAiLeadEmailHtml
 } = require('../lib/mailer');
 const knowledge = require('../lib/knowledge.json');
@@ -164,6 +165,17 @@ runTest('Mailer: Contact form email template format & bottom-right logo', () => 
   assert.ok(html.includes('cid:hasnain_logo'), 'Should use CID logo attachment');
   assert.ok(html.includes('align="right"'), 'Logo should be aligned to the right');
   assert.ok(html.includes('H.X.S.N Digital Technologies'), 'Should contain brand name');
+});
+
+runTest('Mailer: Plain-text contact email uses real line breaks', () => {
+  const text = buildContactEmailText({
+    referenceId: 'INQ-TEST',
+    name: 'Ali Khan',
+    email: 'ali@example.com',
+    message: 'I need a business website.'
+  });
+  assert.ok(text.includes('\nClient name: Ali Khan\n'));
+  assert.ok(!text.includes('\\n'));
 });
 
 runTest('AI: Hasnain availability and Contact action handling', () => {
