@@ -1,7 +1,5 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { spawnSync } = require('node:child_process');
-
 const projectRoot = path.resolve(__dirname, '..');
 const requiredFiles = [
   'server.js',
@@ -15,6 +13,7 @@ const requiredFiles = [
   'public/firebase-client.mjs',
   'api/admin-chat.js',
   'api/contact.js',
+  'api/index.js',
   'images/logo.png',
   'robots.txt',
   'sitemap.xml',
@@ -36,15 +35,21 @@ function validateBuildInputs() {
   if (packageJson.allowScripts?.['@google/genai'] !== false || packageJson.allowScripts?.protobufjs !== false) {
     throw new Error('Reviewed dependency lifecycle scripts must remain explicitly blocked.');
   }
-  if (!config.functions?.['server.js']?.includeFiles || !config.routes?.some(route => route.dest === 'server.js')) {
-    throw new Error('Vercel Express function or catch-all route configuration is missing.');
+  if (
+    !config.functions?.['api/index.js']?.includeFiles ||
+    !config.routes?.some(route => route.src === '/(.*)' && route.dest === '/api/index.js')
+  ) {
+    throw new Error('Vercel Express function entrypoint or catch-all route configuration is missing.');
+  }
+  if (!fs.existsSync(path.join(projectRoot, 'api/index.js'))) {
+    throw new Error('The Express function entrypoint must exist under the Vercel api directory.');
   }
   if (!config.routes.some(route => route.src === '/firebase-client.mjs' && route.check === true)) {
     throw new Error('The Firebase ES module must resolve to the static filesystem before the Express function.');
   }
   if (
     !config.routes.some(route => route.src === '/google1de57ef96b630118.html' && route.dest === '/google1de57ef96b630118.html' && route.check === true) ||
-    !config.functions['server.js'].includeFiles.includes('google1de57ef96b630118.html')
+    !config.functions['api/index.js'].includeFiles.includes('*.html')
   ) {
     throw new Error('Google Search Console verification must resolve at the origin root and be included in the Vercel function bundle.');
   }
@@ -66,20 +71,4 @@ try {
   process.exit(1);
 }
 
-if (process.env.VERCEL === '1' || process.env.HXSN_VERCEL_BUILD_INNER === '1') {
-  process.stdout.write('Production inputs validated for Vercel function packaging.\n');
-  process.exit(0);
-}
-
-const command = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-const build = spawnSync(command, ['--yes', 'vercel@65.4.0', 'build', '--yes'], {
-  cwd: projectRoot,
-  env: { ...process.env, HXSN_VERCEL_BUILD_INNER: '1' },
-  stdio: 'inherit'
-});
-
-if (build.error) {
-  process.stderr.write(`[build] Unable to start Vercel CLI: ${build.error.message}\n`);
-  process.exit(1);
-}
-process.exitCode = build.status ?? 1;
+process.stdout.write('Production inputs validated for Vercel function packaging.\n');
