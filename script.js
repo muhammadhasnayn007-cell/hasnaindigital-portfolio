@@ -705,12 +705,15 @@ document.addEventListener('DOMContentLoaded',()=>{
 
         const data = await apiRes.json().catch(() => ({}));
 
-        if (apiRes.ok && data.success) {
+        if (apiRes.ok && data.success && !data.deliveryPending) {
           trackAnalytics('contact_success', { service: serviceSelect?.value || 'unknown' });
           delivered = true;
         } else {
-          showMailtoFallback = apiRes.status >= 500;
-          serverErrorMsg = data.error || (apiRes.status === 429 ? 'Too many requests. Please wait a minute before retrying.' : 'Server encountered an issue sending your email.');
+          const deliveryPending = Boolean(data.deliveryPending);
+          showMailtoFallback = deliveryPending || apiRes.status >= 500;
+          serverErrorMsg = deliveryPending
+            ? 'Your enquiry was saved, but the email is still pending. Please retry shortly or use the direct email link.'
+            : data.error || (apiRes.status === 429 ? 'Too many requests. Please wait a minute before retrying.' : 'Server encountered an issue sending your email.');
         }
       } catch (err) {
         showMailtoFallback = true;
@@ -936,7 +939,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       const retryBtn = bubble.querySelector('.chat-retry-btn');
       retryBtn?.addEventListener('click', () => {
         bubble.remove();
-        sendChatMessage(retryMessage);
+        sendChatMessage(retryMessage, { retry: true });
       });
 
       // Wire up Contact Hasnain / Start a Project action button
@@ -994,11 +997,13 @@ document.addEventListener('DOMContentLoaded',()=>{
       if (el) el.remove();
     };
 
-    const sendChatMessage = async messageText => {
+    const sendChatMessage = async (messageText, { retry = false } = {}) => {
       if (!messageText || isWaitingResponse) return;
 
-      appendUserMessage(messageText);
-      conversationHistory.push({ role: 'user', content: messageText });
+      if (!retry) {
+        appendUserMessage(messageText);
+        conversationHistory.push({ role: 'user', content: messageText });
+      }
 
       // Track candidate service mentioned in conversation
       const lower = messageText.toLowerCase();
@@ -1063,7 +1068,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     // Modern IME-safe enter submit
     if (chatInput) {
       chatInput.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+        if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
           e.preventDefault();
           chatForm.dispatchEvent(new Event('submit'));
         }
