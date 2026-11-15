@@ -313,9 +313,17 @@ app.post('/api/contact', async (req, res) => {
       emailData: { name, email, subject, service, message, budget, timeline, websiteUrl, contactMethod, whatsapp }
     });
 
-    if (result.deliveryError) {
+    if (result.deliveryError || result.alreadyProcessing) {
       clearSubmissionLock(name, email, message);
-      return res.status(202).json({ success: true, message: 'Your enquiry was received securely. Our team will follow up shortly.', inquiryId: result.inquiry.id, referenceId: result.inquiry.reference_id, deliveryPending: true });
+      return res.status(202).json({
+        success: true,
+        message: result.alreadyProcessing
+          ? 'Your enquiry is saved, but its email is still being processed.'
+          : 'Your enquiry is saved, but its email notification is pending. Please retry shortly.',
+        inquiryId: result.inquiry.id,
+        referenceId: result.inquiry.reference_id,
+        deliveryPending: true
+      });
     }
 
     recordSubmissionSuccess(name, email, message);
